@@ -1,0 +1,9 @@
+﻿<Grammar> ::= <Production> <ProductionList> ;
+<ProductionList> ::= <Production> <ProductionList> | null ;
+<Production> ::= <Vn> "::=" <Canditate> <RightPartList> ";" ;
+<Canditate> ::= <V> <VList> ;
+<VList> ::= <V> <VList> | null ;
+<RightPartList> ::= "|" <Canditate> <RightPartList> | null ;
+<V> ::= <Vn> | <Vt> ;
+<Vn> ::= "<" identifier ">" ;
+<Vt> ::= "null" | "identifier" | "number" | "constString" | constString ;

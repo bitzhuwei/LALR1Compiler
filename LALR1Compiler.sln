@@ -5,6 +5,8 @@ VisualStudioVersion = 12.0.30501.0
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LALR1Compiler", "LALR1Compiler\LALR1Compiler.csproj", "{AFC8738E-0A2D-4124-9045-4F935E3DA0CF}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ContextfreeGrammarCompiler", "ContextfreeGrammarCompiler\ContextfreeGrammarCompiler.csproj", "{ECD074F1-CE37-4390-B171-6B8B7C400187}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -15,6 +17,10 @@ Global
 		{AFC8738E-0A2D-4124-9045-4F935E3DA0CF}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{AFC8738E-0A2D-4124-9045-4F935E3DA0CF}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{AFC8738E-0A2D-4124-9045-4F935E3DA0CF}.Release|Any CPU.Build.0 = Release|Any CPU
+		{ECD074F1-CE37-4390-B171-6B8B7C400187}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{ECD074F1-CE37-4390-B171-6B8B7C400187}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{ECD074F1-CE37-4390-B171-6B8B7C400187}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{ECD074F1-CE37-4390-B171-6B8B7C400187}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
