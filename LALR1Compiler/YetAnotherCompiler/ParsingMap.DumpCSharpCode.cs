@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace LALR1Compiler
 {
-    public static class LR1ParsingMapHelper
+    public static class LRParsingMapHelper
     {
 
         public static IEnumerable<string> ToCSharpCode(this LRParsingMap parsingMap)

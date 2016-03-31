@@ -67,14 +67,14 @@ namespace LALR1Compiler
             LRParsingMap parsingMap = new LRParsingMap();
             foreach (var edge in edgeList)
             {
-                if (edge.x.IsLeave)
+                if (edge.X.IsLeave)
                 {
-                    parsingMap.SetAction(stateList.IndexOf(edge.From) + 1, edge.x,
+                    parsingMap.SetAction(stateList.IndexOf(edge.From) + 1, edge.X,
                         new LR1ShiftInAction(stateList.IndexOf(edge.To) + 1));
                 }
                 else
                 {
-                    parsingMap.SetAction(stateList.IndexOf(edge.From) + 1, edge.x,
+                    parsingMap.SetAction(stateList.IndexOf(edge.From) + 1, edge.X,
                         new LR1GotoAction(stateList.IndexOf(edge.To) + 1));
                 }
             }

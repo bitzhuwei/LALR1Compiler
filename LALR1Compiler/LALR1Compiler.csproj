@@ -39,6 +39,14 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="YetAnotherCompiler\RegulationList.Completeness.cs" />
+    <Compile Include="YetAnotherCompiler\LR%281%29ParserGeneratorInfo.cs" />
+    <Compile Include="YetAnotherCompiler\LR%281%29EdgeList.cs" />
+    <Compile Include="YetAnotherCompiler\LR%281%29Edge.cs" />
+    <Compile Include="YetAnotherCompiler\LR%281%29StateList.cs" />
+    <Compile Include="YetAnotherCompiler\LR%281%29State.cs" />
+    <Compile Include="YetAnotherCompiler\LR%281%29Item.cs" />
+    <Compile Include="YetAnotherCompiler\RegulationList.Algorithm.LR%281%29.cs" />
     <Compile Include="YetAnotherCompiler\SLRParserGeneratorInfo.cs" />
     <Compile Include="YetAnotherCompiler\LR%280%29ParserGeneratorInfo.cs" />
     <Compile Include="YetAnotherCompiler\LR%280%29EdgeList.cs" />
