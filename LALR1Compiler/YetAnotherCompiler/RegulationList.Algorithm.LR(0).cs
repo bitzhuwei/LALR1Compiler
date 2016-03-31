@@ -52,14 +52,14 @@ namespace LALR1Compiler
                     if (x == null || x == decoratedEnd) { continue; }
 
                     LR0State toState = decoratedGrammar.Goto(fromState, x);
-                    if (stateList.TryBinaryInsert(toState))
+                    if (stateList.TryInsert(toState))
                     {
                         queue.Enqueue(toState);
                         stateListCount++;
                         queueCount++;
                     }
                     LR0Edge edge = new LR0Edge(fromState, x, toState);
-                    edgeList.TryBinaryInsert(edge);
+                    edgeList.TryInsert(edge);
                 }
             }
             Console.WriteLine();
@@ -130,7 +130,7 @@ namespace LALR1Compiler
                     if (regulation.Left == node)
                     {
                         var newItem = new LR0Item(regulation, 0);
-                        if (state.TryBinaryInsert(newItem))
+                        if (state.TryInsert(newItem))
                         {
                             queue.Enqueue(newItem);
                         }
@@ -158,7 +158,7 @@ namespace LALR1Compiler
                 if (nextNode == x)
                 {
                     var newItem = new LR0Item(item.Regulation, item.DotPosition + 1);
-                    toState.TryBinaryInsert(newItem);
+                    toState.TryInsert(newItem);
                 }
             }
 

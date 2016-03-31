@@ -39,9 +39,17 @@ namespace LALR1Compiler
             return builder.ToString();
         }
 
-        public bool TryBinaryInsert(T item)
+        public bool TryInsert(T item)
         {
-            return this.list.TryBinaryInsert(item);
+            if (this.list.TryBinaryInsert(item))
+            {
+                this.SetDirty();
+                return true;
+            }
+            else
+            {
+                return false;
+            }
         }
 
         public int IndexOf(T item)

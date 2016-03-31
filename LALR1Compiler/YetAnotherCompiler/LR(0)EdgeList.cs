@@ -16,7 +16,7 @@ namespace LALR1Compiler
             {
                 foreach (var item in edges)
                 {
-                    this.TryBinaryInsert(item);
+                    this.TryInsert(item);
                 }
             }
         }

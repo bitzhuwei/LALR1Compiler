@@ -20,7 +20,7 @@ namespace LALR1Compiler
             {
                 foreach (var item in values)
                 {
-                    this.values.TryBinaryInsert(item);
+                    this.values.TryInsert(item);
                 }
             }
         }
@@ -51,7 +51,7 @@ namespace LALR1Compiler
 
         public bool TryInsert(TreeNodeType value)
         {
-            if (this.values.TryBinaryInsert(value))
+            if (this.values.TryInsert(value))
             {
                 this.SetDirty();
                 return true;

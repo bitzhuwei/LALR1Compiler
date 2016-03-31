@@ -52,14 +52,14 @@ namespace LALR1Compiler
                     if (x == null || x == decoratedEnd) { continue; }
 
                     LR0State toState = decoratedGrammar.Goto(fromState, x);
-                    if (stateList.TryBinaryInsert(toState))
+                    if (stateList.TryInsert(toState))
                     {
                         queue.Enqueue(toState);
                         stateListCount++;
                         queueCount++;
                     }
                     LR0Edge edge = new LR0Edge(fromState, x, toState);
-                    edgeList.TryBinaryInsert(edge);
+                    edgeList.TryInsert(edge);
                 }
             }
             Console.WriteLine();
