@@ -39,7 +39,6 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Class1.cs" />
     <Compile Include="ContextfreeGrammarCharType.cs" />
     <Compile Include="ContextfreeGrammarLexicalAnalyzer.cs" />
     <Compile Include="ContextfreeGrammarSyntaxParser.cs" />
