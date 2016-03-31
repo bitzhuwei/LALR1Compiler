@@ -39,7 +39,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="SLRParserGeneratorInfo.cs" />
+    <Compile Include="YetAnotherCompiler\SLRParserGeneratorInfo.cs" />
     <Compile Include="YetAnotherCompiler\LR%280%29ParserGeneratorInfo.cs" />
     <Compile Include="YetAnotherCompiler\LR%280%29EdgeList.cs" />
     <Compile Include="YetAnotherCompiler\LR%280%29Edge.cs" />
@@ -61,7 +61,6 @@
     <Compile Include="Token.cs" />
     <Compile Include="TokenList.cs" />
     <Compile Include="TokenType.cs" />
-    <Compile Include="TokenType2TreeNodeType.cs" />
     <Compile Include="Utilities\BinaryInsertHelper.cs" />
     <Compile Include="HashCache.cs" />
     <Compile Include="OrderedCollection.cs" />
