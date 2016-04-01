@@ -80,10 +80,7 @@ namespace ContextfreeGrammarCompiler.Test
                     }
 
                     var SetActionMethod = new CodeMethodReferenceExpression(
-                        new CodeVariableReferenceExpression(varName), "SetAction",
-                        new CodeTypeReference(typeof(int)),
-                        new CodeTypeReference(typeof(TreeNodeType)),
-                        new CodeTypeReference(typeof(LRParsingAction)));
+                        new CodeVariableReferenceExpression(varName), "SetAction");
                     var setAction = new CodeMethodInvokeExpression(
                         SetActionMethod, stateId, nodeType, ctor);
                     method.Statements.Add(setAction);
@@ -119,8 +116,9 @@ namespace ContextfreeGrammarCompiler.Test
                 var ctor = new CodeObjectCreateExpression(typeof(Regulation), parametes.ToArray());
                 var AddMethod = new CodeMethodReferenceExpression(
                     new CodeVariableReferenceExpression(varName),
-                    "Add",
-                    new CodeTypeReference(typeof(Regulation)));
+                    "Add");
+                    //,
+                    //new CodeTypeReference(typeof(Regulation)));
                 var addRegulation = new CodeMethodInvokeExpression(AddMethod, ctor);
                 method.Statements.Add(addRegulation);
             }
