@@ -94,7 +94,7 @@ namespace ContextfreeGrammarCompiler.Test
             if (!Directory.Exists(LR1Directory)) { Directory.CreateDirectory(LR1Directory); }
 
             Console.WriteLine("    Dump LR(1) source code...");
-            DumpSyntaxParserCode(grammar, LR1Map, grammarId, LR1Directory);
+            DumpSyntaxParserCode(grammar, LR1Map, grammarId, LR1Directory, SyntaxParserMapAlgorithm.LR1);
         }
 
         private static void DumpSLRCode(
@@ -106,7 +106,7 @@ namespace ContextfreeGrammarCompiler.Test
             if (!Directory.Exists(SLRDirectory)) { Directory.CreateDirectory(SLRDirectory); }
 
             Console.WriteLine("    Dump SLR source code...");
-            DumpSyntaxParserCode(grammar, SLRMap, grammarId, SLRDirectory);
+            DumpSyntaxParserCode(grammar, SLRMap, grammarId, SLRDirectory, SyntaxParserMapAlgorithm.SLR);
         }
 
 
@@ -119,8 +119,9 @@ namespace ContextfreeGrammarCompiler.Test
             if (!Directory.Exists(LR0Directory)) { Directory.CreateDirectory(LR0Directory); }
 
             Console.WriteLine("    Dump LR(0) source code...");
-            DumpSyntaxParserCode(grammar, LR0Map, grammarId, LR0Directory);
+            DumpSyntaxParserCode(grammar, LR0Map, grammarId, LR0Directory, SyntaxParserMapAlgorithm.LR0);
         }
 
     }
+
 }
