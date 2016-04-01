@@ -13,7 +13,7 @@ namespace ContextfreeGrammarCompiler.Test
 {
     partial class Program
     {
-        
+
         private static void DumpSyntaxParserCode(RegulationList grammar, LRParsingMap map, string grammarId, string LR0Directory)
         {
             var parserType = new CodeTypeDeclaration(GetParserName(grammarId));
@@ -115,10 +115,7 @@ namespace ContextfreeGrammarCompiler.Test
                     select new CodeVariableReferenceExpression(GetNodeName(item)));
                 var ctor = new CodeObjectCreateExpression(typeof(Regulation), parametes.ToArray());
                 var AddMethod = new CodeMethodReferenceExpression(
-                    new CodeVariableReferenceExpression(varName),
-                    "Add");
-                    //,
-                    //new CodeTypeReference(typeof(Regulation)));
+                    new CodeVariableReferenceExpression(varName), "Add");
                 var addRegulation = new CodeMethodInvokeExpression(AddMethod, ctor);
                 method.Statements.Add(addRegulation);
             }
