@@ -7,13 +7,18 @@ using System.Threading.Tasks;
 namespace LALR1Compiler
 {
     /// <summary>
-    /// FIRST集
+    /// 一个FIRST集
     /// </summary>
     public class FIRST : HashCache
     {
 
+        /// <summary>
+        /// 一个FIRST集
+        /// </summary>
+        /// <param name="target"></param>
+        /// <param name="values"></param>
         public FIRST(TreeNodeType target, params TreeNodeType[] values)
-            : base(GetToString)
+            : base(GetUniqueString)
         {
             this.target.Add(target);
             if (values != null)
@@ -26,7 +31,7 @@ namespace LALR1Compiler
         }
 
         public FIRST(IEnumerable<TreeNodeType> target, params TreeNodeType[] values)
-            : base(GetToString)
+            : base(GetUniqueString)
         {
             this.target.AddRange(target);
             if (values != null)
@@ -39,12 +44,12 @@ namespace LALR1Compiler
         }
 
         public FIRST(IEnumerable<TreeNodeType> target)
-            : base(GetToString)
+            : base(GetUniqueString)
         {
             this.target.AddRange(target);
         }
 
-        private static string GetToString(HashCache cache)
+        private static string GetUniqueString(HashCache cache)
         {
             FIRST obj = cache as FIRST;
             StringBuilder builder = new StringBuilder();
@@ -84,7 +89,7 @@ namespace LALR1Compiler
         private OrderedCollection<TreeNodeType> values = new OrderedCollection<TreeNodeType>(" ");
         public IEnumerable<TreeNodeType> Values { get { return this.values; } }
 
-        public bool TryBinaryInsert(TreeNodeType value)
+        public bool TryInsert(TreeNodeType value)
         {
             if (this.values.TryInsert(value))
             {

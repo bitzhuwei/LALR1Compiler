@@ -8,7 +8,7 @@ namespace LALR1Compiler
 {
     // http://blog.csdn.net/lanlicen/article/details/8913065
     /// <summary>
-    /// 缓存一个对象的hash code。
+    /// 缓存一个对象的hash code。提高比较（==、!=、Equals、GetHashCode、Compare）的效率。
     /// </summary>
     public abstract class HashCache : IComparable<HashCache>, IDump2Stream
     {
@@ -77,10 +77,15 @@ namespace LALR1Compiler
             }
         }
 
+        // TODO: 功能稳定后应精简此字段的内容。
+        /// <summary>
+        /// 功能稳定后应精简此字段的内容。
+        /// </summary>
         private string uniqueString = string.Empty;
 
         /// <summary>
-        /// 上一次产生的可代表该对象的字符串。
+        /// 可唯一标识该对象的字符串。
+        /// 功能稳定后应精简此字段的内容。
         /// </summary>
         public string UniqueString
         {
@@ -97,6 +102,10 @@ namespace LALR1Compiler
             }
         }
 
+        /// <summary>
+        /// 缓存一个对象的hash code。提高比较（==、!=、Equals、GetHashCode、Compare）的效率。
+        /// </summary>
+        /// <param name="getUniqueString">获取一个可唯一标识此对象的字符串。</param>
         public HashCache(Func<HashCache, string> getUniqueString)
         {
             if (getUniqueString == null) { throw new ArgumentNullException(); }

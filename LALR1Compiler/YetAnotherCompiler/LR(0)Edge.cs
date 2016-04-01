@@ -6,18 +6,27 @@ using System.Threading.Tasks;
 
 namespace LALR1Compiler
 {
+    /// <summary>
+    /// 从一个LR(0)状态跳转到另一个LR(0)状态
+    /// </summary>
     public class LR0Edge : HashCache
     {
 
+        /// <summary>
+        /// 从一个LR(0)状态跳转到另一个LR(0)状态
+        /// </summary>
+        /// <param name="from"></param>
+        /// <param name="x"></param>
+        /// <param name="to"></param>
         public LR0Edge(LR0State from, TreeNodeType x, LR0State to)
-            : base(GetToString)
+            : base(GetUniqueString)
         {
             this.From = from;
             this.X = x;
             this.To = to;
         }
 
-        private static string GetToString(HashCache cache)
+        private static string GetUniqueString(HashCache cache)
         {
             LR0Edge obj = cache as LR0Edge;
             StringBuilder builder = new StringBuilder();

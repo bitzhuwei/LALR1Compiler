@@ -6,9 +6,17 @@ using System.Threading.Tasks;
 
 namespace LALR1Compiler
 {
+    /// <summary>
+    /// 从一个LR(1)状态跳转到另一个LR(1)状态
+    /// </summary>
     public class LR1Edge : HashCache
     {
-
+        /// <summary>
+        /// 从一个LR(1)状态跳转到另一个LR(1)状态
+        /// </summary>
+        /// <param name="from"></param>
+        /// <param name="x"></param>
+        /// <param name="to"></param>
         public LR1Edge(LR1State from, TreeNodeType x, LR1State to)
             : base(GetUniqueString)
         {

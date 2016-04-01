@@ -22,6 +22,11 @@ namespace LALR1Compiler
         /// </summary>
         public int DotPosition { get; private set; }
 
+        /// <summary>
+        /// LR(0)项：Regulation + 圆点的位置
+        /// </summary>
+        /// <param name="regulation"></param>
+        /// <param name="dotPosition"></param>
         public LR0Item(Regulation regulation, int dotPosition)
             : base(GetUniqueString)
         {

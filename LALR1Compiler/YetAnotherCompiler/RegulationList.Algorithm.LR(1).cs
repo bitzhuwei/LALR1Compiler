@@ -32,8 +32,8 @@ namespace LALR1Compiler
             Dictionary<TreeNodeType, bool> nullableDict = new Dictionary<TreeNodeType, bool>();
             var firstList = decoratedGrammar.GetFirstList(nullableDict);
             firstState = decoratedGrammar.Closure(firstState, nullableDict, firstList);
-            var stateList = new LR1StateList(firstState);
-            var edgeList = new LR1EdgeList();
+            var stateList = new LR1StateCollection(firstState);
+            var edgeList = new LR1EdgeCollection();
             Queue<LR1State> queue = new Queue<LR1State>();
             queue.Enqueue(firstState);
             int lastOutputLength = 0;
@@ -175,7 +175,7 @@ namespace LALR1Compiler
                         {
                             if (value != TreeNodeType.NullNode)
                             {
-                                changed = first.TryBinaryInsert(value) || changed;
+                                changed = first.TryInsert(value) || changed;
                             }
                         }
                     }
@@ -187,7 +187,7 @@ namespace LALR1Compiler
                         //throw new Exception("如果是在LR1分析器生成工具的设计时走到此处，说明代码有问题。");
                         if (!first.Values.Contains(TreeNodeType.NullNode))
                         {
-                            changed = first.TryBinaryInsert(TreeNodeType.NullNode) || changed;
+                            changed = first.TryInsert(TreeNodeType.NullNode) || changed;
                         }
                     }
                 }

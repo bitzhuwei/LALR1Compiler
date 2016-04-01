@@ -168,7 +168,7 @@ namespace LALR1Compiler
                                 if ((value != TreeNodeType.NullNode)
                                     && (!first.Values.Contains(value)))
                                 {
-                                    first.TryBinaryInsert(value);
+                                    first.TryInsert(value);
                                     changed = true;
                                 }
                             }
@@ -180,7 +180,7 @@ namespace LALR1Compiler
                         {
                             if (!first.Values.Contains(TreeNodeType.NullNode))
                             {
-                                first.TryBinaryInsert(TreeNodeType.NullNode);
+                                first.TryInsert(TreeNodeType.NullNode);
                                 changed = true;
                             }
                         }
@@ -240,7 +240,7 @@ namespace LALR1Compiler
                                 if ((value != TreeNodeType.NullNode)
                                     && (!first.Values.Contains(value)))
                                 {
-                                    first.TryBinaryInsert(value);
+                                    first.TryInsert(value);
                                     changed = true;
                                 }
                             }

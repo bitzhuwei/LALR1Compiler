@@ -29,8 +29,8 @@ namespace LALR1Compiler
             var firstItem = new LR0Item(decoratedGrammar[0], 0);
             var firstState = new LR0State(firstItem);
             firstState = decoratedGrammar.Closure(firstState);
-            var stateList = new LR0StateList(firstState);
-            var edgeList = new LR0EdgeList();
+            var stateList = new LR0StateCollection(firstState);
+            var edgeList = new LR0EdgeCollection();
             Queue<LR0State> queue = new Queue<LR0State>();
             queue.Enqueue(firstState);
             int lastOutputLength = 0;

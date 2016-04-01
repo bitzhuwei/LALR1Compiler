@@ -7,16 +7,23 @@ using System.Threading.Tasks;
 namespace LALR1Compiler
 {
     /// <summary>
-    /// 对使用者，这是一个不能控制元素顺序的集合。
-    /// 对开发者，这是一个只能添加元素的集合，其元素是有序的，是按二分法插入的。
+    /// 经过优化的列表。插入新元素用二分法，速度更快，但使用者不能控制元素的位置。
+    /// 对于LALR(1)Compiler项目，只需支持“添加元素”的功能，所以我没有写修改和删除元素的功能。
     /// </summary>
-    /// <typeparam name="T"></typeparam>
-    public class OrderedCollection<T> : HashCache, IEnumerable<T>
-        where T : HashCache
+    /// <typeparam name="T">元素也要支持快速比较。</typeparam>
+    public class OrderedCollection<T> :
+        HashCache // 快速比较两个OrderedCollection<T>是否相同。
+        , IEnumerable<T> // 可枚举该集合的元素。
+        where T : HashCache // 元素也要支持快速比较。
     {
         private List<T> list = new List<T>();
-        private string seperator;
+        private string seperator = Environment.NewLine;
 
+        /// <summary>
+        /// 这是一个只能添加元素的集合，其元素是有序的，是按二分法插入的。
+        /// 但是使用者不能控制元素的顺序。
+        /// </summary>
+        /// <param name="separator">在Dump到流时用什么分隔符分隔各个元素？</param>
         public OrderedCollection(string separator)
             : base(GetUniqueString)
         {

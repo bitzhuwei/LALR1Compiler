@@ -10,7 +10,7 @@ namespace LALR1Compiler
     public class LR0ParserGeneratorInfo
     {
 
-        public LR0ParserGeneratorInfo(RegulationList grammar, LR0StateList stateList, LR0EdgeList edgeList, LRParsingMap parsingMap)
+        public LR0ParserGeneratorInfo(RegulationList grammar, LR0StateCollection stateList, LR0EdgeCollection edgeList, LRParsingMap parsingMap)
         {
             this.Grammar = grammar;
             this.StateList = stateList;
@@ -20,9 +20,9 @@ namespace LALR1Compiler
 
         public RegulationList Grammar { get; set; }
 
-        public LR0StateList StateList { get; set; }
+        public LR0StateCollection StateList { get; set; }
 
-        public LR0EdgeList EdgeList { get; set; }
+        public LR0EdgeCollection EdgeList { get; set; }
 
         public LRParsingMap ParsingMap { get; set; }
 

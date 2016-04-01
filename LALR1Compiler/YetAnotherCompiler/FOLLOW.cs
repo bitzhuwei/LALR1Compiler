@@ -7,13 +7,18 @@ using System.Threading.Tasks;
 namespace LALR1Compiler
 {
     /// <summary>
-    /// FOLLOW集
+    /// 一个FOLLOW集
     /// </summary>
     public class FOLLOW : HashCache
     {
 
+        /// <summary>
+        /// 一个FOLLOW集
+        /// </summary>
+        /// <param name="target"></param>
+        /// <param name="values"></param>
         public FOLLOW(TreeNodeType target, params TreeNodeType[] values)
-            : base(GetToString)
+            : base(GetUniqueString)
         {
             this.Target = target;
             if (values != null)
@@ -25,7 +30,7 @@ namespace LALR1Compiler
             }
         }
 
-        private static string GetToString(HashCache cache)
+        private static string GetUniqueString(HashCache cache)
         {
             FOLLOW obj = cache as FOLLOW;
             StringBuilder builder = new StringBuilder();
