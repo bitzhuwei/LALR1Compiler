@@ -18,7 +18,8 @@ namespace ContextfreeGrammarCompiler.Test
             string[] directories = Directory.GetDirectories(
                 ".", "*.Grammar", SearchOption.AllDirectories)
                 .OrderBy(x =>
-                    (new FileInfo(Directory.GetFiles(x, "*.Grammar.txt", SearchOption.TopDirectoryOnly)[0]).Length))
+                    (new FileInfo(Directory.GetFiles(
+                        x, "*.Grammar.txt", SearchOption.TopDirectoryOnly)[0]).Length))
                     .ToArray();
             foreach (var directory in directories)
             {
@@ -28,7 +29,8 @@ namespace ContextfreeGrammarCompiler.Test
 
         private static void Run(string directory)
         {
-            string[] grammarFullnames = Directory.GetFiles(directory, "*.Grammar.txt", SearchOption.TopDirectoryOnly);
+            string[] grammarFullnames = Directory.GetFiles(
+                directory, "*.Grammar.txt", SearchOption.TopDirectoryOnly);
             foreach (var grammarFullname in grammarFullnames)
             {
                 ProcessGrammar(grammarFullname);
@@ -41,7 +43,8 @@ namespace ContextfreeGrammarCompiler.Test
 
             FileInfo fileInfo = new FileInfo(grammarFullname);
             string directory = fileInfo.DirectoryName;
-            string grammarId = fileInfo.Name.Substring(0, fileInfo.Name.Length - (".Grammar.txt").Length);
+            string grammarId = fileInfo.Name.Substring(0, 
+                fileInfo.Name.Length - (".Grammar.txt").Length);
 
             string sourceCode = File.ReadAllText(grammarFullname);
             RegulationList grammar = GetGrammar(sourceCode, directory, grammarId);
@@ -61,11 +64,13 @@ namespace ContextfreeGrammarCompiler.Test
             grammar.GetNullableDict(out nullableDict);
             FIRSTCollection firstCollection;
             grammar.GetFirstCollection(out firstCollection, nullableDict);
-            using (StreamWriter stream = new StreamWriter(Path.Combine(directory, grammarId + ".FIRST.txt")))
+            using (StreamWriter stream = new StreamWriter(
+                Path.Combine(directory, grammarId + ".FIRST.txt")))
             { firstCollection.Dump(stream); }
             FOLLOWCollection followCollection;
             grammar.GetFollowCollection(out followCollection, nullableDict, firstCollection);
-            using (StreamWriter stream = new StreamWriter(Path.Combine(directory, grammarId + ".FOLLOW.txt")))
+            using (StreamWriter stream = new StreamWriter(
+                Path.Combine(directory, grammarId + ".FOLLOW.txt")))
             { followCollection.Dump(stream); }
 
             LRParsingMap LR0Map = grammar.GetLR0ParsingMap();

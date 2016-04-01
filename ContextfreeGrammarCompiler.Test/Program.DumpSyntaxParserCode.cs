@@ -90,7 +90,8 @@ namespace ContextfreeGrammarCompiler.Test
                 }
             }
             {
-                var returnMap = new CodeMethodReturnStatement(new CodeVariableReferenceExpression(varName));
+                var returnMap = new CodeMethodReturnStatement(
+                    new CodeVariableReferenceExpression(varName));
                 method.Statements.Add(returnMap);
             }
 
@@ -124,7 +125,8 @@ namespace ContextfreeGrammarCompiler.Test
                 method.Statements.Add(addRegulation);
             }
             {
-                var returnGrammar = new CodeMethodReturnStatement(new CodeVariableReferenceExpression(varName));
+                var returnGrammar = new CodeMethodReturnStatement(
+                    new CodeVariableReferenceExpression(varName));
                 method.Statements.Add(returnGrammar);
             }
 
