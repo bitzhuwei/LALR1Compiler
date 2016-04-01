@@ -16,6 +16,7 @@ namespace LALR1Compiler
         /// 将此对象的信息写入流中。
         /// </summary>
         /// <param name="stream"></param>
-        void Dump(StreamWriter stream);
+        void Dump(TextWriter stream);
+
     }
 }

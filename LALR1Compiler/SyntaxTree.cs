@@ -146,7 +146,7 @@ namespace LALR1Compiler
             return result;
         }
 
-        private void Dump(StreamWriter stream, SyntaxTree syntaxTree)
+        private void Dump(TextWriter stream, SyntaxTree syntaxTree)
         {
             DumpPremark(stream, syntaxTree);
             stream.WriteLine("*({0})*[{1}][{2}]",
@@ -158,7 +158,7 @@ namespace LALR1Compiler
             }
         }
 
-        private void DumpPremark(StreamWriter stream, SyntaxTree syntaxTree)
+        private void DumpPremark(TextWriter stream, SyntaxTree syntaxTree)
         {
             var parent = syntaxTree.Parent;
             if (parent == null) { return; }
@@ -194,7 +194,7 @@ namespace LALR1Compiler
                 Dump(stream);
             }
         }
-        public void Dump(StreamWriter stream)
+        public void Dump(TextWriter stream)
         {
             Dump(stream, this);
         }

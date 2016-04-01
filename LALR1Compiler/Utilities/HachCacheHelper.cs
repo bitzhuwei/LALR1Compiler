@@ -16,22 +16,14 @@ namespace LALR1Compiler
         /// <returns></returns>
         public static string Dump(this HashCache cache)
         {
-            using (MemoryStream ms = new MemoryStream())
+            StringBuilder builder = new StringBuilder();
+            using (StringWriter writer = new StringWriter(builder))
             {
-                using (StreamWriter sw = new StreamWriter(ms))
-                {
-                    cache.Dump(sw);
-                }
-
-                ms.Position = 0;
-                
-                using (StreamReader sr = new StreamReader(ms))
-                {
-                    string str = sr.ReadToEnd();
-
-                    return str;
-                }
+                cache.Dump(writer);
             }
+
+            string str = builder.ToString();
+            return str;
         }
     }
 }

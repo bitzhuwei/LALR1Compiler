@@ -78,35 +78,35 @@ namespace LALR1Compiler
         private static string GetUniqueString(HashCache cache)
         {
             LR1Item obj = cache as LR1Item;
-            StringBuilder builder = new StringBuilder();
-            builder.Append(obj.Regulation.Left.Nickname);
-            builder.Append(" ::= ");
+            return obj.Dump();
+            //StringBuilder builder = new StringBuilder();
+            //builder.Append(obj.Regulation.Left.Nickname);
+            //builder.Append(" ::= ");
+            //int count = obj.Regulation.RightPart.Count();
+            //for (int i = 0; i < count; i++)
+            //{
+            //    if (i == obj.DotPosition)
+            //    { builder.Append('.'); builder.Append(' '); }
 
-            int count = obj.Regulation.RightPart.Count();
-            for (int i = 0; i < count; i++)
-            {
-                if (i == obj.DotPosition)
-                { builder.Append('.'); builder.Append(' '); }
-
-                TreeNodeType item = obj.Regulation.RightNode(i);
-                //TODO:这是我定义的规则
-                builder.Append(item.Nickname);
+            //    TreeNodeType item = obj.Regulation.RightNode(i);
+            //    //TODO:这是我定义的规则
+            //    builder.Append(item.Nickname);
                 
-                builder.Append(' ');
-            }
+            //    builder.Append(' ');
+            //}
 
-            if (obj.DotPosition == count)
-            { builder.Append('.'); builder.Append(' '); }
+            //if (obj.DotPosition == count)
+            //{ builder.Append('.'); builder.Append(' '); }
 
-            builder.Append(';');
-            builder.Append(", ");
-            builder.Append(obj.LookAheadNodeType.Nickname);
+            //builder.Append(';');
+            //builder.Append(", ");
+            //builder.Append(obj.LookAheadNodeType.Nickname);
 
-            return builder.ToString();
+            //return builder.ToString();
         }
 
 
-        public override void Dump(System.IO.StreamWriter stream)
+        public override void Dump(System.IO.TextWriter stream)
         {
             this.Regulation.Left.Dump(stream);
             stream.Write(" ::= ");

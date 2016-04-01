@@ -52,34 +52,35 @@ namespace LALR1Compiler
         private static string GetUniqueString(HashCache cache)
         {
             FIRST obj = cache as FIRST;
-            StringBuilder builder = new StringBuilder();
-            {
-                builder.Append("FIRST( ");
+            return obj.Dump();
+            //StringBuilder builder = new StringBuilder();
+            //{
+            //    builder.Append("FIRST( ");
 
-                int count = obj.target.Count;
-                for (int i = 0; i < count; i++)
-                {
-                    builder.Append(obj.target[i].Nickname);
-                    if (i + 1 < count)
-                    { builder.Append(" "); }
-                }
-                if (count == 0)
-                { builder.Append("ε "); }
+            //    int count = obj.target.Count;
+            //    for (int i = 0; i < count; i++)
+            //    {
+            //        builder.Append(obj.target[i].Nickname);
+            //        if (i + 1 < count)
+            //        { builder.Append(" "); }
+            //    }
+            //    if (count == 0)
+            //    { builder.Append("ε "); }
 
-                builder.Append(" ) = ");
-            }
-            {
-                builder.Append("【 ");
-                int count = obj.values.Count;
-                for (int i = 0; i < count; i++)
-                {
-                    builder.Append(obj.values[i].Nickname);
-                    if (i + 1 < count)
-                    { builder.Append(" "); }
-                }
-                builder.Append(" 】");
-            }
-            return builder.ToString();
+            //    builder.Append(" ) = ");
+            //}
+            //{
+            //    builder.Append("【 ");
+            //    int count = obj.values.Count;
+            //    for (int i = 0; i < count; i++)
+            //    {
+            //        builder.Append(obj.values[i].Nickname);
+            //        if (i + 1 < count)
+            //        { builder.Append(" "); }
+            //    }
+            //    builder.Append(" 】");
+            //}
+            //return builder.ToString();
         }
 
         private List<TreeNodeType> target = new List<TreeNodeType>();
@@ -106,7 +107,7 @@ namespace LALR1Compiler
             }
         }
 
-        public override void Dump(System.IO.StreamWriter stream)
+        public override void Dump(System.IO.TextWriter stream)
         {
             {
                 stream.Write("FIRST( ");

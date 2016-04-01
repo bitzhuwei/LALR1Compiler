@@ -46,7 +46,8 @@ namespace LALR1Compiler
         private static string GetUniqueString(HashCache cache)
         {
             TreeNodeType obj = cache as TreeNodeType;
-            return string.Format("*({0})*[{1}][{2}]", obj.Type, obj.Content, obj.Nickname);
+            return obj.Dump();
+            //return string.Format("*({0})*[{1}][{2}]", obj.Type, obj.Content, obj.Nickname);
         }
 
         // “__E”or “numberLeave__”
@@ -73,7 +74,7 @@ namespace LALR1Compiler
         /// </summary>
         public bool IsLeave { get; private set; }
 
-        public override void Dump(System.IO.StreamWriter stream)
+        public override void Dump(System.IO.TextWriter stream)
         {
             stream.Write(this.Nickname);
         }

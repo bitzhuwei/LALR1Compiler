@@ -32,7 +32,7 @@ namespace LALR1Compiler
             return builder.ToString();
         }
 
-        public void Dump(System.IO.StreamWriter stream)
+        public void Dump(System.IO.TextWriter stream)
         {
             for (int i = 0; i < this.Count; i++)
             {

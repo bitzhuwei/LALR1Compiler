@@ -57,31 +57,32 @@ namespace LALR1Compiler
         private static string GetUniqueString(HashCache cache)
         {
             LR0Item obj = cache as LR0Item;
-            StringBuilder builder = new StringBuilder();
-            builder.Append(obj.Regulation.Left.Nickname);
-            builder.Append(" ::= ");
+            return obj.Dump();
+            //StringBuilder builder = new StringBuilder();
+            //builder.Append(obj.Regulation.Left.Nickname);
+            //builder.Append(" ::= ");
 
-            int count = obj.Regulation.RightPart.Count();
-            for (int i = 0; i < count; i++)
-            {
-                if (i == obj.DotPosition)
-                { builder.Append('.'); builder.Append(' '); }
+            //int count = obj.Regulation.RightPart.Count();
+            //for (int i = 0; i < count; i++)
+            //{
+            //    if (i == obj.DotPosition)
+            //    { builder.Append('.'); builder.Append(' '); }
 
-                var item = obj.Regulation.RightNode(i);
-                builder.Append(item.Nickname);
-                builder.Append(' ');
-            }
+            //    var item = obj.Regulation.RightNode(i);
+            //    builder.Append(item.Nickname);
+            //    builder.Append(' ');
+            //}
 
-            if (obj.DotPosition == count)
-            { builder.Append('.'); builder.Append(' '); }
+            //if (obj.DotPosition == count)
+            //{ builder.Append('.'); builder.Append(' '); }
 
-            builder.Append(';');
+            //builder.Append(';');
 
-            return builder.ToString();
+            //return builder.ToString();
         }
 
 
-        public override void Dump(System.IO.StreamWriter stream)
+        public override void Dump(System.IO.TextWriter stream)
         {
             stream.Write(this.Regulation.Left.Nickname);
             stream.Write(" ::= ");

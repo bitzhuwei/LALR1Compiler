@@ -33,19 +33,20 @@ namespace LALR1Compiler
         private static string GetUniqueString(HashCache cache)
         {
             FOLLOW obj = cache as FOLLOW;
-            StringBuilder builder = new StringBuilder();
-            builder.Append("FOLLOW(");
-            builder.Append(obj.Target.Nickname);
-            builder.Append(") = 【 ");
-            int count = obj.values.Count;
-            for (int i = 0; i < count; i++)
-            {
-                builder.Append(obj.values[i].Nickname);
-                builder.Append(" ");
-            }
-            builder.Append("】");
+            return obj.Dump();
+            //StringBuilder builder = new StringBuilder();
+            //builder.Append("FOLLOW(");
+            //builder.Append(obj.Target.Nickname);
+            //builder.Append(") = 【 ");
+            //int count = obj.values.Count;
+            //for (int i = 0; i < count; i++)
+            //{
+            //    builder.Append(obj.values[i].Nickname);
+            //    builder.Append(" ");
+            //}
+            //builder.Append("】");
 
-            return builder.ToString();
+            //return builder.ToString();
         }
 
         public TreeNodeType Target { get; private set; }
@@ -67,7 +68,7 @@ namespace LALR1Compiler
             }
         }
 
-        public override void Dump(System.IO.StreamWriter stream)
+        public override void Dump(System.IO.TextWriter stream)
         {
             stream.Write("FOLLOW(");
             this.Target.Dump(stream);

@@ -12,15 +12,16 @@ namespace LALR1Compiler
     {
 
         public TokenType(string type, string content, string nickname)
-            : base(GetToString)
+            : base(GetUniqueString)
         {
             this.Type = type; this.Content = content; this.Nickname = nickname;
         }
 
-        private static string GetToString(HashCache cache)
+        private static string GetUniqueString(HashCache cache)
         {
             TokenType obj = cache as TokenType;
-            return string.Format("({0})[{1}][{2}]", obj.Type, obj.Content, obj.Nickname);
+            return obj.Dump();
+            //return string.Format("({0})[{1}][{2}]", obj.Type, obj.Content, obj.Nickname);
         }
 
         /// <summary>
@@ -40,7 +41,7 @@ namespace LALR1Compiler
         public string Nickname { get; private set; }
 
 
-        public override void Dump(System.IO.StreamWriter stream)
+        public override void Dump(System.IO.TextWriter stream)
         {
             stream.Write("({0})[{1}][{2}]", this.Type, this.Content, this.Nickname);
         }

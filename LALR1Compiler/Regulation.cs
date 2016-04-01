@@ -25,13 +25,14 @@ namespace LALR1Compiler
         private static string getUniqueString(HashCache cache)
         {
             Regulation obj = cache as Regulation;
-            StringBuilder builder = new StringBuilder();
-            builder.Append(obj.Left);
-            builder.Append(" ::= ");
-            builder.Append(obj.RightPart);
-            builder.Append(" ;");
+            return obj.Dump();
+            //StringBuilder builder = new StringBuilder();
+            //builder.Append(obj.Left.Nickname);
+            //builder.Append(" ::= ");
+            //builder.Append(obj.RightPart);
+            //builder.Append(" ;");
 
-            return builder.ToString();
+            //return builder.ToString();
         }
 
         public TreeNodeType Left { get; private set; }
@@ -46,7 +47,7 @@ namespace LALR1Compiler
         }
 
 
-        public override void Dump(System.IO.StreamWriter stream)
+        public override void Dump(System.IO.TextWriter stream)
         {
             this.Left.Dump(stream);
             stream.Write(" ::= ");

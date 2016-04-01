@@ -28,15 +28,15 @@ namespace LALR1Compiler
         private static string GetUniqueString(HashCache cache)
         {
             LR1Edge obj = cache as LR1Edge;
-            StringBuilder builder = new StringBuilder();
+            return obj.Dump();
+            //StringBuilder builder = new StringBuilder();
+            //builder.Append(obj.From);
+            //builder.AppendLine();
+            //builder.Append("    └──("); builder.Append(obj.X); builder.Append(")──┒");
+            //builder.AppendLine();
+            //builder.Append(obj.To);
 
-            builder.Append(obj.From);
-            builder.AppendLine();
-            builder.Append("    └──("); builder.Append(obj.X); builder.Append(")──┒");
-            builder.AppendLine();
-            builder.Append(obj.To);
-
-            return builder.ToString();
+            //return builder.ToString();
         }
 
         public LR1State From { get; set; }
@@ -46,7 +46,7 @@ namespace LALR1Compiler
         public LR1State To { get; set; }
 
 
-        public override void Dump(System.IO.StreamWriter stream)
+        public override void Dump(System.IO.TextWriter stream)
         {
             this.From.Dump(stream);
             stream.WriteLine();

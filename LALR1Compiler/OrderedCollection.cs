@@ -33,17 +33,18 @@ namespace LALR1Compiler
         private static string GetUniqueString(HashCache cache)
         {
             OrderedCollection<T> obj = cache as OrderedCollection<T>;
-            StringBuilder builder = new StringBuilder();
-            for (int i = 0; i < obj.list.Count; i++)
-            {
-                builder.Append(obj.list[i]);
-                if (i + 1 < obj.list.Count)
-                {
-                    builder.Append(obj.seperator);
-                }
-            }
+            return obj.Dump();
+            //StringBuilder builder = new StringBuilder();
+            //for (int i = 0; i < obj.list.Count; i++)
+            //{
+            //    builder.Append(obj.list[i]);
+            //    if (i + 1 < obj.list.Count)
+            //    {
+            //        builder.Append(obj.seperator);
+            //    }
+            //}
 
-            return builder.ToString();
+            //return builder.ToString();
         }
 
         public bool TryInsert(T item)
@@ -87,7 +88,7 @@ namespace LALR1Compiler
             return this.GetEnumerator();
         }
 
-        public override void Dump(System.IO.StreamWriter stream)
+        public override void Dump(System.IO.TextWriter stream)
         {
             for (int i = 0; i < this.list.Count; i++)
             {

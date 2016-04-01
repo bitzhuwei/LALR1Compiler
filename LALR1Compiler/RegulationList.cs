@@ -116,7 +116,7 @@ namespace LALR1Compiler
         }
 
 
-        public void Dump(System.IO.StreamWriter stream)
+        public void Dump(System.IO.TextWriter stream)
         {
             foreach (var item in this)
             {
@@ -131,5 +131,6 @@ namespace LALR1Compiler
                 Dump(stream);
             }
         }
+
     }
 }

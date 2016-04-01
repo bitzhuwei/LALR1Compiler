@@ -130,6 +130,7 @@ namespace LALR1Compiler
         /// 这样，内存中就不用同时存在太多太大的string。
         /// </summary>
         /// <param name="stream"></param>
-        public abstract void Dump(System.IO.StreamWriter stream);
+        public abstract void Dump(System.IO.TextWriter stream);
+
     }
 }
