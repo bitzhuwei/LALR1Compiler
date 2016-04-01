@@ -149,8 +149,8 @@ namespace LALR1Compiler
         private void Dump(StreamWriter stream, SyntaxTree syntaxTree)
         {
             DumpPremark(stream, syntaxTree);
-            stream.WriteLine(syntaxTree.NodeType);
-            syntaxTree.NodeType.Dump(stream);
+            stream.WriteLine("*({0})*[{1}][{2}]",
+                syntaxTree.NodeType.Type, syntaxTree.NodeType.Content, syntaxTree.NodeType.Nickname);
 
             foreach (var item in syntaxTree.Children)
             {

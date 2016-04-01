@@ -55,6 +55,7 @@ namespace LALR1Compiler
             StringBuilder builder = new StringBuilder();
             {
                 builder.Append("FIRST( ");
+
                 int count = obj.target.Count;
                 for (int i = 0; i < count; i++)
                 {
@@ -62,6 +63,9 @@ namespace LALR1Compiler
                     if (i + 1 < count)
                     { builder.Append(" "); }
                 }
+                if (count == 0)
+                { builder.Append("ε "); }
+
                 builder.Append(" ) = ");
             }
             {
@@ -106,12 +110,16 @@ namespace LALR1Compiler
         {
             {
                 stream.Write("FIRST( ");
+
                 int count = this.target.Count;
                 for (int i = 0; i < count; i++)
                 {
                     this.target[i].Dump(stream);
                     stream.Write(" ");
                 }
+                if (count == 0)
+                { stream.Write("ε "); }
+
                 stream.Write(") = ");
             }
             {

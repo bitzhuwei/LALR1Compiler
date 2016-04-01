@@ -293,7 +293,7 @@ namespace ContextfreeGrammarCompiler
             bool isKeyword = false;
             foreach (var item in ContextfreeGrammarLexicalAnalyzer.keywords)
             {
-                if (item.Name == content)
+                if (item.NickName == content)
                 {
                     result.TokenType = new TokenType(item.TokenType, content, content);
                     isKeyword = true;
@@ -312,18 +312,18 @@ namespace ContextfreeGrammarCompiler
         class Keyword
         {
             public string TokenType { get; set; }
-            public string Name { get; set; }
+            public string NickName { get; set; }
 
-            public Keyword(string tokenType, string name)
+            public Keyword(string tokenType, string nickName)
             {
                 // TODO: Complete member initialization
                 this.TokenType = tokenType;
-                this.Name = name;
+                this.NickName = nickName;
             }
 
             public override string ToString()
             {
-                return string.Format("{0}, {1}", TokenType, Name);
+                return string.Format("{0}, {1}", TokenType, NickName);
             }
         }
         private static readonly IEnumerable<Keyword> keywords = new List<Keyword>()

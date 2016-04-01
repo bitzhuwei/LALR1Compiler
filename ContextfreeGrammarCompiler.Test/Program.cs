@@ -18,7 +18,7 @@ namespace ContextfreeGrammarCompiler.Test
             string[] directories = Directory.GetDirectories(
                 ".", "*.Grammar", SearchOption.AllDirectories)
                 .OrderBy(x =>
-                    Directory.GetFiles(x, "*.Grammar.txt", SearchOption.TopDirectoryOnly)[0].Length)
+                    (new FileInfo(Directory.GetFiles(x, "*.Grammar.txt", SearchOption.TopDirectoryOnly)[0]).Length))
                     .ToArray();
             foreach (var directory in directories)
             {
@@ -41,7 +41,7 @@ namespace ContextfreeGrammarCompiler.Test
 
             FileInfo fileInfo = new FileInfo(grammarFullname);
             string directory = fileInfo.DirectoryName;
-            string grammarId = fileInfo.Name.Substring(fileInfo.Name.Length - (".Grammar.txt").Length);
+            string grammarId = fileInfo.Name.Substring(0, fileInfo.Name.Length - (".Grammar.txt").Length);
 
             string sourceCode = File.ReadAllText(grammarFullname);
             RegulationList grammar = GetGrammar(sourceCode, directory, grammarId);
@@ -79,13 +79,14 @@ namespace ContextfreeGrammarCompiler.Test
         }
 
         private static void DumpLR1Code(
-            RegulationList grammar, 
+            RegulationList grammar,
             LRParsingMap LR1Map,
             string directory, string grammarId)
         {
-            string LR0Directory = Path.Combine(directory, "LR(1)");
+            string LR1Directory = Path.Combine(directory, "LR(1)");
+            if (!Directory.Exists(LR1Directory)) { Directory.CreateDirectory(LR1Directory); }
 
-            DumpSyntaxParserCode(grammar, LR1Map, grammarId, LR0Directory);
+            DumpSyntaxParserCode(grammar, LR1Map, grammarId, LR1Directory);
         }
 
         private static void DumpSLRCode(
@@ -93,9 +94,10 @@ namespace ContextfreeGrammarCompiler.Test
             LRParsingMap SLRMap,
             string directory, string grammarId)
         {
-            string LR0Directory = Path.Combine(directory, "SLR");
+            string SLRDirectory = Path.Combine(directory, "SLR");
+            if (!Directory.Exists(SLRDirectory)) { Directory.CreateDirectory(SLRDirectory); }
 
-            DumpSyntaxParserCode(grammar, SLRMap, grammarId, LR0Directory);
+            DumpSyntaxParserCode(grammar, SLRMap, grammarId, SLRDirectory);
         }
 
 
@@ -105,6 +107,7 @@ namespace ContextfreeGrammarCompiler.Test
             string directory, string grammarId)
         {
             string LR0Directory = Path.Combine(directory, "LR(0)");
+            if (!Directory.Exists(LR0Directory)) { Directory.CreateDirectory(LR0Directory); }
 
             DumpSyntaxParserCode(grammar, LR0Map, grammarId, LR0Directory);
         }
@@ -156,7 +159,8 @@ namespace ContextfreeGrammarCompiler.Test
                 var parametes = new List<CodeExpression>();
                 string[] parts = action.Key.Split('+');
                 var stateId = new CodePrimitiveExpression(int.Parse(parts[0]));
-                var nodeType = new CodeVariableReferenceExpression(parts[1]);
+                var nodeType = new CodeVariableReferenceExpression(
+                    GetNodeName(new TreeNodeType(parts[1], parts[1], parts[1])));
                 foreach (var value in action.Value)
                 {
                     // action.Value超过1项，就说明有冲突。
@@ -205,10 +209,15 @@ namespace ContextfreeGrammarCompiler.Test
                 //string str = regulation.Dump();
                 //var comment = new CodeComment(string.Format("// {0}", str));
                 var parametes = new List<CodeExpression>();
-                parametes.Add(new CodeVariableReferenceExpression(regulation.Left.Type));
-                parametes.AddRange(from item in regulation.RightPart select new CodeVariableReferenceExpression(item.Type));
+                parametes.Add(new CodeVariableReferenceExpression(GetNodeName(regulation.Left)));
+                parametes.AddRange(
+                    from item in regulation.RightPart
+                    select new CodeVariableReferenceExpression(GetNodeName(item)));
                 var ctor = new CodeObjectCreateExpression(typeof(Regulation), parametes.ToArray());
-                var AddMethod = new CodeMethodReferenceExpression(new CodeVariableReferenceExpression(varName), "Add", new CodeTypeReference(typeof(Regulation)));
+                var AddMethod = new CodeMethodReferenceExpression(
+                    new CodeVariableReferenceExpression(varName),
+                    "Add",
+                    new CodeTypeReference(typeof(Regulation)));
                 var addRegulation = new CodeMethodInvokeExpression(AddMethod, ctor);
                 method.Statements.Add(addRegulation);
             }
@@ -224,7 +233,7 @@ namespace ContextfreeGrammarCompiler.Test
         {
             foreach (var node in grammar.GetAllTreeNodeNonLeaveTypes())
             {
-                CodeMemberField field = new CodeMemberField(typeof(TreeNodeType), node.Type);
+                CodeMemberField field = new CodeMemberField(typeof(TreeNodeType), GetNodeName(node));
                 field.Attributes = MemberAttributes.Private | MemberAttributes.Static;
                 var ctor = new CodeObjectCreateExpression(typeof(TreeNodeType),
                     new CodePrimitiveExpression(node.Type),
@@ -235,7 +244,7 @@ namespace ContextfreeGrammarCompiler.Test
             }
             foreach (var node in grammar.GetAllTreeNodeLeaveTypes())
             {
-                CodeMemberField field = new CodeMemberField(typeof(TreeNodeType), node.Type);
+                CodeMemberField field = new CodeMemberField(typeof(TreeNodeType), GetNodeName(node));
                 field.Attributes = MemberAttributes.Private | MemberAttributes.Static;
                 var ctor = new CodeObjectCreateExpression(typeof(TreeNodeType),
                     new CodePrimitiveExpression(node.Type),
@@ -246,7 +255,7 @@ namespace ContextfreeGrammarCompiler.Test
             }
             {
                 var node = TreeNodeType.endOfTokenListNode;
-                CodeMemberField field = new CodeMemberField(typeof(TreeNodeType), node.Type);
+                CodeMemberField field = new CodeMemberField(typeof(TreeNodeType), GetNodeName(node));
                 field.Attributes = MemberAttributes.Private | MemberAttributes.Static;
                 var ctor = new CodeObjectCreateExpression(typeof(TreeNodeType),
                     new CodePrimitiveExpression(node.Type),
@@ -255,6 +264,11 @@ namespace ContextfreeGrammarCompiler.Test
                 field.InitExpression = ctor;
                 parserType.Members.Add(field);
             }
+        }
+
+        private static string GetNodeName(TreeNodeType node)
+        {
+            return string.Format("NODE{0}", node.Type);
         }
 
         private static string GetParserName(string grammarId)
