@@ -95,6 +95,7 @@ namespace ContextfreeGrammarCompiler.Test
                 { edgeCollection.Dump(stream); }
                 Console.WriteLine("    Dump LR(0) source code...");
                 DumpSyntaxParserCode(grammar, LR0Map, grammarId, LR0Directory, SyntaxParserMapAlgorithm.LR0);
+                DumpLexicalAnalyzerCode(grammar, grammarId, LR0Directory);
             }
 
             {
@@ -116,6 +117,7 @@ namespace ContextfreeGrammarCompiler.Test
                 { edgeCollection.Dump(stream); }
                 Console.WriteLine("    Dump SLR source code...");
                 DumpSyntaxParserCode(grammar, SLRMap, grammarId, SLRDirectory, SyntaxParserMapAlgorithm.SLR);
+                DumpLexicalAnalyzerCode(grammar, grammarId, SLRDirectory);
             }
 
             {
@@ -137,8 +139,11 @@ namespace ContextfreeGrammarCompiler.Test
                 { edgeCollection.Dump(stream); }
                 Console.WriteLine("    Dump LR(1) source code...");
                 DumpSyntaxParserCode(grammar, LR1Map, grammarId, LR1Directory, SyntaxParserMapAlgorithm.LR1);
+                DumpLexicalAnalyzerCode(grammar, grammarId, LR1Directory);
             }
         }
+
+
     }
 
 }

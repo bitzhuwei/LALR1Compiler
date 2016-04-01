@@ -14,7 +14,12 @@ namespace ContextfreeGrammarCompiler.Test
     partial class Program
     {
 
-        private static string GetNodeName(TreeNodeType node)
+        private static string GetLexicalAnalyzerName(string grammarId)
+        {
+            return string.Format("{0}LexicalAnalyzer", grammarId);
+        }
+
+        private static string GetNodeNameInParser(TreeNodeType node)
         {
             return string.Format("NODE{0}", node.Type);
         }
