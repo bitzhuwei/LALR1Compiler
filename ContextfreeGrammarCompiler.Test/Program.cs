@@ -39,11 +39,11 @@ namespace ContextfreeGrammarCompiler.Test
 
         private static void ProcessGrammar(string grammarFullname)
         {
-            Console.WriteLine("Processing {0}", grammarFullname);
+            Console.WriteLine("=====> Processing {0}", grammarFullname);
 
             FileInfo fileInfo = new FileInfo(grammarFullname);
             string directory = fileInfo.DirectoryName;
-            string grammarId = fileInfo.Name.Substring(0, 
+            string grammarId = fileInfo.Name.Substring(0,
                 fileInfo.Name.Length - (".Grammar.txt").Length);
 
             string sourceCode = File.ReadAllText(grammarFullname);
@@ -64,11 +64,13 @@ namespace ContextfreeGrammarCompiler.Test
             grammar.GetNullableDict(out nullableDict);
             FIRSTCollection firstCollection;
             grammar.GetFirstCollection(out firstCollection, nullableDict);
+            Console.WriteLine("    Dump {0}", grammarId + ".FIRST.txt");
             using (StreamWriter stream = new StreamWriter(
                 Path.Combine(directory, grammarId + ".FIRST.txt")))
             { firstCollection.Dump(stream); }
             FOLLOWCollection followCollection;
             grammar.GetFollowCollection(out followCollection, nullableDict, firstCollection);
+            Console.WriteLine("    Dump {0}", grammarId + ".FOLLOW.txt");
             using (StreamWriter stream = new StreamWriter(
                 Path.Combine(directory, grammarId + ".FOLLOW.txt")))
             { followCollection.Dump(stream); }
@@ -91,6 +93,7 @@ namespace ContextfreeGrammarCompiler.Test
             string LR1Directory = Path.Combine(directory, "LR(1)");
             if (!Directory.Exists(LR1Directory)) { Directory.CreateDirectory(LR1Directory); }
 
+            Console.WriteLine("    Dump LR(1) source code...");
             DumpSyntaxParserCode(grammar, LR1Map, grammarId, LR1Directory);
         }
 
@@ -102,6 +105,7 @@ namespace ContextfreeGrammarCompiler.Test
             string SLRDirectory = Path.Combine(directory, "SLR");
             if (!Directory.Exists(SLRDirectory)) { Directory.CreateDirectory(SLRDirectory); }
 
+            Console.WriteLine("    Dump SLR source code...");
             DumpSyntaxParserCode(grammar, SLRMap, grammarId, SLRDirectory);
         }
 
@@ -114,6 +118,7 @@ namespace ContextfreeGrammarCompiler.Test
             string LR0Directory = Path.Combine(directory, "LR(0)");
             if (!Directory.Exists(LR0Directory)) { Directory.CreateDirectory(LR0Directory); }
 
+            Console.WriteLine("    Dump LR(0) source code...");
             DumpSyntaxParserCode(grammar, LR0Map, grammarId, LR0Directory);
         }
 
