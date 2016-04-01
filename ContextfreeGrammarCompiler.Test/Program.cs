@@ -60,68 +60,85 @@ namespace ContextfreeGrammarCompiler.Test
         /// <param name="grammarId"></param>
         private static void DumpCode(RegulationList grammar, string directory, string grammarId)
         {
-            Dictionary<TreeNodeType, bool> nullableDict;
-            grammar.GetNullableDict(out nullableDict);
-            FIRSTCollection firstCollection;
-            grammar.GetFirstCollection(out firstCollection, nullableDict);
-            Console.WriteLine("    Dump {0}", grammarId + ".FIRST.txt");
-            using (StreamWriter stream = new StreamWriter(
-                Path.Combine(directory, grammarId + ".FIRST.txt")))
-            { firstCollection.Dump(stream); }
-            FOLLOWCollection followCollection;
-            grammar.GetFollowCollection(out followCollection, nullableDict, firstCollection);
-            Console.WriteLine("    Dump {0}", grammarId + ".FOLLOW.txt");
-            using (StreamWriter stream = new StreamWriter(
-                Path.Combine(directory, grammarId + ".FOLLOW.txt")))
-            { followCollection.Dump(stream); }
+            {
+                Dictionary<TreeNodeType, bool> nullableDict;
+                grammar.GetNullableDict(out nullableDict);
+                FIRSTCollection firstCollection;
+                grammar.GetFirstCollection(out firstCollection, nullableDict);
+                Console.WriteLine("    Dump {0}", grammarId + ".FIRST.txt");
+                using (StreamWriter stream = new StreamWriter(
+                    Path.Combine(directory, grammarId + ".FIRST.txt")))
+                { firstCollection.Dump(stream); }
+                FOLLOWCollection followCollection;
+                grammar.GetFollowCollection(out followCollection, nullableDict, firstCollection);
+                Console.WriteLine("    Dump {0}", grammarId + ".FOLLOW.txt");
+                using (StreamWriter stream = new StreamWriter(
+                    Path.Combine(directory, grammarId + ".FOLLOW.txt")))
+                { followCollection.Dump(stream); }
+            }
+            {
+                LR0StateCollection stateCollection;
+                LR0EdgeCollection edgeCollection;
+                LRParsingMap LR0Map;
+                grammar.GetLR0ParsingMap(out LR0Map, out stateCollection, out edgeCollection);
 
-            LRParsingMap LR0Map = grammar.GetLR0ParsingMap();
-            DumpLR0Code(grammar, LR0Map, directory, grammarId);
+                string LR0Directory = Path.Combine(directory, "LR(0)");
+                if (!Directory.Exists(LR0Directory)) { Directory.CreateDirectory(LR0Directory); }
 
-            LRParsingMap SLRMap = grammar.GetSLRParsingMap();
-            DumpSLRCode(grammar, SLRMap, directory, grammarId);
+                Console.WriteLine("    Dump {0}", grammarId + ".State.txt");
+                using (StreamWriter stream = new StreamWriter(
+                    Path.Combine(LR0Directory, grammarId + ".State.txt")))
+                { stateCollection.Dump(stream); }
+                Console.WriteLine("    Dump {0}", grammarId + ".Edge.txt");
+                using (StreamWriter stream = new StreamWriter(
+                    Path.Combine(LR0Directory, grammarId + ".Edge.txt")))
+                { edgeCollection.Dump(stream); }
+                Console.WriteLine("    Dump LR(0) source code...");
+                DumpSyntaxParserCode(grammar, LR0Map, grammarId, LR0Directory, SyntaxParserMapAlgorithm.LR0);
+            }
 
-            LRParsingMap LR1Map = grammar.GetLR1ParsingMap();
-            DumpLR1Code(grammar, LR1Map, directory, grammarId);
+            {
+                LRParsingMap SLRMap;
+                LR0StateCollection stateCollection;
+                LR0EdgeCollection edgeCollection;
+                grammar.GetSLRParsingMap(out SLRMap, out stateCollection, out edgeCollection);
+
+                string SLRDirectory = Path.Combine(directory, "SLR");
+                if (!Directory.Exists(SLRDirectory)) { Directory.CreateDirectory(SLRDirectory); }
+
+                Console.WriteLine("    Dump {0}", grammarId + ".State.txt");
+                using (StreamWriter stream = new StreamWriter(
+                    Path.Combine(SLRDirectory, grammarId + ".State.txt")))
+                { stateCollection.Dump(stream); }
+                Console.WriteLine("    Dump {0}", grammarId + ".Edge.txt");
+                using (StreamWriter stream = new StreamWriter(
+                    Path.Combine(SLRDirectory, grammarId + ".Edge.txt")))
+                { edgeCollection.Dump(stream); }
+                Console.WriteLine("    Dump SLR source code...");
+                DumpSyntaxParserCode(grammar, SLRMap, grammarId, SLRDirectory, SyntaxParserMapAlgorithm.SLR);
+            }
+
+            {
+                LRParsingMap LR1Map;
+                LR1StateCollection stateCollection;
+                LR1EdgeCollection edgeCollection;
+                grammar.GetLR1ParsingMap(out LR1Map, out stateCollection, out edgeCollection);
+
+                string LR1Directory = Path.Combine(directory, "LR(1)");
+                if (!Directory.Exists(LR1Directory)) { Directory.CreateDirectory(LR1Directory); }
+
+                Console.WriteLine("    Dump {0}", grammarId + ".State.txt");
+                using (StreamWriter stream = new StreamWriter(
+                    Path.Combine(LR1Directory, grammarId + ".State.txt")))
+                { stateCollection.Dump(stream); }
+                Console.WriteLine("    Dump {0}", grammarId + ".Edge.txt");
+                using (StreamWriter stream = new StreamWriter(
+                    Path.Combine(LR1Directory, grammarId + ".Edge.txt")))
+                { edgeCollection.Dump(stream); }
+                Console.WriteLine("    Dump LR(1) source code...");
+                DumpSyntaxParserCode(grammar, LR1Map, grammarId, LR1Directory, SyntaxParserMapAlgorithm.LR1);
+            }
         }
-
-        private static void DumpLR1Code(
-            RegulationList grammar,
-            LRParsingMap LR1Map,
-            string directory, string grammarId)
-        {
-            string LR1Directory = Path.Combine(directory, "LR(1)");
-            if (!Directory.Exists(LR1Directory)) { Directory.CreateDirectory(LR1Directory); }
-
-            Console.WriteLine("    Dump LR(1) source code...");
-            DumpSyntaxParserCode(grammar, LR1Map, grammarId, LR1Directory, SyntaxParserMapAlgorithm.LR1);
-        }
-
-        private static void DumpSLRCode(
-            RegulationList grammar,
-            LRParsingMap SLRMap,
-            string directory, string grammarId)
-        {
-            string SLRDirectory = Path.Combine(directory, "SLR");
-            if (!Directory.Exists(SLRDirectory)) { Directory.CreateDirectory(SLRDirectory); }
-
-            Console.WriteLine("    Dump SLR source code...");
-            DumpSyntaxParserCode(grammar, SLRMap, grammarId, SLRDirectory, SyntaxParserMapAlgorithm.SLR);
-        }
-
-
-        private static void DumpLR0Code(
-            RegulationList grammar,
-            LRParsingMap LR0Map,
-            string directory, string grammarId)
-        {
-            string LR0Directory = Path.Combine(directory, "LR(0)");
-            if (!Directory.Exists(LR0Directory)) { Directory.CreateDirectory(LR0Directory); }
-
-            Console.WriteLine("    Dump LR(0) source code...");
-            DumpSyntaxParserCode(grammar, LR0Map, grammarId, LR0Directory, SyntaxParserMapAlgorithm.LR0);
-        }
-
     }
 
 }

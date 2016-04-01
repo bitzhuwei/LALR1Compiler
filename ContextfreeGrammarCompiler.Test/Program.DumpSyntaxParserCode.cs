@@ -126,12 +126,14 @@ namespace ContextfreeGrammarCompiler.Test
                 varDeclaration.InitExpression = new CodeObjectCreateExpression(typeof(RegulationList));
                 method.Statements.Add(varDeclaration);
             }
+            int id = 1;
             foreach (var regulation in grammar)
             {
                 // <S> ::= null ;
                 // private static LALR1Compiler.TreeNodeType NODE__S = new LALR1Compiler.TreeNodeType("__S", "S", "<S>");
                 string str = regulation.Dump();
-                var commentStatement = new CodeCommentStatement(new CodeComment(str, false));
+                var commentStatement = new CodeCommentStatement(new CodeComment(
+                    string.Format("{0}: {1}", id++, str), false));
                 method.Statements.Add(commentStatement);
                 var parametes = new List<CodeExpression>();
                 parametes.Add(new CodeVariableReferenceExpression(GetNodeName(regulation.Left)));

@@ -28,5 +28,17 @@ namespace LALR1Compiler
             }
         }
 
+        public override void Dump(System.IO.TextWriter stream)
+        {
+            for (int i = 0; i < this.Count; i++)
+            {
+                stream.WriteLine("Edge [{0}]:", i + 1);
+                this[i].Dump(stream);
+                if (i + 1 < this.Count)
+                {
+                    stream.WriteLine();
+                }
+            }
+        }
     }
 }

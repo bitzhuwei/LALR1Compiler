@@ -15,7 +15,10 @@ namespace LALR1Compiler
         /// </summary>
         /// <param name="grammar"></param>
         /// <returns></returns>
-        public static LRParsingMap GetSLRParsingMap(this RegulationList grammar)
+        public static void GetSLRParsingMap(this RegulationList grammar,
+            out LRParsingMap map,
+            out LR0StateCollection stateCollection,
+            out LR0EdgeCollection edgeCollection)
         {
             // 给文法添加一个辅助的开始产生式 S' -> S $
             // 如何添加一个外来的结点类型？用Enum是无法做到的。
@@ -29,8 +32,8 @@ namespace LALR1Compiler
             var firstItem = new LR0Item(decoratedGrammar[0], 0);
             var firstState = new LR0State(firstItem);
             firstState = decoratedGrammar.Closure(firstState);
-            var stateList = new LR0StateCollection(firstState);
-            var edgeList = new LR0EdgeCollection();
+            stateCollection = new LR0StateCollection(firstState);
+            edgeCollection = new LR0EdgeCollection();
             Queue<LR0State> queue = new Queue<LR0State>();
             queue.Enqueue(firstState);
             int lastOutputLength = 0;
@@ -52,40 +55,40 @@ namespace LALR1Compiler
                     if (x == null || x == decoratedEnd) { continue; }
 
                     LR0State toState = decoratedGrammar.Goto(fromState, x);
-                    if (stateList.TryInsert(toState))
+                    if (stateCollection.TryInsert(toState))
                     {
                         queue.Enqueue(toState);
                         stateListCount++;
                         queueCount++;
                     }
                     LR0Edge edge = new LR0Edge(fromState, x, toState);
-                    edgeList.TryInsert(edge);
+                    edgeCollection.TryInsert(edge);
                 }
             }
             Console.WriteLine();
 
-            LRParsingMap parsingMap = new LRParsingMap();
-            foreach (var edge in edgeList)
+            map = new LRParsingMap();
+            foreach (var edge in edgeCollection)
             {
                 if (edge.X.IsLeave)
                 {
-                    parsingMap.SetAction(stateList.IndexOf(edge.From) + 1, edge.X,
-                        new LR1ShiftInAction(stateList.IndexOf(edge.To) + 1));
+                    map.SetAction(stateCollection.IndexOf(edge.From) + 1, edge.X,
+                        new LR1ShiftInAction(stateCollection.IndexOf(edge.To) + 1));
                 }
                 else
                 {
-                    parsingMap.SetAction(stateList.IndexOf(edge.From) + 1, edge.X,
-                        new LR1GotoAction(stateList.IndexOf(edge.To) + 1));
+                    map.SetAction(stateCollection.IndexOf(edge.From) + 1, edge.X,
+                        new LR1GotoAction(stateCollection.IndexOf(edge.To) + 1));
                 }
             }
             var endItem = new LR0Item(decoratedRegulation, 1);
             FOLLOWCollection followCollection;
             decoratedGrammar.GetFollowCollection(out followCollection);
-            foreach (var state in stateList)
+            foreach (var state in stateCollection)
             {
                 if (state.Contains(endItem))
                 {
-                    parsingMap.SetAction(stateList.IndexOf(state) + 1, decoratedEnd,
+                    map.SetAction(stateCollection.IndexOf(state) + 1, decoratedEnd,
                         new LR1AceptAction());
                 }
                 foreach (var lr0Item in state)
@@ -95,14 +98,12 @@ namespace LALR1Compiler
                         FOLLOW follow = FindFollow(followCollection, lr0Item.Regulation.Left);
                         foreach (var value in follow.Values)
                         {
-                            parsingMap.SetAction(stateList.IndexOf(state) + 1, value,
+                            map.SetAction(stateCollection.IndexOf(state) + 1, value,
                                 new LR1ReducitonAction(decoratedGrammar.IndexOf(lr0Item.Regulation)));
                         }
                     }
                 }
             }
-
-            return  parsingMap;
         }
 
     }

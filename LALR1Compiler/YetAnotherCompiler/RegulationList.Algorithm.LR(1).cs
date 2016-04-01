@@ -16,7 +16,10 @@ namespace LALR1Compiler
         /// </summary>
         /// <param name="grammar"></param>
         /// <returns></returns>
-        public static LRParsingMap GetLR1ParsingMap(this RegulationList grammar)
+        public static void GetLR1ParsingMap(this RegulationList grammar,
+            out LRParsingMap map,
+            out LR1StateCollection stateCollection,
+            out LR1EdgeCollection edgeCollection)
         {
             // 给文法添加一个辅助的开始产生式 S' -> S $
             // 如何添加一个外来的结点类型？用Enum是无法做到的。
@@ -34,8 +37,8 @@ namespace LALR1Compiler
             FIRSTCollection firstCollection;
             decoratedGrammar.GetFirstCollection(out firstCollection, nullableDict);
             firstState = decoratedGrammar.Closure(firstState, nullableDict, firstCollection);
-            var stateList = new LR1StateCollection(firstState);
-            var edgeList = new LR1EdgeCollection();
+            stateCollection = new LR1StateCollection(firstState);
+            edgeCollection = new LR1EdgeCollection();
             Queue<LR1State> queue = new Queue<LR1State>();
             queue.Enqueue(firstState);
             int lastOutputLength = 0;
@@ -57,52 +60,50 @@ namespace LALR1Compiler
                     if (x == decoratedEnd || x == null) { continue; }
 
                     LR1State toState = decoratedGrammar.Goto(fromState, x, nullableDict, firstCollection);
-                    if (stateList.TryInsert(toState))
+                    if (stateCollection.TryInsert(toState))
                     {
                         queue.Enqueue(toState);
                         stateListCount++;
                         queueCount++;
                     }
                     LR1Edge edge = new LR1Edge(fromState, x, toState);
-                    edgeList.TryInsert(edge);
+                    edgeCollection.TryInsert(edge);
                 }
             }
             Console.WriteLine();
 
-            LRParsingMap parsingMap = new LRParsingMap();
-            foreach (var edge in edgeList)
+            map = new LRParsingMap();
+            foreach (var edge in edgeCollection)
             {
                 if (edge.X.IsLeave)
                 {
-                    parsingMap.SetAction(stateList.IndexOf(edge.From) + 1, edge.X,
-                        new LR1ShiftInAction(stateList.IndexOf(edge.To) + 1));
+                    map.SetAction(stateCollection.IndexOf(edge.From) + 1, edge.X,
+                        new LR1ShiftInAction(stateCollection.IndexOf(edge.To) + 1));
                 }
                 else
                 {
-                    parsingMap.SetAction(stateList.IndexOf(edge.From) + 1, edge.X,
-                        new LR1GotoAction(stateList.IndexOf(edge.To) + 1));
+                    map.SetAction(stateCollection.IndexOf(edge.From) + 1, edge.X,
+                        new LR1GotoAction(stateCollection.IndexOf(edge.To) + 1));
                 }
             }
             // TODO: not implemented
             var endItem = new LR1Item(decoratedRegulation, 1, decoratedEnd);
-            foreach (var state in stateList)
+            foreach (var state in stateCollection)
             {
                 if (state.Contains(endItem))
                 {
-                    parsingMap.SetAction(stateList.IndexOf(state) + 1, decoratedEnd,
+                    map.SetAction(stateCollection.IndexOf(state) + 1, decoratedEnd,
                         new LR1AceptAction());
                 }
                 foreach (var LR1Item in state)
                 {
                     if (LR1Item.GetNodeNext2Dot() == null)
                     {
-                        parsingMap.SetAction(stateList.IndexOf(state) + 1, LR1Item.LookAheadNodeType,
+                        map.SetAction(stateCollection.IndexOf(state) + 1, LR1Item.LookAheadNodeType,
                             new LR1ReducitonAction(decoratedGrammar.IndexOf(LR1Item.Regulation)));
                     }
                 }
             }
-
-            return parsingMap;
         }
 
         /// <summary>
