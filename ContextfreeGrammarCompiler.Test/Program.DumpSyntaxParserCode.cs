@@ -63,6 +63,18 @@ namespace ContextfreeGrammarCompiler.Test
                 var stateId = new CodePrimitiveExpression(int.Parse(parts[0]));
                 var nodeType = new CodeVariableReferenceExpression(
                     GetNodeName(new TreeNodeType(parts[1], parts[1], parts[1])));
+                if (action.Value.Count > 1)
+                {
+                    method.Comments.Add(new CodeCommentStatement(
+                        string.Format("{0} confilicts:", action.Value.Count), false));
+                    foreach (var value in action.Value)
+                    {
+                        string str = string.Format("map.SetAction({0}, {1}, new {2}({3}));",
+                            parts[0], GetNodeName(new TreeNodeType(parts[1], parts[1], parts[1])),
+                            value.GetType().Name, value.ActionParam());
+                        method.Comments.Add(new CodeCommentStatement(str, false));
+                    }
+                }
                 foreach (var value in action.Value)
                 {
                     // action.Value超过1项，就说明有冲突。
