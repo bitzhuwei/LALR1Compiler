@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -9,7 +10,7 @@ namespace LALR1Compiler
     /// <summary>
     /// 规则列表。一个完整的规则列表就是一个文法。
     /// </summary>
-    public class RegulationList : List<Regulation>
+    public class RegulationList : List<Regulation>, IDump2Stream
     {
         public RegulationList(params Regulation[] regulations)
         {
@@ -114,5 +115,21 @@ namespace LALR1Compiler
             return list;
         }
 
+
+        public void Dump(System.IO.StreamWriter stream)
+        {
+            foreach (var item in this)
+            {
+                item.Dump(stream);
+            }
+        }
+
+        public void Dump(string fullname)
+        {
+            using (StreamWriter stream = new StreamWriter(fullname, false))
+            {
+                Dump(stream);
+            }
+        }
     }
 }

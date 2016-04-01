@@ -187,6 +187,13 @@ namespace LALR1Compiler
             { stream.Write(" └─"); }
         }
 
+        public void Dump(string fullname)
+        {
+            using (StreamWriter stream = new StreamWriter(fullname, false))
+            {
+                Dump(stream);
+            }
+        }
         public void Dump(StreamWriter stream)
         {
             Dump(stream, this);
