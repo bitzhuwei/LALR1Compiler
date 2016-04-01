@@ -17,42 +17,66 @@ namespace LALR1Compiler
         public static FirstListAndFollowList GetFirstListAndFollowList(this RegulationList grammar)
         {
             Dictionary<TreeNodeType, bool> nullableDict = new Dictionary<TreeNodeType, bool>();
-            GetNullableDict(grammar, nullableDict);
-            List<FIRST> firstList4Node = GetFirstList4Node(grammar, nullableDict);
-            List<FIRST> firstList4Regulation = GetFirstList4Regulation(grammar, nullableDict, firstList4Node);
-            List<FOLLOW> followList = GetFollowList(grammar, nullableDict, firstList4Node);
+            GetNullableDict(grammar, out nullableDict);
+            FIRSTCollection firstCollection4Node;
+            grammar.GetFirstCollection4Node(out firstCollection4Node, nullableDict);
+            FIRSTCollection firstCollection4Regulation;
+            grammar.GetFirstCollection4Regulation(out firstCollection4Regulation, nullableDict, firstCollection4Node);
+            FOLLOWCollection followCollection;
+            grammar.GetFollowCollection(out followCollection, nullableDict, firstCollection4Node);
 
-            List<FIRST> firstList = new List<FIRST>();
-            firstList.AddRange(firstList4Node);
-            firstList.AddRange(firstList4Regulation);
-            return new FirstListAndFollowList(firstList, followList);
+            var firstCollection = new FIRSTCollection();
+            foreach (var item in firstCollection4Node)
+            {
+                firstCollection.TryInsert(item);
+            }
+            foreach (var item in firstCollection4Regulation)
+            {
+                firstCollection.TryInsert(item);
+            }
+            return new FirstListAndFollowList(firstCollection, followCollection);
         }
 
-        public static List<FOLLOW> GetFollowList(this RegulationList grammar, Dictionary<TreeNodeType, bool> nullableDict = null)
+        public static void GetFollowCollection(
+            this RegulationList grammar,
+            out FOLLOWCollection followCollection,
+            Dictionary<TreeNodeType, bool> nullableDict = null,
+            FIRSTCollection firstCollection = null)
         {
             if (nullableDict == null)
-            { nullableDict = new Dictionary<TreeNodeType, bool>(); }
-            GetNullableDict(grammar, nullableDict);
-            List<FIRST> firstList4Node = GetFirstList4Node(grammar, nullableDict);
-            List<FIRST> firstList4Regulation = GetFirstList4Regulation(grammar, nullableDict, firstList4Node);
-            List<FOLLOW> followList = GetFollowList(grammar, nullableDict, firstList4Node);
+            { grammar.GetNullableDict(out nullableDict); }
+            if (firstCollection == null)
+            { grammar.GetFirstCollection(out firstCollection, nullableDict); }
 
-            return followList;
+            FIRSTCollection firstList4Node;
+            grammar.GetFirstCollection4Node(out firstList4Node, nullableDict);
+            FIRSTCollection firstList4Regulation;
+            grammar.GetFirstCollection4Regulation(out firstList4Regulation, nullableDict, firstList4Node);
+            grammar.DoGetFollowList(out followCollection, nullableDict, firstList4Node);
         }
 
-        public static List<FIRST> GetFirstList(this RegulationList grammar, Dictionary<TreeNodeType, bool> nullableDict = null)
+        public static void GetFirstCollection(
+            this RegulationList grammar,
+            out FIRSTCollection firstCollection, Dictionary<TreeNodeType, bool> nullableDict = null)
         {
             if (nullableDict == null)
-            { nullableDict = new Dictionary<TreeNodeType, bool>(); }
-            GetNullableDict(grammar, nullableDict);
-            List<FIRST> firstList4Node = GetFirstList4Node(grammar, nullableDict);
-            List<FIRST> firstList4Regulation = GetFirstList4Regulation(grammar, nullableDict, firstList4Node);
+            { GetNullableDict(grammar, out nullableDict); }
 
-            var list = new List<FIRST>();
-            list.AddRange(firstList4Node);
-            list.AddRange(firstList4Regulation);
+            FIRSTCollection firstList4Node;
+            grammar.GetFirstCollection4Node(out firstList4Node, nullableDict);
+            FIRSTCollection firstList4Regulation;
+            grammar.GetFirstCollection4Regulation(out firstList4Regulation,
+                nullableDict, firstList4Node);
 
-            return list;
+            firstCollection = new FIRSTCollection();
+            foreach (var item in firstList4Node)
+            {
+                firstCollection.TryInsert(item);
+            }
+            foreach (var item in firstList4Regulation)
+            {
+                firstCollection.TryInsert(item);
+            }
         }
 
         /// <summary>
@@ -62,13 +86,16 @@ namespace LALR1Compiler
         /// <param name="nullableDict"></param>
         /// <param name="firstList4Node"></param>
         /// <returns></returns>
-        private static List<FOLLOW> GetFollowList(RegulationList grammar, Dictionary<TreeNodeType, bool> nullableDict, List<FIRST> firstList4Node)
+        private static void DoGetFollowList(
+            this RegulationList grammar,
+            out FOLLOWCollection followCollection,
+            Dictionary<TreeNodeType, bool> nullableDict, FIRSTCollection firstList4Node)
         {
             // 初始化Follow list
-            List<FOLLOW> result = new List<FOLLOW>();
+            followCollection = new FOLLOWCollection();
             foreach (var item in grammar.GetAllTreeNodeNonLeaveTypes())
             {
-                result.Add(new FOLLOW(item));
+                followCollection.TryInsert(new FOLLOW(item));
             }
 
             // 迭代到不动点
@@ -84,7 +111,7 @@ namespace LALR1Compiler
                         // 准备为target添加follow元素
                         TreeNodeType target = regulation.RightNode(index);
                         if (target.IsLeave) { continue; } // 叶结点没有follow
-                        FOLLOW follow = FindFollow(result, target); // 找到follow对象
+                        FOLLOW follow = FindFollow(followCollection, target); // 找到follow对象
                         for (int checkCount = 0; checkCount < count - (index + 1); checkCount++)
                         {
                             if (Nullable(regulation.RightPart, index + 1, checkCount, nullableDict))
@@ -106,7 +133,7 @@ namespace LALR1Compiler
                             if (Nullable(regulation.RightPart, index + 1, count - (index + 1), nullableDict))
                             {
                                 // 找到此regulation.Left的folow
-                                FOLLOW refFollow = FindFollow(result, regulation.Left);
+                                FOLLOW refFollow = FindFollow(followCollection, regulation.Left);
                                 foreach (var item in refFollow.Values)
                                 {
                                     changed = follow.TryInsert(item) || changed;
@@ -116,13 +143,11 @@ namespace LALR1Compiler
                     }
                 }
             } while (changed);
-
-            return result;
         }
 
-        private static FOLLOW FindFollow(List<FOLLOW> followList, TreeNodeType target)
+        private static FOLLOW FindFollow(FOLLOWCollection followCollection, TreeNodeType target)
         {
-            foreach (var item in followList)
+            foreach (var item in followCollection)
             {
                 if (item.Target == target)
                 {
@@ -140,20 +165,23 @@ namespace LALR1Compiler
         /// <param name="nullableDict"></param>
         /// <param name="firstList4Node"></param>
         /// <returns></returns>
-        private static List<FIRST> GetFirstList4Regulation(RegulationList grammar, Dictionary<TreeNodeType, bool> nullableDict, List<FIRST> firstList4Node)
+        private static void GetFirstCollection4Regulation(
+            this RegulationList grammar,
+            out FIRSTCollection firstCollection,
+            Dictionary<TreeNodeType, bool> nullableDict = null, FIRSTCollection firstList4Node = null)
         {
             // 初始化FIRST集
-            List<FIRST> result = new List<FIRST>();
+            firstCollection = new FIRSTCollection();
             foreach (var regulation in grammar)
             {
-                result.Add(new FIRST(regulation.RightPart));
+                firstCollection.TryInsert(new FIRST(regulation.RightPart));
             }
 
             bool changed = false;
             do
             {
                 changed = false;
-                foreach (var first in result)
+                foreach (var first in firstCollection)
                 {
                     int count = first.Target.Count();
                     for (int i = 0; i < count; i++)
@@ -165,11 +193,9 @@ namespace LALR1Compiler
                             FIRST refFirst = FindFirst(firstList4Node, first.GetNode(i));
                             foreach (var value in refFirst.Values)
                             {
-                                if ((value != TreeNodeType.NullNode)
-                                    && (!first.Values.Contains(value)))
+                                if (value != TreeNodeType.NullNode)
                                 {
-                                    first.TryInsert(value);
-                                    changed = true;
+                                    changed = first.TryInsert(value) || changed;
                                 }
                             }
                         }
@@ -178,17 +204,11 @@ namespace LALR1Compiler
                         // 如果RightPart的全部结点都可为null，就说明此RightPart的FIRST包含"null"结点。
                         if (Nullable(first.Target, 0, first.Target.Count(), nullableDict))
                         {
-                            if (!first.Values.Contains(TreeNodeType.NullNode))
-                            {
-                                first.TryInsert(TreeNodeType.NullNode);
-                                changed = true;
-                            }
+                            changed = first.TryInsert(TreeNodeType.NullNode) || changed;
                         }
                     }
                 }
             } while (changed);
-
-            return result;
         }
 
         /// <summary>
@@ -197,26 +217,29 @@ namespace LALR1Compiler
         /// <param name="grammar"></param>
         /// <param name="nullableDict"></param>
         /// <returns></returns>
-        private static List<FIRST> GetFirstList4Node(RegulationList grammar, Dictionary<TreeNodeType, bool> nullableDict)
+        private static void GetFirstCollection4Node(
+            this RegulationList grammar,
+            out FIRSTCollection firstCollection,
+            Dictionary<TreeNodeType, bool> nullableDict = null)
         {
             // 初始化FIRST
-            List<FIRST> result = new List<FIRST>();
+            firstCollection = new FIRSTCollection();
             // 初始化非叶结点的FIRST
             foreach (var item in grammar.GetAllTreeNodeNonLeaveTypes())
             {
                 if (nullableDict[item])
                 {
-                    result.Add(new FIRST(item, TreeNodeType.NullNode));
+                    firstCollection.TryInsert(new FIRST(item, TreeNodeType.NullNode));
                 }
                 else
                 {
-                    result.Add(new FIRST(item));
+                    firstCollection.TryInsert(new FIRST(item));
                 }
             }
             // 初始化叶结点的FIRST（叶结点的FIRST实际上已经完工）
             foreach (var item in grammar.GetAllTreeNodeLeaveTypes())
             {
-                result.Add(new FIRST(item, item));
+                firstCollection.TryInsert(new FIRST(item, item));
             }
 
             bool changed = false;
@@ -225,7 +248,7 @@ namespace LALR1Compiler
                 changed = false;
                 foreach (var regulation in grammar)
                 {
-                    FIRST first = FindFirst(result, regulation.Left);
+                    FIRST first = FindFirst(firstCollection, regulation.Left);
                     int rightPartCount = regulation.RightPart.Count();
                     for (int checkCount = 0; checkCount < rightPartCount; checkCount++)
                     {
@@ -233,28 +256,24 @@ namespace LALR1Compiler
                         // 就说明RightPart[checkCount]的FIRST是此regulation.Left的FIRST的一部分。
                         if (Nullable(regulation.RightPart, 0, checkCount, nullableDict))
                         {
-                            FIRST refFirst = FindFirst(result, regulation.RightNode(checkCount));
+                            FIRST refFirst = FindFirst(firstCollection, regulation.RightNode(checkCount));
                             if (refFirst == null) { throw new Exception("algorithm error!"); }
                             foreach (var value in refFirst.Values)
                             {
-                                if ((value != TreeNodeType.NullNode)
-                                    && (!first.Values.Contains(value)))
+                                if (value != TreeNodeType.NullNode)
                                 {
-                                    first.TryInsert(value);
-                                    changed = true;
+                                    changed = first.TryInsert(value) || changed;
                                 }
                             }
                         }
                     }
                 }
             } while (changed);
-
-            return result;
         }
 
-        private static FIRST FindFirst(List<FIRST> firstList, TreeNodeType target)
+        private static FIRST FindFirst(FIRSTCollection firstCollection, TreeNodeType target)
         {
-            foreach (var item in firstList)
+            foreach (var item in firstCollection)
             {
                 if (item.Target.Count() == 1
                     && item.Target.First() == target)
@@ -271,8 +290,11 @@ namespace LALR1Compiler
         /// </summary>
         /// <param name="grammar"></param>
         /// <returns></returns>
-        private static Dictionary<TreeNodeType, bool> GetNullableDict(this RegulationList grammar, Dictionary<TreeNodeType, bool> nullableDict)
+        public static void GetNullableDict(
+            this RegulationList grammar, out Dictionary<TreeNodeType, bool> nullableDict)
         {
+            nullableDict = new Dictionary<TreeNodeType, bool>();
+
             // 初始化nullable
             List<TreeNodeType> allNodeTypes = grammar.GetAllTreeNodeTypes();
             foreach (var item in allNodeTypes)
@@ -298,8 +320,6 @@ namespace LALR1Compiler
                     }
                 }
             } while (changed);
-
-            return nullableDict;
         }
 
         /// <summary>
@@ -335,15 +355,15 @@ namespace LALR1Compiler
 
     public class FirstListAndFollowList
     {
-        public FirstListAndFollowList(List<FIRST> firstList, List<FOLLOW> followList)
+        public FirstListAndFollowList(FIRSTCollection firstList, FOLLOWCollection followList)
         {
             this.FirstList = firstList;
             this.FollowList = followList;
         }
 
-        public List<FIRST> FirstList { get; set; }
+        public FIRSTCollection FirstList { get; set; }
 
-        public List<FOLLOW> FollowList { get; set; }
+        public FOLLOWCollection FollowList { get; set; }
 
         public override string ToString()
         {
@@ -381,7 +401,7 @@ namespace LALR1Compiler
         }
     }
 
-    
 
-    
+
+
 }

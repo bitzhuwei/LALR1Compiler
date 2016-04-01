@@ -9,14 +9,14 @@ namespace LALR1Compiler
 {
     public static partial class RegulationListHelper
     {
-        
+
 
         /// <summary>
         /// 用LR(1)分析法计算分析表
         /// </summary>
         /// <param name="grammar"></param>
         /// <returns></returns>
-        public static LR1ParserGeneratorInfo GetLR1ParsingMap(this RegulationList grammar)
+        public static LRParsingMap GetLR1ParsingMap(this RegulationList grammar)
         {
             // 给文法添加一个辅助的开始产生式 S' -> S $
             // 如何添加一个外来的结点类型？用Enum是无法做到的。
@@ -29,9 +29,11 @@ namespace LALR1Compiler
             // 初始化T为{ Closure(S' -> S $) }
             var firstItem = new LR1Item(decoratedGrammar[0], 0, decoratedEnd);
             var firstState = new LR1State(firstItem);
-            Dictionary<TreeNodeType, bool> nullableDict = new Dictionary<TreeNodeType, bool>();
-            var firstList = decoratedGrammar.GetFirstList(nullableDict);
-            firstState = decoratedGrammar.Closure(firstState, nullableDict, firstList);
+            Dictionary<TreeNodeType, bool> nullableDict;
+            decoratedGrammar.GetNullableDict(out nullableDict);
+            FIRSTCollection firstCollection;
+            decoratedGrammar.GetFirstCollection(out firstCollection, nullableDict);
+            firstState = decoratedGrammar.Closure(firstState, nullableDict, firstCollection);
             var stateList = new LR1StateCollection(firstState);
             var edgeList = new LR1EdgeCollection();
             Queue<LR1State> queue = new Queue<LR1State>();
@@ -54,7 +56,7 @@ namespace LALR1Compiler
                     TreeNodeType x = item.GetNodeNext2Dot();
                     if (x == decoratedEnd || x == null) { continue; }
 
-                    LR1State toState = decoratedGrammar.Goto(fromState, x, nullableDict, firstList);
+                    LR1State toState = decoratedGrammar.Goto(fromState, x, nullableDict, firstCollection);
                     if (stateList.TryInsert(toState))
                     {
                         queue.Enqueue(toState);
@@ -100,7 +102,7 @@ namespace LALR1Compiler
                 }
             }
 
-            return new LR1ParserGeneratorInfo(grammar, firstList, stateList, edgeList, parsingMap);
+            return parsingMap;
         }
 
         /// <summary>
@@ -110,12 +112,13 @@ namespace LALR1Compiler
         /// <param name="grammar"></param>
         /// <param name="state"></param>
         /// <returns></returns>
-        static LR1State Closure(this RegulationList grammar, LR1State state, Dictionary<TreeNodeType, bool> nullableDict, List<FIRST> firstList = null)
+        static LR1State Closure(this RegulationList grammar, LR1State state,
+            Dictionary<TreeNodeType, bool> nullableDict = null, FIRSTCollection firstCollection = null)
         {
             if (nullableDict == null)
-            { nullableDict = new Dictionary<TreeNodeType, bool>(); }
-            if (firstList == null)
-            { firstList = grammar.GetFirstList(nullableDict); }
+            { grammar.GetNullableDict(out nullableDict); }
+            if (firstCollection == null)
+            { grammar.GetFirstCollection(out firstCollection, nullableDict); }
 
             Queue<LR1Item> queue = new Queue<LR1Item>();
             foreach (var item in state)
@@ -129,7 +132,7 @@ namespace LALR1Compiler
                 if (node == null || node.IsLeave) { continue; }
 
                 List<TreeNodeType> betaZ = item.GetBetaZ();
-                FIRST first = grammar.GetFirst(firstList, nullableDict, betaZ);
+                FIRST first = grammar.GetFirst(firstCollection, nullableDict, betaZ);
                 List<Regulation> regulations = grammar.GetRegulations(node);
                 foreach (var regulation in regulations)
                 {
@@ -154,7 +157,7 @@ namespace LALR1Compiler
         /// <param name="firstList4Node"></param>
         /// <param name="target"></param>
         /// <returns></returns>
-        private static FIRST GetFirst(this RegulationList grammar, List<FIRST> firstList4Node, Dictionary<TreeNodeType, bool> nullableDict, List<TreeNodeType> target)
+        private static FIRST GetFirst(this RegulationList grammar, FIRSTCollection firstList4Node, Dictionary<TreeNodeType, bool> nullableDict, List<TreeNodeType> target)
         {
             // 初始化FIRST集
             FIRST first = new FIRST(target);
@@ -205,7 +208,7 @@ namespace LALR1Compiler
         /// <param name="x">一个文法符号，终结点或非终结点。</param>
         /// <param name="firstList"></param>
         /// <returns></returns>
-        static LR1State Goto(this RegulationList list, LR1State state, TreeNodeType x, Dictionary<TreeNodeType, bool> nullableDict, List<FIRST> firstList = null)
+        static LR1State Goto(this RegulationList list, LR1State state, TreeNodeType x, Dictionary<TreeNodeType, bool> nullableDict, FIRSTCollection firstList = null)
         {
             LR1State toState = new LR1State();
             foreach (var item in state)

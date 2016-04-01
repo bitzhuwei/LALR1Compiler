@@ -10,7 +10,7 @@ namespace LALR1Compiler
     public class SLRParserGeneratorInfo
     {
 
-        public SLRParserGeneratorInfo(RegulationList grammar, List<FOLLOW> followList, LR0StateCollection stateList, LR0EdgeCollection edgeList, LRParsingMap parsingMap)
+        public SLRParserGeneratorInfo(RegulationList grammar, FOLLOWCollection followList, LR0StateCollection stateList, LR0EdgeCollection edgeList, LRParsingMap parsingMap)
         {
             this.Grammar = grammar;
             this.FollowList = followList;
@@ -21,7 +21,7 @@ namespace LALR1Compiler
 
         public RegulationList Grammar { get; set; }
 
-        public List<FOLLOW> FollowList { get; set; }
+        public FOLLOWCollection FollowList { get; set; }
 
         public LR0StateCollection StateList { get; set; }
 

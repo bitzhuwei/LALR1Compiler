@@ -9,7 +9,7 @@ namespace LALR1Compiler
     public class LR1ParserGeneratorInfo
     {
 
-        public LR1ParserGeneratorInfo(RegulationList grammar, List<FIRST> firstList, LR1StateCollection stateList, LR1EdgeCollection edgeList, LRParsingMap parsingMap)
+        public LR1ParserGeneratorInfo(RegulationList grammar, FIRSTCollection firstList, LR1StateCollection stateList, LR1EdgeCollection edgeList, LRParsingMap parsingMap)
         {
             this.Grammar = grammar;
             this.FirstList = firstList;
@@ -20,7 +20,7 @@ namespace LALR1Compiler
 
         public RegulationList Grammar { get; set; }
 
-        public List<FIRST> FirstList { get; set; }
+        public FIRSTCollection FirstList { get; set; }
 
         public LR1StateCollection StateList { get; set; }
 

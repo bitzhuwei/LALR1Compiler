@@ -21,7 +21,7 @@ namespace LALR1Compiler
         /// 为自动生成分析表而添加的抽象方法。代表(s1, g1, ...)中的数字。
         /// </summary>
         /// <returns></returns>
-        internal abstract string ActionParam();
+        public abstract string ActionParam();
 
     }
 
@@ -31,7 +31,7 @@ namespace LALR1Compiler
     public class LR1ShiftInAction : LRParsingAction
     {
 
-        internal override string ActionParam()
+        public override string ActionParam()
         {
             return NextStateId.ToString();
         }
@@ -68,7 +68,7 @@ namespace LALR1Compiler
     public class LR1ReducitonAction : LRParsingAction
     {
 
-        internal override string ActionParam()
+        public override string ActionParam()
         {
             return RegulationId.ToString();
         }
@@ -123,7 +123,7 @@ namespace LALR1Compiler
     public class LR1GotoAction : LRParsingAction
     {
 
-        internal override string ActionParam()
+        public override string ActionParam()
         {
             return GoToStateId.ToString();
         }
@@ -152,7 +152,7 @@ namespace LALR1Compiler
     /// </summary>
     public class LR1AceptAction : LRParsingAction
     {
-        internal override string ActionParam()
+        public override string ActionParam()
         {
             return string.Empty;
         }
@@ -175,7 +175,7 @@ namespace LALR1Compiler
         : LRParsingAction
     {
 
-        internal override string ActionParam()
+        public override string ActionParam()
         {
             return string.Empty;
         }

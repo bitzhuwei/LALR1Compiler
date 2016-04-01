@@ -15,7 +15,7 @@ namespace LALR1Compiler
         /// </summary>
         /// <param name="grammar"></param>
         /// <returns></returns>
-        public static LR0ParserGeneratorInfo GetLR0ParsingMap(this RegulationList grammar)
+        public static LRParsingMap GetLR0ParsingMap(this RegulationList grammar)
         {
             // 给文法添加一个辅助的开始产生式 S' -> S $
             // 如何添加一个外来的结点类型？用Enum是无法做到的。
@@ -102,7 +102,7 @@ namespace LALR1Compiler
                 }
             }
 
-            return new LR0ParserGeneratorInfo(grammar, stateList, edgeList, parsingMap);
+            return parsingMap;
         }
 
         /// <summary>

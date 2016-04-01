@@ -39,6 +39,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Utilities\HachCacheHelper.cs" />
     <Compile Include="YetAnotherCompiler\FOLLOWCollection.cs" />
     <Compile Include="YetAnotherCompiler\FIRSTCollection.cs" />
     <Compile Include="YetAnotherCompiler\RegulationList.Completeness.cs" />

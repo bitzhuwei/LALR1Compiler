@@ -15,7 +15,7 @@ namespace LALR1Compiler
         /// </summary>
         /// <param name="grammar"></param>
         /// <returns></returns>
-        public static SLRParserGeneratorInfo GetSLRParsingMap(this RegulationList grammar)
+        public static LRParsingMap GetSLRParsingMap(this RegulationList grammar)
         {
             // 给文法添加一个辅助的开始产生式 S' -> S $
             // 如何添加一个外来的结点类型？用Enum是无法做到的。
@@ -79,7 +79,8 @@ namespace LALR1Compiler
                 }
             }
             var endItem = new LR0Item(decoratedRegulation, 1);
-            List<FOLLOW> followList = decoratedGrammar.GetFollowList();
+            FOLLOWCollection followCollection;
+            decoratedGrammar.GetFollowCollection(out followCollection);
             foreach (var state in stateList)
             {
                 if (state.Contains(endItem))
@@ -91,7 +92,7 @@ namespace LALR1Compiler
                 {
                     if (lr0Item.GetNodeNext2Dot() == null)
                     {
-                        FOLLOW follow = FindFollow(followList, lr0Item.Regulation.Left);
+                        FOLLOW follow = FindFollow(followCollection, lr0Item.Regulation.Left);
                         foreach (var value in follow.Values)
                         {
                             parsingMap.SetAction(stateList.IndexOf(state) + 1, value,
@@ -101,7 +102,7 @@ namespace LALR1Compiler
                 }
             }
 
-            return new SLRParserGeneratorInfo(grammar, followList, stateList, edgeList, parsingMap);
+            return  parsingMap;
         }
 
     }
