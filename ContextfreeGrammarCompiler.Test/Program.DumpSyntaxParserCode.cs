@@ -20,6 +20,7 @@ namespace ContextfreeGrammarCompiler.Test
         {
             var parserType = new CodeTypeDeclaration(GetParserName(grammarId, algorithm));
             parserType.IsClass = true;
+            parserType.BaseTypes.Add(typeof(LRSyntaxParser));
             DumpSyntaxParserFields(grammar, parserType);
             DumpSyntaxParserMethod_GetGrammar(grammar, parserType);
             DumpSyntaxParserMethod_GetParsingMap(grammar, map, parserType);
