@@ -162,6 +162,7 @@ namespace ContextfreeGrammarCompiler.Test
             foreach (var node in grammar.GetAllTreeNodeNonLeaveTypes())
             {
                 CodeMemberField field = new CodeMemberField(typeof(TreeNodeType), GetNodeName(node));
+                // field.Attributes 不支持readonly，遗憾了。
                 field.Attributes = MemberAttributes.Private | MemberAttributes.Static;
                 var ctor = new CodeObjectCreateExpression(typeof(TreeNodeType),
                     new CodePrimitiveExpression(node.Type),
