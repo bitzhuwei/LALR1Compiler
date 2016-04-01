@@ -134,9 +134,12 @@ namespace LALR1Compiler
                             {
                                 // 找到此regulation.Left的folow
                                 FOLLOW refFollow = FindFollow(followCollection, regulation.Left);
-                                foreach (var item in refFollow.Values)
+                                if (refFollow != follow)
                                 {
-                                    changed = follow.TryInsert(item) || changed;
+                                    foreach (var item in refFollow.Values)
+                                    {
+                                        changed = follow.TryInsert(item) || changed;
+                                    }
                                 }
                             }
                         }
@@ -258,11 +261,14 @@ namespace LALR1Compiler
                         {
                             FIRST refFirst = FindFirst(firstCollection, regulation.RightNode(checkCount));
                             if (refFirst == null) { throw new Exception("algorithm error!"); }
-                            foreach (var value in refFirst.Values)
+                            if (refFirst != first)
                             {
-                                if (value != TreeNodeType.NullNode)
+                                foreach (var value in refFirst.Values)
                                 {
-                                    changed = first.TryInsert(value) || changed;
+                                    if (value != TreeNodeType.NullNode)
+                                    {
+                                        changed = first.TryInsert(value) || changed;
+                                    }
                                 }
                             }
                         }
