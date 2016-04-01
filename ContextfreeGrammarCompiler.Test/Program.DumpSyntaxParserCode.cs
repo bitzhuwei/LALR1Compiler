@@ -120,10 +120,12 @@ namespace ContextfreeGrammarCompiler.Test
             method.Attributes = MemberAttributes.Override | MemberAttributes.Family;
             method.ReturnType = new CodeTypeReference(typeof(RegulationList));
             string varName = "grammar";
-            // LALR1Compiler.RegulationList grammar = new LALR1Compiler.RegulationList();
-            var varDeclaration = new CodeVariableDeclarationStatement(typeof(RegulationList), varName);
-            varDeclaration.InitExpression = new CodeObjectCreateExpression(typeof(RegulationList));
-            method.Statements.Add(varDeclaration);
+            {
+                // LALR1Compiler.RegulationList grammar = new LALR1Compiler.RegulationList();
+                var varDeclaration = new CodeVariableDeclarationStatement(typeof(RegulationList), varName);
+                varDeclaration.InitExpression = new CodeObjectCreateExpression(typeof(RegulationList));
+                method.Statements.Add(varDeclaration);
+            }
             foreach (var regulation in grammar)
             {
                 // <S> ::= null ;
@@ -143,6 +145,7 @@ namespace ContextfreeGrammarCompiler.Test
                 method.Statements.Add(addRegulation);
             }
             {
+                // return grammar;
                 var returnGrammar = new CodeMethodReturnStatement(
                     new CodeVariableReferenceExpression(varName));
                 method.Statements.Add(returnGrammar);

@@ -41,6 +41,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Program.DumpEnum.cs" />
     <Compile Include="Program.DumpSyntaxParserCode.cs" />
     <Compile Include="Program.Utilities.cs" />
     <Compile Include="Program.GetGrammar.cs" />
