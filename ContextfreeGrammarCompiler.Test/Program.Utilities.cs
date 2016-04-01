@@ -13,15 +13,15 @@ namespace ContextfreeGrammarCompiler.Test
 {
     partial class Program
     {
-       
+
         private static string GetNodeName(TreeNodeType node)
         {
             return string.Format("NODE{0}", node.Type);
         }
 
-        private static string GetParserName(string grammarId)
+        private static string GetParserName(string grammarId, SyntaxParserMapAlgorithm algorithm)
         {
-            return string.Format("{0}SyntaxParser", grammarId);
+            return string.Format("{0}{1}SyntaxParser", grammarId, algorithm);
         }
 
         private static string GetNamespace(string grammarId)
