@@ -41,50 +41,7 @@ namespace LALR1Compiler
         /// 从ptNextLetter开始获取下一个Token
         /// </summary>
         /// <returns></returns>
-        protected abstract Token NextToken(AnalyzingContext context);
-
+        protected abstract bool TryGetToken(AnalyzingContext context, Token result, SourceCodeCharType charType);
     }
 
-    public class AnalyzingContext
-    {
-        public string SourceCode { get; set; }
-
-        public AnalyzingContext(string sourceCode)
-        {
-            this.SourceCode = sourceCode;
-        }
-
-        /// <summary>
-        /// 将要分析的字符索引（从0开始）
-        /// </summary>
-        public int NextLetterIndex
-        {
-            get { return nextLetterIndex; }
-            set
-            {
-                CurrentColumn += value - nextLetterIndex;
-                nextLetterIndex = value;
-            }
-        }
-
-        /// <summary>
-        /// 将要分析的字符索引（从0开始）
-        /// </summary>
-        private int nextLetterIndex { get; set; }
-
-        /// <summary>
-        /// ptNextLetter所在行（从0开始）
-        /// </summary>
-        public int CurrentLine { get; set; }
-        /// <summary>
-        /// ptNextLetter所在列（从0开始）
-        /// </summary>
-        public int CurrentColumn { get; set; }
-
-
-        public char CurrentChar()
-        {
-            return this.SourceCode[this.NextLetterIndex];
-        }
-    }
 }

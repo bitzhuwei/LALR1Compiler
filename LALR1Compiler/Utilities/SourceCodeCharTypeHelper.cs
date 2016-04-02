@@ -5,9 +5,9 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
-namespace ContextfreeGrammarCompiler.Test
+namespace LALR1Compiler
 {
-    static class SourceCodeCharTypeHelper
+    public static class SourceCodeCharTypeHelper
     {
 
         /// <summary>

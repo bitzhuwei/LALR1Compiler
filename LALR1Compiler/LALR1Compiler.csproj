@@ -39,8 +39,11 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="LexicalAnalyzer.Fixed.cs" />
+    <Compile Include="SourceCodeCharType.cs" />
     <Compile Include="Utilities\ConstString2IdentifierHelper.cs" />
     <Compile Include="Utilities\HachCacheHelper.cs" />
+    <Compile Include="Utilities\SourceCodeCharTypeHelper.cs" />
     <Compile Include="YetAnotherCompiler\FOLLOWCollection.cs" />
     <Compile Include="YetAnotherCompiler\FIRSTCollection.cs" />
     <Compile Include="YetAnotherCompiler\RegulationList.Completeness.cs" />

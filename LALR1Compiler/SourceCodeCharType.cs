@@ -4,10 +4,11 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace ContextfreeGrammarCompiler
+namespace LALR1Compiler
 {
-    public enum ContextfreeGrammarCharType
+    public enum SourceCodeCharType
     {
+
         /// <summary>
         /// 未知字符
         /// </summary>
@@ -16,10 +17,10 @@ namespace ContextfreeGrammarCompiler
         /// a-z A-Z
         /// </summary>
         Letter,
-        /// <summary>
-        /// 汉字
-        /// </summary>
-        ChineseLetter,
+        ///// <summary>
+        ///// 汉字
+        ///// </summary>
+        //ChineseLetter,
         /// <summary>
         /// 0 1 2 3 4 5 6 7 8 9
         /// </summary>

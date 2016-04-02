@@ -1,0 +1,43 @@
+﻿        /// <summary>
+        /// 获取标识符（函数名，变量名，等）
+        /// </summary>
+        /// <param name="result"></param>
+        /// <returns></returns>
+        protected virtual bool GetIdentifier(Token result, AnalyzingContext context)
+        {
+            StringBuilder builder = new StringBuilder();
+            while (context.NextLetterIndex < context.SourceCode.Length)
+            {
+                char ch = context.CurrentChar();
+                var ct = GetCharType(ch);
+                if (ct == ContextfreeGrammarCharType.Letter
+                    || ct == ContextfreeGrammarCharType.Number
+                    || ct == ContextfreeGrammarCharType.UnderLine
+                    || ct == ContextfreeGrammarCharType.ChineseLetter)
+                {
+                    builder.Append(ch);
+                    context.NextLetterIndex++;
+                }
+                else
+                { break; }
+            }
+            string content = builder.ToString();
+            // specify if this string is a keyword
+            bool isKeyword = false;
+            foreach (var item in ContextfreeGrammarLexicalAnalyzer.keywords)
+            {
+                if (item.NickName == content)
+                {
+                    result.TokenType = new TokenType(item.TokenType, content, content);
+                    isKeyword = true;
+                    break;
+                }
+            }
+            if (!isKeyword)
+            {
+                result.TokenType = new TokenType(
+                    ContextfreeGrammarTokenType.identifier, content, "identifier");
+            }
+
+            return true;
+        }

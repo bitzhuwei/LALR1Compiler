@@ -132,9 +132,9 @@ namespace ContextfreeGrammarCompiler.Test
             method.Name = "TryGetToken";
             method.Attributes = MemberAttributes.Private;
             method.ReturnType = new CodeTypeReference(typeof(bool));
-            method.Parameters.Add(new CodeParameterDeclarationExpression(typeof(AnalyzingContext), "context"));
+            method.Parameters.Add(new CodeParameterDeclarationExpression("AnalyzingContext", "context"));
             method.Parameters.Add(new CodeParameterDeclarationExpression(typeof(Token), "result"));
-            method.Parameters.Add(new CodeParameterDeclarationExpression(typeof(SourceCodeCharType), "charType"));
+            method.Parameters.Add(new CodeParameterDeclarationExpression("SourceCodeCharType", "charType"));
             {
                 // bool gotToken = false;
                 string vargotToken = "gotToken"; // :(

@@ -44,8 +44,6 @@
     <Compile Include="CodeGetToken.cs" />
     <Compile Include="CommentCodeGetTokenCollection.cs" />
     <Compile Include="CodeGetTokenCollection.cs" />
-    <Compile Include="SourceCodeCharType.cs" />
-    <Compile Include="SourceCodeCharTypeHelper.cs" />
     <Compile Include="States.cs" />
     <Compile Include="Program.DumpEnum.cs" />
     <Compile Include="Program.DumpLexicalAnalyzer.cs" />
@@ -71,48 +69,58 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <Content Include="TestCases\3_10.Grammar\3_10.Grammar.txt">
+    <None Include="TestCases\3_10.Grammar\3_10.Grammar">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="TestCases\3_6.Grammar\3_6.Grammar.txt">
+    </None>
+    <None Include="TestCases\3_6.Grammar\3_6.Grammar">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="TestCases\3_8.Grammar\3_8.Grammar.txt">
+    </None>
+    <None Include="TestCases\3_8.Grammar\3_8.Grammar">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="TestCases\3_9.Grammar\3_9.Grammar.txt">
+    </None>
+    <None Include="TestCases\3_9.Grammar\3_9.Grammar">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="TestCases\ConstString.Grammar\ConstString.Grammar.txt">
+    </None>
+    <None Include="TestCases\ConstString.Grammar\ConstString.Grammar">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="TestCases\Production.Grammar\Production.Grammar.txt">
+    </None>
+    <None Include="TestCases\Production.Grammar\Production.Grammar">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="TestCases\ContextfreeGrammar.Grammar\ContextfreeGrammar.Grammar.txt">
+    </None>
+    <None Include="TestCases\ContextfreeGrammar.Grammar\ContextfreeGrammar.Grammar">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="TestCases\Demo.Grammar\Demo.Grammar.txt">
+    </None>
+    <None Include="TestCases\Demo.Grammar\Demo.Grammar">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="TestCases\exercise3.6.Grammar\exercise3.6.Grammar.txt">
+    </None>
+    <None Include="TestCases\exercise3.6.Grammar\exercise3.6.Grammar">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="TestCases\GLSL.Grammar\GLSL.Grammar.txt">
+    </None>
+    <None Include="TestCases\GLSL.Grammar\GLSL.Grammar">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="TestCases\Identifier.Grammar\Identifier.Grammar.txt">
+    </None>
+    <None Include="TestCases\Identifier.Grammar\Identifier.Grammar">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="TestCases\List.Grammar\List.Grammar.txt">
+    </None>
+    <None Include="TestCases\List.Grammar\List.Grammar">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="TestCases\Null.Grammar\Null.Grammar.txt">
+    </None>
+    <None Include="TestCases\Null.Grammar\Null.Grammar">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="TestCases\Single.Grammar\Single.Grammar.txt">
+    </None>
+    <None Include="TestCases\Single.Grammar\Single.Grammar">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="LexicalAanlyzer.SkipSingleLineNote.txt" />
+    <Content Include="LexicalAanlyzer.SkipMultilineNote.txt" />
+    <Content Include="LexicalAanlyzer.GetSpace.txt" />
+    <Content Include="LexicalAanlyzer.GetUnknown.txt" />
+    <Content Include="LexicalAanlyzer.GetIdentifier.txt" />
+    <Content Include="LexicalAanlyzer.GetConstentString.txt" />
+    <Content Include="LexicalAanlyzer.NextToken.txt" />
+    <Content Include="LexicalAanlyzer.Fixed.txt" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

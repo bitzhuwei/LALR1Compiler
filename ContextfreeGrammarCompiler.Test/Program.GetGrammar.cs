@@ -26,15 +26,15 @@ namespace ContextfreeGrammarCompiler.Test
             Console.WriteLine("    Get grammar from source code...");
             var lexi = new ContextfreeGrammarLexicalAnalyzer();
             TokenList tokenList = lexi.Analyze(sourceCode);
-            Console.WriteLine("        Dump {0}", grammarId + ".TokenList.txt");
-            tokenList.Dump(Path.Combine(directory, grammarId + ".TokenList.txt"));
+            Console.WriteLine("        Dump {0}", grammarId + ".TokenList.log");
+            tokenList.Dump(Path.Combine(directory, grammarId + ".TokenList.log"));
             var parser = new ContextfreeGrammarSyntaxParser();
             SyntaxTree tree = parser.Parse(tokenList);
-            Console.WriteLine("        Dump {0}", grammarId + ".Tree.txt");
-            tree.Dump(Path.Combine(directory, grammarId + ".Tree.txt"));
+            Console.WriteLine("        Dump {0}", grammarId + ".Tree.log");
+            tree.Dump(Path.Combine(directory, grammarId + ".Tree.log"));
             RegulationList grammar = tree.DumpGrammar();
-            Console.WriteLine("        Dump {0}", grammarId + ".FormatedGrammar.txt");
-            grammar.Dump(Path.Combine(directory, grammarId + ".FormatedGrammar.txt"));
+            Console.WriteLine("        Dump {0}", grammarId + ".FormatedGrammar.log");
+            grammar.Dump(Path.Combine(directory, grammarId + ".FormatedGrammar.log"));
             return grammar;
         }
     }

@@ -11,40 +11,40 @@ namespace ContextfreeGrammarCompiler
     public partial class ContextfreeGrammarLexicalAnalyzer : LexicalAnalyzer
     {
 
-        private bool TryGetToken(
-            AnalyzingContext context, Token result, ContextfreeGrammarCharType charType)
+        protected override bool TryGetToken(
+            AnalyzingContext context, Token result, SourceCodeCharType charType)
         {
             bool gotToken = false;
             switch (charType)
             {
-                case ContextfreeGrammarCharType.Letter:
+                case SourceCodeCharType.Letter:
                     gotToken = GetIdentifier(result, context);
                     break;
-                case ContextfreeGrammarCharType.UnderLine:
+                case SourceCodeCharType.UnderLine:
                     gotToken = GetIdentifier(result, context);
                     break;
-                case ContextfreeGrammarCharType.Or:
+                case SourceCodeCharType.Or:
                     gotToken = GetOr(result, context);
                     break;
-                case ContextfreeGrammarCharType.LessThan:
+                case SourceCodeCharType.LessThan:
                     gotToken = GetLessThan(result, context);
                     break;
-                case ContextfreeGrammarCharType.GreaterThan:
+                case SourceCodeCharType.GreaterThan:
                     gotToken = GetGreaterThan(result, context);
                     break;
-                case ContextfreeGrammarCharType.DoubleQuotation:
+                case SourceCodeCharType.DoubleQuotation:
                     gotToken = GetConstentString(result, context);
                     break;
-                case ContextfreeGrammarCharType.Semicolon:
+                case SourceCodeCharType.Semicolon:
                     gotToken = GetSemicolon(result, context);
                     break;
-                case ContextfreeGrammarCharType.Colon:
+                case SourceCodeCharType.Colon:
                     gotToken = GetColon(result, context);
                     break;
-                case ContextfreeGrammarCharType.Divide:
+                case SourceCodeCharType.Divide:
                     gotToken = GetDivide(result, context);
                     break;
-                case ContextfreeGrammarCharType.Space:
+                case SourceCodeCharType.Space:
                     gotToken = GetSpace(result, context);
                     break;
                 default:
@@ -203,14 +203,12 @@ namespace ContextfreeGrammarCompiler
             return false;
         }
 
-        private static readonly IEnumerable<Keyword> keywords = new List<Keyword>()
+        static ContextfreeGrammarLexicalAnalyzer()
         {
-            new Keyword(ContextfreeGrammarTokenType.__identifier,ContextfreeGrammarTokenType.__identifier.Substring(2)),
-            new Keyword(ContextfreeGrammarTokenType.__null,ContextfreeGrammarTokenType.__null.Substring(2)),
-            new Keyword(ContextfreeGrammarTokenType.__constString,ContextfreeGrammarTokenType.__constString.Substring(2)),
-            new Keyword(ContextfreeGrammarTokenType.__number,ContextfreeGrammarTokenType.__number.Substring(2)),
-        };
-
-
+            keywords.Add(new Keyword(ContextfreeGrammarTokenType.__identifier, ContextfreeGrammarTokenType.__identifier.Substring(2)));
+            keywords.Add(new Keyword(ContextfreeGrammarTokenType.__null, ContextfreeGrammarTokenType.__null.Substring(2)));
+            keywords.Add(new Keyword(ContextfreeGrammarTokenType.__constString, ContextfreeGrammarTokenType.__constString.Substring(2)));
+            keywords.Add(new Keyword(ContextfreeGrammarTokenType.__number, ContextfreeGrammarTokenType.__number.Substring(2)));
+        }
     }
 }

@@ -1,0 +1,27 @@
+﻿        /// <summary>
+        /// 跳过多行注释
+        /// </summary>
+        /// <returns></returns>
+        protected virtual void SkipMultilineNote(AnalyzingContext context)
+        {
+            int count = context.SourceCode.Length;
+            while (context.NextLetterIndex < count)
+            {
+                if (context.CurrentChar() == '*')
+                {
+                    context.NextLetterIndex++;
+                    if (context.NextLetterIndex < count)
+                    {
+                        if (context.CurrentChar() == '/')
+                        {
+                            context.NextLetterIndex++;
+                            break;
+                        }
+                        else
+                            context.NextLetterIndex++;
+                    }
+                }
+                else
+                    context.NextLetterIndex++;
+            }
+        }
