@@ -34,14 +34,14 @@ namespace ContextfreeGrammarCompiler.Test
                 }
                 else
                 {
-                    GetPunctuation(result, node);
+                    CodeGetRegularToken(result, node);
                 }
             }
 
             return result;
         }
 
-        private static void GetPunctuation(List<LexiState> result, TreeNodeType node)
+        private static void CodeGetRegularToken(List<LexiState> result, TreeNodeType node)
         {
             string content = node.Content;
             SourceCodeCharType charType = content[0].GetCharType();
@@ -50,7 +50,7 @@ namespace ContextfreeGrammarCompiler.Test
             {
                 if (state.Contains(charType))
                 {
-                    state.GetTokenList.TryInsert(new GetPunctuation(content));
+                    state.GetTokenList.TryInsert(new CodeGetToken(node));
                     exists = true;
                     break;
                 }
@@ -59,7 +59,7 @@ namespace ContextfreeGrammarCompiler.Test
             {
                 var state = new LexiState();
                 state.CharTypeList.Add(charType);
-                state.GetTokenList.TryInsert(new GetPunctuation(content));
+                state.GetTokenList.TryInsert(new CodeGetToken(node));
                 result.Add(state);
             }
         }
@@ -78,7 +78,7 @@ namespace ContextfreeGrammarCompiler.Test
             {
                 var state = new LexiState();
                 state.CharTypeList.Add(SourceCodeCharType.Quotation);
-                state.GetTokenList.TryInsert(new GetChar());
+                state.GetTokenList.TryInsert(new CodeGetChar());
                 result.Add(state);
             }
         }
@@ -97,7 +97,7 @@ namespace ContextfreeGrammarCompiler.Test
             {
                 var state = new LexiState();
                 state.CharTypeList.Add(SourceCodeCharType.DoubleQuotation);
-                state.GetTokenList.TryInsert(new GetConstString());
+                state.GetTokenList.TryInsert(new CodeGetConstString());
                 result.Add(state);
             }
         }
@@ -116,7 +116,7 @@ namespace ContextfreeGrammarCompiler.Test
             {
                 var state = new LexiState();
                 state.CharTypeList.Add(SourceCodeCharType.Number);
-                state.GetTokenList.TryInsert(new GetNumber());
+                state.GetTokenList.TryInsert(new CodeGetNumber());
                 result.Add(state);
             }
         }
@@ -136,7 +136,7 @@ namespace ContextfreeGrammarCompiler.Test
                 var state = new LexiState();
                 state.CharTypeList.Add(SourceCodeCharType.Letter);
                 state.CharTypeList.Add(SourceCodeCharType.UnderLine);
-                state.GetTokenList.TryInsert(new GetIdentifier());
+                state.GetTokenList.TryInsert(new CodeGetIdentifier());
                 result.Add(state);
             }
         }
@@ -149,7 +149,7 @@ namespace ContextfreeGrammarCompiler.Test
         {
             var unknown = new LexiState();
             unknown.charTypeList.Add(SourceCodeCharType.Unknown);
-            unknown.getTokenList.TryInsert(new GetUnknown());
+            unknown.getTokenList.TryInsert(new CodeGetUnknown());
             return unknown;
         }
 
@@ -161,9 +161,9 @@ namespace ContextfreeGrammarCompiler.Test
             get { return charTypeList; }
         }
 
-        private OrderedCollection<GetTokenBase> getTokenList = new OrderedCollection<GetTokenBase>(Environment.NewLine);
+        private GetTokenList getTokenList = new GetTokenList();
 
-        internal OrderedCollection<GetTokenBase> GetTokenList
+        internal GetTokenList GetTokenList
         {
             get { return getTokenList; }
         }
@@ -188,6 +188,53 @@ namespace ContextfreeGrammarCompiler.Test
             }
 
             return first;
+        }
+
+        public CodeMemberMethod GetMethodDefinitionStatement()
+        {
+            if (this.IsContextfreeGrammarKeyword()) { return null; }
+
+            var method = new CodeMemberMethod();
+            method.Name = string.Format("Get{0}", this.GetTokenName());
+            method.Attributes = MemberAttributes.Family;
+            method.ReturnType = new CodeTypeReference(typeof(bool));
+            {
+                // var count = context.SourceCode.Length;
+                var count = new CodeVariableDeclarationStatement(typeof(int), "count");
+                count.InitExpression = new CodePropertyReferenceExpression(
+                    new CodePropertyReferenceExpression(
+                        new CodeVariableReferenceExpression("context"), "SourceCode"), "Length");
+                method.Statements.Add(count);
+            }
+            {
+                CodeStatement[] statements = this.GetTokenList.DumpReadToken();
+                method.Statements.AddRange(statements);
+            }
+            {
+                // return false;
+                var returnFalse = new CodeMethodReturnStatement(new CodePrimitiveExpression(false));
+                method.Statements.Add(returnFalse);
+            }
+
+            return method;
+        }
+
+        private bool IsContextfreeGrammarKeyword()
+        {
+            SourceCodeCharType charType = this.charTypeList[0];
+            // identifier
+            if (charType == SourceCodeCharType.UnderLine) { return true; }
+            if (charType == SourceCodeCharType.Letter) { return true; }
+            // number
+            if (charType == SourceCodeCharType.Number) { return true; }
+            // constString
+            if (charType == SourceCodeCharType.DoubleQuotation) { return true; }
+            // char
+            if (charType == SourceCodeCharType.Quotation) { return true; }
+            // null
+            // null is not a node.
+
+            return false;
         }
 
         public CodeStatement[] GetMethodInvokeStatement()
@@ -237,33 +284,109 @@ namespace ContextfreeGrammarCompiler.Test
         }
     }
 
-    abstract class GetTokenBase : HashCache
+    class GetTokenList : OrderedCollection<CodeGetToken>
     {
 
-        public abstract CodeMemberMethod DumpMethodDefinition();
+        public GetTokenList() : base(Environment.NewLine) { }
 
-        public GetTokenBase() : base(GetUniqueString) { }
-
-        static string GetUniqueString(HashCache cache)
+        internal CodeStatement[] DumpReadToken()
         {
-            GetTokenBase obj = cache as GetTokenBase;
-            return obj.Dump();
-        }
+            List<CodeStatement> result = new List<CodeStatement>();
 
+            for (int length = this[0].Value.Type.Length; length > 0; length--)
+            {
+                bool exists = false;
+                var ifStatement = new CodeConditionStatement(
+                    new CodeSnippetExpression(string.Format(
+                        "context.NextLetterIndex + {0} <= count", length)));
+                foreach (var item in this)
+                {
+                    if (item.Value.Content.Length == length)
+                    {
+                        CodeStatement[] statements = item.DumpReadToken();
+                        if (statements != null)
+                        {
+                            ifStatement.TrueStatements.AddRange(statements);
+                            exists = true;
+                        }
+                    }
+                }
+                if (exists)
+                {
+                    result.Add(ifStatement);
+                }
+            }
+
+            return result.ToArray();
+        }
     }
 
-    class GetPunctuation : GetTokenBase
+    class CodeGetToken : HashCache
     {
 
-        public GetPunctuation(string value)
+        public CodeGetToken(TreeNodeType value)
+            : base(GetUniqueString)
         {
             this.Value = value;
         }
 
-        public override CodeMemberMethod DumpMethodDefinition()
+        public TreeNodeType Value { get; set; }
+
+        public override int CompareTo(HashCache other)
         {
-            // TODO:
-            throw new NotImplementedException();
+            CodeGetToken obj = other as CodeGetToken;
+            if ((Object)obj == null) { return -1; }
+            if (obj.Value == null) { return -1; }
+
+            return -(this.Value.Type.Length - obj.Value.Type.Length);
+        }
+
+        public virtual CodeStatement[] DumpReadToken()
+        {
+            List<CodeStatement> list = new List<CodeStatement>();
+
+            {
+                int length = this.Value.Content.Length;
+                var str = new CodeVariableDeclarationStatement(typeof(string), "str");
+                str.InitExpression = new CodeSnippetExpression(string.Format(
+                    "context.SourceCode.Substring(context.NextLetterIndex, {0});", length));
+                list.Add(str);
+            }
+            {
+                var ifStatement = new CodeConditionStatement(
+                    new CodeBinaryOperatorExpression(
+                        new CodePrimitiveExpression(this.Value.Content),
+                        CodeBinaryOperatorType.IdentityEquality,
+                        new CodeVariableReferenceExpression("str")));
+                {
+                    var newTokenType = new CodeAssignStatement(
+                        new CodePropertyReferenceExpression(
+                            new CodeVariableReferenceExpression("result"),
+                            "TokenType"),
+                        new CodeObjectCreateExpression(typeof(TokenType),
+                            new CodePrimitiveExpression(this.Value.Type),
+                            new CodePrimitiveExpression(this.Value.Content),
+                            new CodePrimitiveExpression(this.Value.Nickname)));
+                    ifStatement.TrueStatements.Add(newTokenType);
+                    var pointer = new CodePropertyReferenceExpression(
+                        new CodeVariableReferenceExpression("context"), "NextLetterIndex");
+                    var incresePointer = new CodeAssignStatement(
+                        pointer, new CodeBinaryOperatorExpression(
+                            pointer, CodeBinaryOperatorType.Add, new CodePrimitiveExpression(3)));
+                    ifStatement.TrueStatements.Add(incresePointer);
+                    var returnTrue = new CodeMethodReturnStatement(new CodePrimitiveExpression(true));
+                    ifStatement.TrueStatements.Add(returnTrue);
+                }
+                list.Add(ifStatement);
+            }
+
+            return list.ToArray();
+        }
+
+        static string GetUniqueString(HashCache cache)
+        {
+            CodeGetToken obj = cache as CodeGetToken;
+            return obj.Dump();
         }
 
         public override void Dump(System.IO.TextWriter stream)
@@ -271,89 +394,59 @@ namespace ContextfreeGrammarCompiler.Test
             stream.Write(this.Value);
         }
 
-        public string Value { get; set; }
-
-        public override int CompareTo(HashCache other)
-        {
-            GetPunctuation obj = other as GetPunctuation;
-            if ((Object)obj == null) { return -1; }
-
-            return -(this.Value.Length - obj.Value.Length);
-        }
-
     }
-    class GetIdentifier : GetTokenBase
+
+    class CodeGetIdentifier : CodeGetToken
     {
 
+        public CodeGetIdentifier() : base(null) { }
 
-        public override void Dump(System.IO.TextWriter stream)
+        public override CodeStatement[] DumpReadToken()
         {
-            throw new NotImplementedException();
+            return null;
         }
+    }
 
-        public override CodeMemberMethod DumpMethodDefinition()
+    class CodeGetNumber : CodeGetToken
+    {
+        public CodeGetNumber() : base(null) { }
+
+        public override CodeStatement[] DumpReadToken()
         {
             return null;
         }
 
     }
 
-    class GetNumber : GetTokenBase
+    class CodeGetConstString : CodeGetToken
     {
+        public CodeGetConstString() : base(null) { }
 
-        public override CodeMemberMethod DumpMethodDefinition()
+        public override CodeStatement[] DumpReadToken()
         {
             return null;
-        }
-
-        public override void Dump(System.IO.TextWriter stream)
-        {
-            throw new NotImplementedException();
         }
 
     }
 
-    class GetConstString : GetTokenBase
+    class CodeGetChar : CodeGetToken
     {
+        public CodeGetChar() : base(null) { }
 
-        public override CodeMemberMethod DumpMethodDefinition()
+        public override CodeStatement[] DumpReadToken()
         {
             return null;
-        }
-
-        public override void Dump(System.IO.TextWriter stream)
-        {
-            throw new NotImplementedException();
         }
 
     }
 
-    class GetChar : GetTokenBase
+    class CodeGetUnknown : CodeGetToken
     {
+        public CodeGetUnknown() : base(null) { }
 
-        public override CodeMemberMethod DumpMethodDefinition()
+        public override CodeStatement[] DumpReadToken()
         {
             return null;
-        }
-
-        public override void Dump(System.IO.TextWriter stream)
-        {
-            throw new NotImplementedException();
-        }
-
-    }
-
-    class GetUnknown : GetTokenBase
-    {
-
-        public override CodeMemberMethod DumpMethodDefinition()
-        {
-            return null;
-        }
-
-        public override void Dump(System.IO.TextWriter stream)
-        {
-            throw new NotImplementedException();
         }
 
     }

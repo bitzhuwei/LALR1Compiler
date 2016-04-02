@@ -49,8 +49,15 @@ namespace ContextfreeGrammarCompiler.Test
         private static void DumpLexicalAnalyzer_GetSymbol(
             RegulationList grammar, CodeTypeDeclaration lexiType)
         {
-            // TODO:
-            //throw new NotImplementedException();
+            List<LexiState> lexiStateList = grammar.GetLexiStateList();
+            foreach (var state in lexiStateList)
+            {
+                CodeMemberMethod method = state.GetMethodDefinitionStatement();
+                if (method != null)
+                {
+                    lexiType.Members.Add(method);
+                }
+            }
         }
 
         private static void DumpLexicalAnalyzer_GetKeywordList(
