@@ -47,7 +47,6 @@
     <Compile Include="SourceCodeCharType.cs" />
     <Compile Include="SourceCodeCharTypeHelper.cs" />
     <Compile Include="States.cs" />
-    <Compile Include="Symbol.cs" />
     <Compile Include="Program.DumpEnum.cs" />
     <Compile Include="Program.DumpLexicalAnalyzer.cs" />
     <Compile Include="Program.DumpSyntaxParserCode.cs" />
@@ -85,6 +84,9 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="TestCases\ConstString.Grammar\ConstString.Grammar.txt">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="TestCases\Production.Grammar\Production.Grammar.txt">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="TestCases\ContextfreeGrammar.Grammar\ContextfreeGrammar.Grammar.txt">
