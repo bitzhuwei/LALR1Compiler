@@ -121,24 +121,6 @@ namespace ContextfreeGrammarCompiler
             return true;
         }
 
-        class Keyword
-        {
-            public string TokenType { get; set; }
-            public string NickName { get; set; }
-
-            public Keyword(string tokenType, string nickName)
-            {
-                // TODO: Complete member initialization
-                this.TokenType = tokenType;
-                this.NickName = nickName;
-            }
-
-            public override string ToString()
-            {
-                return string.Format("{0}, {1}", TokenType, NickName);
-            }
-        }
-
         /// <summary>
         /// 未知符号
         /// </summary>
@@ -266,4 +248,24 @@ namespace ContextfreeGrammarCompiler
         /// </summary>
         private static readonly Regex regChineseLetter = new Regex("^[^\x00-\xFF]");
     }
+
+
+    class Keyword
+    {
+        public string TokenType { get; set; }
+        public string NickName { get; set; }
+
+        public Keyword(string tokenType, string nickName)
+        {
+            // TODO: Complete member initialization
+            this.TokenType = tokenType;
+            this.NickName = nickName;
+        }
+
+        public override string ToString()
+        {
+            return string.Format("{0}, {1}", TokenType, NickName);
+        }
+    }
+
 }

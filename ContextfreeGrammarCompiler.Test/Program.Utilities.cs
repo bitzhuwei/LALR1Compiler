@@ -13,6 +13,37 @@ namespace ContextfreeGrammarCompiler.Test
 {
     partial class Program
     {
+        private static bool IsIdentifier(this TreeNodeType node)
+        {
+            if (!node.IsLeave) { throw new ArgumentException(); }
+
+            {
+                char item = node.Content[0];
+                SourceCodeCharType charType = item.GetCharType();
+
+                if (!(
+                    charType == SourceCodeCharType.UnderLine
+                    || charType == SourceCodeCharType.Letter))
+                {
+                    return false;
+                }
+            }
+            for (int i = 1; i < node.Content.Length; i++)
+            {
+                char item = node.Content[i];
+                SourceCodeCharType charType = item.GetCharType();
+
+                if (!(
+                    charType == SourceCodeCharType.UnderLine
+                    || charType == SourceCodeCharType.Number
+                    || charType == SourceCodeCharType.Letter))
+                {
+                    return false;
+                }
+            }
+
+            return true;
+        }
 
         private static string GetLexicalAnalyzerName(string grammarId)
         {

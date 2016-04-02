@@ -22,7 +22,7 @@ namespace ContextfreeGrammarCompiler.Test
             lexiType.BaseTypes.Add(typeof(LexicalAnalyzer));
             DumpLexicalAnalyzer_TryGetToken(grammar, lexiType);
             DumpLexicalAnalyzer_GetSymbol(grammar, lexiType);
-            DumpLexicalAnalyzer_GetKeywordList(grammar, lexiType);
+            DumpLexicalAnalyzer_GetKeywordList(grammar, grammarId, lexiType);
 
             var lexiNamespace = new CodeNamespace(GetNamespace(grammarId));
             lexiNamespace.Imports.Add(new CodeNamespaceImport(typeof(System.Object).Namespace));
@@ -47,10 +47,46 @@ namespace ContextfreeGrammarCompiler.Test
         }
 
         private static void DumpLexicalAnalyzer_GetKeywordList(
-            RegulationList grammar, CodeTypeDeclaration lexiType)
+            RegulationList grammar, string grammarId, CodeTypeDeclaration lexiType)
         {
-            // TODO:
-            //throw new NotImplementedException();
+            {
+                // private static readonly IEnumerable<Keyword> keywords;
+                var field = new CodeMemberField("IEnumerable<Keyword>", "keywords");
+                field.Attributes = MemberAttributes.Private | MemberAttributes.Static;
+                lexiType.Members.Add(field);
+            }
+            {
+                var method = new CodeTypeConstructor();
+                method.Name = GetLexicalAnalyzerName(grammarId);
+                method.Attributes = MemberAttributes.Static;
+                {
+                    var keyword = new CodeVariableDeclarationStatement("List<Keyword>", "keyword");
+                    keyword.InitExpression = new CodeObjectCreateExpression("List<Keyword>");
+                    method.Statements.Add(keyword);
+                }
+                foreach (var node in grammar.GetAllTreeNodeLeaveTypes())
+                {
+                    if (node.IsIdentifier())
+                    {
+                        var ctor = new CodeObjectCreateExpression("Keyword",
+                            new CodePrimitiveExpression(node.Type),
+                            new CodePrimitiveExpression(node.Nickname));
+                        var add = new CodeMethodInvokeExpression(
+                            new CodeVariableReferenceExpression("keywords"),
+                            "Add",
+                            ctor);
+                        method.Statements.Add(add);
+                    }
+                }
+                {
+                    var assign = new CodeAssignStatement(
+                        new CodeFieldReferenceExpression(
+                            new CodeSnippetExpression(GetLexicalAnalyzerName(grammarId)), "keywords"),
+                        new CodeVariableReferenceExpression("keywords"));
+                    method.Statements.Add(assign);
+                }
+                lexiType.Members.Add(method);
+            }
         }
 
         private static void DumpLexicalAnalyzer_GetSymbol(
@@ -58,7 +94,6 @@ namespace ContextfreeGrammarCompiler.Test
         {
             // TODO:
             //throw new NotImplementedException();
-
         }
 
         private static void DumpLexicalAnalyzer_TryGetToken(
