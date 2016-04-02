@@ -64,13 +64,15 @@ namespace ContextfreeGrammarCompiler.Test
                     keyword.InitExpression = new CodeObjectCreateExpression("List<Keyword>");
                     method.Statements.Add(keyword);
                 }
+                var convertor = new TreeNodeType2TokenType();
                 foreach (var node in grammar.GetAllTreeNodeLeaveTypes())
                 {
                     if (node.IsIdentifier())
                     {
+                        TokenType tokenType = convertor.GetTokenType(node);
                         var ctor = new CodeObjectCreateExpression("Keyword",
-                            new CodePrimitiveExpression(node.Type),
-                            new CodePrimitiveExpression(node.Nickname));
+                            new CodePrimitiveExpression(tokenType.Type),
+                            new CodePrimitiveExpression(tokenType.Content));
                         var add = new CodeMethodInvokeExpression(
                             new CodeVariableReferenceExpression("keywords"),
                             "Add",

@@ -245,4 +245,17 @@ namespace LALR1Compiler
             return result;
         }
     }
+
+    public class TreeNodeType2TokenType
+    {
+        public virtual TokenType GetTokenType(TreeNodeType treeNodeType)
+        {
+            //TODO:“Leave__”后缀，这是个自定义规则
+            string strTokenType = treeNodeType.Type.Substring(0, treeNodeType.Type.Length - "Leave__".Length);
+            string content = treeNodeType.Content;
+            TokenType result = new TokenType(strTokenType, treeNodeType.Content, treeNodeType.Nickname);
+
+            return result;
+        }
+    }
 }
