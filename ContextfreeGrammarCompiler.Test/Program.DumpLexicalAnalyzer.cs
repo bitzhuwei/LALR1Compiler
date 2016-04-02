@@ -46,6 +46,13 @@ namespace ContextfreeGrammarCompiler.Test
             }
         }
 
+        private static void DumpLexicalAnalyzer_GetSymbol(
+            RegulationList grammar, CodeTypeDeclaration lexiType)
+        {
+            // TODO:
+            //throw new NotImplementedException();
+        }
+
         private static void DumpLexicalAnalyzer_GetKeywordList(
             RegulationList grammar, string grammarId, CodeTypeDeclaration lexiType)
         {
@@ -56,10 +63,12 @@ namespace ContextfreeGrammarCompiler.Test
                 lexiType.Members.Add(field);
             }
             {
+                // static DemoLexicalAnalyzer()
                 var method = new CodeTypeConstructor();
                 method.Name = GetLexicalAnalyzerName(grammarId);
                 method.Attributes = MemberAttributes.Static;
                 {
+                    // List<Keyword> keyword = new List<Keyword>();
                     var keyword = new CodeVariableDeclarationStatement("List<Keyword>", "keyword");
                     keyword.InitExpression = new CodeObjectCreateExpression("List<Keyword>");
                     method.Statements.Add(keyword);
@@ -67,6 +76,7 @@ namespace ContextfreeGrammarCompiler.Test
                 var convertor = new TreeNodeType2TokenType();
                 foreach (var node in grammar.GetAllTreeNodeLeaveTypes())
                 {
+                    // keywords.Add(new Keyword("__x", "x"));
                     if (node.IsIdentifier())
                     {
                         TokenType tokenType = convertor.GetTokenType(node);
@@ -81,6 +91,7 @@ namespace ContextfreeGrammarCompiler.Test
                     }
                 }
                 {
+                    // DemoLexicalAnalyzer.keywords = keywords;
                     var assign = new CodeAssignStatement(
                         new CodeFieldReferenceExpression(
                             new CodeSnippetExpression(GetLexicalAnalyzerName(grammarId)), "keywords"),
@@ -89,13 +100,6 @@ namespace ContextfreeGrammarCompiler.Test
                 }
                 lexiType.Members.Add(method);
             }
-        }
-
-        private static void DumpLexicalAnalyzer_GetSymbol(
-            RegulationList grammar, CodeTypeDeclaration lexiType)
-        {
-            // TODO:
-            //throw new NotImplementedException();
         }
 
         private static void DumpLexicalAnalyzer_TryGetToken(
