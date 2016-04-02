@@ -192,18 +192,18 @@ namespace ContextfreeGrammarCompiler.Test
 
         public CodeStatement[] GetMethodInvokeStatement()
         {
-            var statements = new CodeStatement[1];
+            var statements = new CodeStatement[2];
 
             // gotToken = GetUnknown(result, context);
+            // return gotToken;
             var gotToken = new CodeVariableReferenceExpression("gotToken");
             var callMethod = new CodeMethodInvokeExpression(
                 new CodeThisReferenceExpression(),
                 string.Format("Get{0}", this.GetTokenName()),
                 new CodeVariableReferenceExpression("result"),
                 new CodeVariableReferenceExpression("context"));
-            var statement = new CodeAssignStatement(gotToken, callMethod);
-
-            statements[0] = statement;
+            statements[0] = new CodeAssignStatement(gotToken, callMethod);
+            statements[1] = new CodeMethodReturnStatement(gotToken);
             return statements;
         }
 
