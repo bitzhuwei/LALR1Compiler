@@ -42,12 +42,12 @@ namespace ContextfreeGrammarCompiler.Test
         /// <summary>
         /// 哪些类型的单词会由此状态产生？
         /// </summary>
-        protected GetTokenList getTokenList = new GetTokenList();
+        protected CodeGetTokenCollection getTokenList = new CodeGetTokenCollection();
 
         /// <summary>
         /// 哪些类型的单词会由此状态产生？
         /// </summary>
-        internal GetTokenList GetTokenList
+        internal CodeGetTokenCollection GetTokenList
         {
             get { return getTokenList; }
         }
@@ -199,7 +199,7 @@ namespace ContextfreeGrammarCompiler.Test
         public DivideState(LexiState state)
         {
             this.charTypeList = state.CharTypeList;
-            this.getTokenList = new DivideGetTokenList(state.GetTokenList);
+            this.getTokenList = new CommentCodeGetTokenCollection(state.GetTokenList);
         }
 
         protected override string GetTokenName()

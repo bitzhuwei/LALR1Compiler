@@ -41,7 +41,9 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="GetTokenBase.cs" />
+    <Compile Include="CodeGetToken.cs" />
+    <Compile Include="CommentCodeGetTokenCollection.cs" />
+    <Compile Include="CodeGetTokenCollection.cs" />
     <Compile Include="SourceCodeCharType.cs" />
     <Compile Include="SourceCodeCharTypeHelper.cs" />
     <Compile Include="States.cs" />
