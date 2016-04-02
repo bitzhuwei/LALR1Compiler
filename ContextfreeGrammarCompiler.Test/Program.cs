@@ -22,12 +22,13 @@ namespace ContextfreeGrammarCompiler.Test
                     (new FileInfo(Directory.GetFiles(
                         x, "*.Grammar", SearchOption.TopDirectoryOnly)[0]).Length))
                     .ToArray();
-            DeleteFiles(directories);
+            DeleteFiles();
             TextWriter originalOut = Console.Out;
             foreach (var directory in directories)
             {
                 Console.WriteLine("Testing {0}", directory);
-                StreamWriter writer = new StreamWriter("ContextfreeGrammarCompiler.Test.log", false);
+                FileStream fs = new FileStream("ContextfreeGrammarCompiler.Test.log", FileMode.Append, FileAccess.Write);
+                StreamWriter writer = new StreamWriter(fs);
                 writer.AutoFlush = true;
                 Console.SetOut(writer);
                 Run(directory);
@@ -36,19 +37,17 @@ namespace ContextfreeGrammarCompiler.Test
             }
         }
 
-        private static void DeleteFiles(string[] directories)
+        private static void DeleteFiles()
         {
-            foreach (var dir in directories)
             {
-                string[] files = Directory.GetFiles(dir, "*.log", SearchOption.AllDirectories);
+                string[] files = Directory.GetFiles(".", "*.log", SearchOption.AllDirectories);
                 foreach (var item in files)
                 {
                     File.Delete(item);
                 }
             }
-            foreach (var dir in directories)
             {
-                string[] files = Directory.GetFiles(dir, "*.cs", SearchOption.AllDirectories);
+                string[] files = Directory.GetFiles(".", "*.cs", SearchOption.AllDirectories);
                 foreach (var item in files)
                 {
                     File.Delete(item);

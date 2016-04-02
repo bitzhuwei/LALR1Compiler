@@ -41,21 +41,21 @@ namespace LALR1Compiler
             edgeCollection = new LR1EdgeCollection(stateCollection);
             Queue<LR1State> queue = new Queue<LR1State>();
             queue.Enqueue(firstState);
-            int lastOutputLength = 0;
+            //int lastOutputLength = 0;
             int stateListCount = 1;
             int queueCount = 1;
             while (queue.Count > 0)
             {
                 LR1State fromState = queue.Dequeue(); queueCount--;
-                int itemIndex = 0;
+                //int itemIndex = 0;
                 int itemCount = fromState.Count();
                 foreach (var item in fromState)
                 {
-                    for (int i = 0; i < lastOutputLength; i++) { Console.Write('\u0008'); }
-                    string output = string.Format("Calculating LR(1) State List: {0} <-- {1}, working on {2}/{3} ...",
-                        stateListCount, queueCount, 1 + itemIndex++, itemCount);
-                    Console.Write(output);
-                    lastOutputLength = output.Length;
+                    //for (int i = 0; i < lastOutputLength; i++) { Console.Write('\u0008'); }
+                    //string output = string.Format("Calculating LR(1) State List: {0} <-- {1}, working on {2}/{3} ...",
+                    //    stateListCount, queueCount, 1 + itemIndex++, itemCount);
+                    //Console.Write(output);
+                    //lastOutputLength = output.Length;
                     TreeNodeType x = item.GetNodeNext2Dot();
                     if (x == decoratedEnd || x == null) { continue; }
 

@@ -130,7 +130,7 @@ namespace ContextfreeGrammarCompiler.Test
         {
             var method = new CodeMemberMethod();
             method.Name = "TryGetToken";
-            method.Attributes = MemberAttributes.Private;
+            method.Attributes = MemberAttributes.Family | MemberAttributes.Override;
             method.ReturnType = new CodeTypeReference(typeof(bool));
             method.Parameters.Add(new CodeParameterDeclarationExpression("AnalyzingContext", "context"));
             method.Parameters.Add(new CodeParameterDeclarationExpression(typeof(Token), "result"));
