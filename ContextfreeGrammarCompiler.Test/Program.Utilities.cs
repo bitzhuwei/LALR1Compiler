@@ -16,7 +16,15 @@ namespace ContextfreeGrammarCompiler.Test
 
         private static string GetLexicalAnalyzerName(string grammarId)
         {
-            return string.Format("{0}LexicalAnalyzer", grammarId);
+            SourceCodeCharType charType = grammarId[0].GetCharType();
+            if (charType == SourceCodeCharType.Letter || charType == SourceCodeCharType.UnderLine)
+            {
+                return string.Format("{0}LexicalAnalyzer", grammarId);
+            }
+            else
+            {
+                return string.Format("_{0}LexicalAnalyzer", grammarId);
+            }
         }
 
         private static string GetNodeNameInParser(TreeNodeType node)
@@ -26,12 +34,28 @@ namespace ContextfreeGrammarCompiler.Test
 
         private static string GetParserName(string grammarId, SyntaxParserMapAlgorithm algorithm)
         {
-            return string.Format("{0}{1}SyntaxParser", grammarId, algorithm);
+            SourceCodeCharType charType = grammarId[0].GetCharType();
+            if (charType == SourceCodeCharType.Letter || charType == SourceCodeCharType.UnderLine)
+            {
+                return string.Format("{0}{1}SyntaxParser", grammarId, algorithm);
+            }
+            else
+            {
+                return string.Format("_{0}{1}SyntaxParser", grammarId, algorithm);
+            }
         }
 
         private static string GetNamespace(string grammarId)
         {
-            return string.Format("{0}Compiler", grammarId);
+            SourceCodeCharType charType = grammarId[0].GetCharType();
+            if (charType == SourceCodeCharType.Letter || charType == SourceCodeCharType.UnderLine)
+            {
+                return string.Format("{0}Compiler", grammarId);
+            }
+            else
+            {
+                return string.Format("_{0}Compiler", grammarId);
+            }
         }
 
     }

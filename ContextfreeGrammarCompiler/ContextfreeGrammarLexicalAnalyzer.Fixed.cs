@@ -10,6 +10,35 @@ namespace ContextfreeGrammarCompiler
 {
     public partial class ContextfreeGrammarLexicalAnalyzer : LexicalAnalyzer
     {
+
+        /// <summary>
+        /// 从<code>context.NextLetterIndex</code>开始获取下一个<code>Token</code>
+        /// </summary>
+        /// <returns></returns>
+        protected override Token NextToken(AnalyzingContext context)
+        {
+            var result = new Token();
+            result.Line = context.CurrentLine;
+            result.Column = context.CurrentColumn;
+            result.IndexOfSourceCode = context.NextLetterIndex;
+            var count = context.SourceCode.Length;
+            if (context.NextLetterIndex < 0 || context.NextLetterIndex >= count)
+            { return result; }
+            var gotToken = false;
+            char ch = context.CurrentChar();
+            ContextfreeGrammarCharType charType = GetCharType(ch);
+            gotToken = TryGetToken(context, result, charType);
+            if (gotToken)
+            {
+                result.Length = context.NextLetterIndex - result.IndexOfSourceCode;
+                return result;
+            }
+            else
+            {
+                return null;
+            }
+        }
+
         #region 获取某类型的单词
 
         /// <summary>

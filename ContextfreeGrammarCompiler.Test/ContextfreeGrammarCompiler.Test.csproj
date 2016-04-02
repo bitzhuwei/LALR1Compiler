@@ -41,6 +41,10 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="GetTokenBase.cs" />
+    <Compile Include="SourceCodeCharType.cs" />
+    <Compile Include="SourceCodeCharTypeHelper.cs" />
+    <Compile Include="Symbol.cs" />
     <Compile Include="Program.DumpEnum.cs" />
     <Compile Include="Program.DumpLexicalAnalyzer.cs" />
     <Compile Include="Program.DumpSyntaxParserCode.cs" />
@@ -52,6 +56,7 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
+    <Compile Include="Program.GetLexicalAnalyzer_TryGetToken_States.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\ContextfreeGrammarCompiler\ContextfreeGrammarCompiler.csproj">
