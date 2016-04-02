@@ -50,9 +50,25 @@ namespace ContextfreeGrammarCompiler.Test
             RegulationList grammar, CodeTypeDeclaration lexiType)
         {
             List<LexiState> lexiStateList = grammar.GetLexiStateList();
+            DivideState divideState = null;// 为了处理注释，"/"符号要特殊对待。
             foreach (var state in lexiStateList)
             {
+                if (state.CharTypeList.Contains(SourceCodeCharType.Divide))
+                {
+                    divideState = new DivideState(state);
+                    continue;
+                }
+
                 CodeMemberMethod method = state.GetMethodDefinitionStatement();
+                if (method != null)
+                {
+                    lexiType.Members.Add(method);
+                }
+            }
+            {
+                if (divideState == null)
+                { divideState = new DivideState(new LexiState()); }
+                CodeMemberMethod method = divideState.GetMethodDefinitionStatement();
                 if (method != null)
                 {
                     lexiType.Members.Add(method);

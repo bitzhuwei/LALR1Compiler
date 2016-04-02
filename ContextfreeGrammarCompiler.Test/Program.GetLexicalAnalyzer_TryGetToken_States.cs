@@ -142,6 +142,53 @@ namespace ContextfreeGrammarCompiler.Test
         }
     }
 
+    /// <summary>
+    /// 特殊处理"/"
+    /// </summary>
+    class DivideState : LexiState
+    {
+        public DivideState(LexiState state)
+        {
+            this.charTypeList = state.CharTypeList;
+            this.getTokenList = new DivideGetTokenList(state.GetTokenList);
+        }
+
+        protected override string GetTokenName()
+        {
+            return ConstString2IdentifierHelper.ConstString2Identifier("/");
+        }
+
+        /// <summary>
+        /// 特殊处理"/"
+        /// </summary>
+        /// <returns></returns>
+        public override CodeMemberMethod GetMethodDefinitionStatement()
+        {
+            var method = new CodeMemberMethod();
+            method.Name = string.Format("Get{0}", this.GetTokenName());
+            method.Attributes = MemberAttributes.Family;
+            method.ReturnType = new CodeTypeReference(typeof(bool));
+            {
+                // var count = context.SourceCode.Length;
+                var count = new CodeVariableDeclarationStatement(typeof(int), "count");
+                count.InitExpression = new CodePropertyReferenceExpression(
+                    new CodePropertyReferenceExpression(
+                        new CodeVariableReferenceExpression("context"), "SourceCode"), "Length");
+                method.Statements.Add(count);
+            }
+            {
+                CodeStatement[] statements = this.GetTokenList.DumpReadToken();
+                method.Statements.AddRange(statements);
+            }
+            {
+                // return false;
+                var returnFalse = new CodeMethodReturnStatement(new CodePrimitiveExpression(false));
+                method.Statements.Add(returnFalse);
+            }
+
+            return method;
+        }
+    }
     class LexiState
     {
 
@@ -154,14 +201,14 @@ namespace ContextfreeGrammarCompiler.Test
         }
 
 
-        private List<SourceCodeCharType> charTypeList = new List<SourceCodeCharType>();
+        protected List<SourceCodeCharType> charTypeList = new List<SourceCodeCharType>();
 
         internal List<SourceCodeCharType> CharTypeList
         {
             get { return charTypeList; }
         }
 
-        private GetTokenList getTokenList = new GetTokenList();
+        protected GetTokenList getTokenList = new GetTokenList();
 
         internal GetTokenList GetTokenList
         {
@@ -190,7 +237,7 @@ namespace ContextfreeGrammarCompiler.Test
             return first;
         }
 
-        public CodeMemberMethod GetMethodDefinitionStatement()
+        public virtual CodeMemberMethod GetMethodDefinitionStatement()
         {
             if (this.IsContextfreeGrammarKeyword()) { return null; }
 
@@ -254,7 +301,7 @@ namespace ContextfreeGrammarCompiler.Test
             return statements;
         }
 
-        private string GetTokenName()
+        protected virtual string GetTokenName()
         {
             if (this.charTypeList.Count > 1)
             {
@@ -265,7 +312,7 @@ namespace ContextfreeGrammarCompiler.Test
                 }
                 else
                 {
-                    throw new NotImplementedException();
+                    throw new Exception();
                 }
             }
             else if (this.charTypeList.Count == 1)
@@ -274,7 +321,7 @@ namespace ContextfreeGrammarCompiler.Test
             }
             else
             {
-                throw new NotImplementedException();
+                throw new Exception();
             }
         }
 
@@ -284,12 +331,133 @@ namespace ContextfreeGrammarCompiler.Test
         }
     }
 
+    class DivideGetTokenList : GetTokenList
+    {
+        public DivideGetTokenList(GetTokenList getTokenList)
+        {
+            foreach (var item in getTokenList)
+            {
+                this.TryInsert(item);
+            }
+        }
+
+        internal override CodeStatement[] DumpReadToken()
+        {
+            List<CodeStatement> result = new List<CodeStatement>();
+            if (this.Count > 0)
+            {
+                for (int length = this[0].Value.Type.Length; length > 0; length--)
+                {
+                    bool exists = false;
+                    var ifStatement = new CodeConditionStatement(
+                        new CodeSnippetExpression(string.Format(
+                            "context.NextLetterIndex + {0} <= count", length)));
+                    {
+                        var str = new CodeVariableDeclarationStatement(typeof(string), "str");
+                        str.InitExpression = new CodeSnippetExpression(string.Format(
+                            "context.SourceCode.Substring(context.NextLetterIndex, {0});", length));
+                        ifStatement.TrueStatements.Add(str);
+                    }
+                    foreach (var item in this)
+                    {
+                        // if ("xxx" == str) { ... }
+                        if (item.Value.Content.Length == length)
+                        {
+                            CodeStatement[] statements = item.DumpReadToken();
+                            if (statements != null)
+                            {
+                                ifStatement.TrueStatements.AddRange(statements);
+                                exists = true;
+                            }
+                        }
+                    }
+
+                    if (length == 2)// 注释
+                    {
+                        {
+                            var singleLine = new CodeConditionStatement(
+                                new CodeBinaryOperatorExpression(
+                                    new CodePrimitiveExpression("//"),
+                                    CodeBinaryOperatorType.IdentityEquality,
+                                    new CodeVariableReferenceExpression("str")));
+                            singleLine.TrueStatements.Add(
+                                new CodeMethodInvokeExpression(
+                                    new CodeThisReferenceExpression(),
+                                    "SkipSingleLineNote",
+                                    new CodeVariableReferenceExpression("context")));
+                            ifStatement.TrueStatements.Add(singleLine);
+                        }
+                        {
+                            var multiLine = new CodeConditionStatement(
+                                new CodeBinaryOperatorExpression(
+                                    new CodePrimitiveExpression("/*"),
+                                    CodeBinaryOperatorType.IdentityEquality,
+                                    new CodeVariableReferenceExpression("str")));
+                            multiLine.TrueStatements.Add(
+                                new CodeMethodInvokeExpression(
+                                    new CodeThisReferenceExpression(),
+                                    "SkipMultilineNote",
+                                    new CodeVariableReferenceExpression("context")));
+                            ifStatement.TrueStatements.Add(multiLine);
+                        }
+
+                        exists = true;
+                    }
+                    if (exists)
+                    {
+                        result.Add(ifStatement);
+                    }
+                }
+            }
+            else
+            {
+                int length = 2;
+                var ifStatement = new CodeConditionStatement(
+                    new CodeSnippetExpression(string.Format(
+                        "context.NextLetterIndex + {0} <= count", length)));
+                {
+                    var str = new CodeVariableDeclarationStatement(typeof(string), "str");
+                    str.InitExpression = new CodeSnippetExpression(string.Format(
+                        "context.SourceCode.Substring(context.NextLetterIndex, {0});", length));
+                    ifStatement.TrueStatements.Add(str);
+                }
+                {
+                    var singleLine = new CodeConditionStatement(
+                        new CodeBinaryOperatorExpression(
+                            new CodePrimitiveExpression("//"),
+                            CodeBinaryOperatorType.IdentityEquality,
+                            new CodeVariableReferenceExpression("str")));
+                    singleLine.TrueStatements.Add(
+                        new CodeMethodInvokeExpression(
+                            new CodeThisReferenceExpression(),
+                            "SkipSingleLineNote",
+                            new CodeVariableReferenceExpression("context")));
+                    ifStatement.TrueStatements.Add(singleLine);
+                }
+                {
+                    var multiLine = new CodeConditionStatement(
+                        new CodeBinaryOperatorExpression(
+                            new CodePrimitiveExpression("/*"),
+                            CodeBinaryOperatorType.IdentityEquality,
+                            new CodeVariableReferenceExpression("str")));
+                    multiLine.TrueStatements.Add(
+                        new CodeMethodInvokeExpression(
+                            new CodeThisReferenceExpression(),
+                            "SkipMultilineNote",
+                            new CodeVariableReferenceExpression("context")));
+                    ifStatement.TrueStatements.Add(multiLine);
+                }
+                result.Add(ifStatement);
+            }
+            return result.ToArray();
+        }
+    }
     class GetTokenList : OrderedCollection<CodeGetToken>
     {
 
         public GetTokenList() : base(Environment.NewLine) { }
 
-        internal CodeStatement[] DumpReadToken()
+        internal virtual CodeStatement[] DumpReadToken()
         {
             List<CodeStatement> result = new List<CodeStatement>();
 
@@ -299,6 +467,12 @@ namespace ContextfreeGrammarCompiler.Test
                 var ifStatement = new CodeConditionStatement(
                     new CodeSnippetExpression(string.Format(
                         "context.NextLetterIndex + {0} <= count", length)));
+                {
+                    var str = new CodeVariableDeclarationStatement(typeof(string), "str");
+                    str.InitExpression = new CodeSnippetExpression(string.Format(
+                        "context.SourceCode.Substring(context.NextLetterIndex, {0});", length));
+                    ifStatement.TrueStatements.Add(str);
+                }
                 foreach (var item in this)
                 {
                     if (item.Value.Content.Length == length)
@@ -345,13 +519,6 @@ namespace ContextfreeGrammarCompiler.Test
         {
             List<CodeStatement> list = new List<CodeStatement>();
 
-            {
-                int length = this.Value.Content.Length;
-                var str = new CodeVariableDeclarationStatement(typeof(string), "str");
-                str.InitExpression = new CodeSnippetExpression(string.Format(
-                    "context.SourceCode.Substring(context.NextLetterIndex, {0});", length));
-                list.Add(str);
-            }
             {
                 var ifStatement = new CodeConditionStatement(
                     new CodeBinaryOperatorExpression(
