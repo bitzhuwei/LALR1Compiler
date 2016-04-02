@@ -35,12 +35,12 @@ namespace LALR1Compiler
         /// <summary>
         /// LR1分析表。
         /// </summary>
-        static LRParsingMap parsingMap;
+        protected LRParsingMap parsingMap;
 
         /// <summary>
         /// 规则列表。即文法。
         /// </summary>
-        static RegulationList grammar;
+        protected RegulationList grammar;
 
 #if DEBUG
         static bool print = false;
@@ -63,7 +63,14 @@ namespace LALR1Compiler
 
             PrintLastState(context);
 
-            return context.TreeStack.Peek();
+            if (context.TreeStack.Count > 0)
+            {
+                return context.TreeStack.Peek();
+            }
+            else
+            {
+                return new SyntaxTree();
+            }
         }
 
         private void PrintLastState(ParsingContext context)
@@ -99,7 +106,7 @@ namespace LALR1Compiler
                 Debug.WriteLine("Last action:");
                 TreeNodeType nodeType = context.CurrentNodeType();
                 int stateId = context.StateIdStack.Peek();
-                LRParsingAction action = parsingMap.GetAction(stateId, nodeType);
+                LRParsingAction action = this.parsingMap.GetAction(stateId, nodeType);
                 Debug.Write("    "); Debug.WriteLine(action);
             }
             {
@@ -116,7 +123,7 @@ namespace LALR1Compiler
 #endif
         }
 
-        private static void PrintParsingProgress(ParsingContext context)
+        private void PrintParsingProgress(ParsingContext context)
         {
 #if DEBUG
             if (!print) { return; } // 调试时快速取消print
@@ -148,7 +155,7 @@ namespace LALR1Compiler
                 Debug.WriteLine("Next action:");
                 TreeNodeType nodeType = context.CurrentNodeType();
                 int stateId = context.StateIdStack.Peek();
-                LRParsingAction action = parsingMap.GetAction(stateId, nodeType);
+                LRParsingAction action = this.parsingMap.GetAction(stateId, nodeType);
                 Debug.Write("    "); Debug.WriteLine(action);
             }
             {

@@ -89,14 +89,14 @@ namespace ContextfreeGrammarCompiler.Test
                 string LR0Directory = Path.Combine(directory, "LR(0)");
                 Assembly asm = CompileCode(LR0Directory, grammarId, SyntaxParserMapAlgorithm.LR0);
                 Console.WriteLine("    Test Code {0} of LR(0) version", grammarId);
-                TestCode(asm, directory, grammarId, LR0Directory, SyntaxParserMapAlgorithm.LR0);
+                TestCode(asm, directory, LR0Directory, grammarId, SyntaxParserMapAlgorithm.LR0);
             }
             {
                 Console.WriteLine("    Compiling {0} of SLR version", grammarId);
                 string SLRDirectory = Path.Combine(directory, "SLR");
                 Assembly asm = CompileCode(SLRDirectory, grammarId, SyntaxParserMapAlgorithm.SLR);
                 Console.WriteLine("    Test Code {0} of SLR version", grammarId);
-                TestCode(asm, directory, grammarId, SLRDirectory, SyntaxParserMapAlgorithm.SLR);
+                TestCode(asm, directory, SLRDirectory, grammarId, SyntaxParserMapAlgorithm.SLR);
             }
             {
                 Console.WriteLine("    Compiling {0} of LR(1) version", grammarId);
@@ -117,9 +117,9 @@ namespace ContextfreeGrammarCompiler.Test
             try
             {
                 LexicalAnalyzer lexi = asm.CreateInstance(
-                    GetLexicalAnalyzerName(grammarId)) as LexicalAnalyzer;
+                    GetNamespace(grammarId) + "." + GetLexicalAnalyzerName(grammarId)) as LexicalAnalyzer;
                 LRSyntaxParser parser = asm.CreateInstance(
-                    GetParserName(grammarId, syntaxParserMapAlgorithm)) as LRSyntaxParser;
+                    GetNamespace(grammarId) + "." + GetParserName(grammarId, syntaxParserMapAlgorithm)) as LRSyntaxParser;
                 string[] sourceCodeFullnames = Directory.GetFiles(
                     directory, "*.Code", SearchOption.TopDirectoryOnly);
                 foreach (var fullname in sourceCodeFullnames)

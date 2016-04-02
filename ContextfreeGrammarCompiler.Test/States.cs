@@ -18,6 +18,18 @@ namespace ContextfreeGrammarCompiler.Test
         /// 处理Unknown状态的字符。
         /// </summary>
         /// <returns></returns>
+        public static LexiState GetSpaceState()
+        {
+            var unknown = new LexiState();
+            unknown.charTypeList.Add(SourceCodeCharType.Space);
+            unknown.getTokenList.TryInsert(new CodeGetSpace());
+            return unknown;
+        }
+
+        /// <summary>
+        /// 处理Unknown状态的字符。
+        /// </summary>
+        /// <returns></returns>
         public static LexiState GetUnknownState()
         {
             var unknown = new LexiState();
@@ -91,6 +103,8 @@ namespace ContextfreeGrammarCompiler.Test
             method.Name = string.Format("Get{0}", this.GetTokenName());
             method.Attributes = MemberAttributes.Family;
             method.ReturnType = new CodeTypeReference(typeof(bool));
+            method.Parameters.Add(new CodeParameterDeclarationExpression("AnalyzingContext", "context"));
+            method.Parameters.Add(new CodeParameterDeclarationExpression(typeof(Token), "result"));
             {
                 // var count = context.SourceCode.Length;
                 var count = new CodeVariableDeclarationStatement(typeof(int), "count");

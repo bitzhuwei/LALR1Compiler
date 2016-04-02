@@ -137,4 +137,15 @@ namespace ContextfreeGrammarCompiler.Test
         }
 
     }
+
+    class CodeGetSpace : CodeGetToken
+    {
+        public CodeGetSpace() : base(null) { }
+
+        public override CodeStatement[] DumpReadToken()
+        {
+            return null;
+        }
+
+    }
 }

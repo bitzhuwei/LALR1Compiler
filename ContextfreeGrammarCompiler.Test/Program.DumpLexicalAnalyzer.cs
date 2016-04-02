@@ -152,6 +152,11 @@ namespace ContextfreeGrammarCompiler.Test
                     method.Statements.Add(condition);
                 }
                 {
+                    var getSpaceState = LexiState.GetSpaceState();
+                    var lastCondition = getSpaceState.GetMethodInvokeStatement();
+                    method.Statements.AddRange(lastCondition);
+                }
+                {
                     var getUnknownState = LexiState.GetUnknownState();
                     var lastCondition = getUnknownState.GetMethodInvokeStatement();
                     method.Statements.AddRange(lastCondition);

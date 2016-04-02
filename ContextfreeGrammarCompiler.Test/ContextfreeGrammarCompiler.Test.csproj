@@ -112,16 +112,6 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
   </ItemGroup>
-  <ItemGroup>
-    <Content Include="LexicalAanlyzer.SkipSingleLineNote.txt" />
-    <Content Include="LexicalAanlyzer.SkipMultilineNote.txt" />
-    <Content Include="LexicalAanlyzer.GetSpace.txt" />
-    <Content Include="LexicalAanlyzer.GetUnknown.txt" />
-    <Content Include="LexicalAanlyzer.GetIdentifier.txt" />
-    <Content Include="LexicalAanlyzer.GetConstentString.txt" />
-    <Content Include="LexicalAanlyzer.NextToken.txt" />
-    <Content Include="LexicalAanlyzer.Fixed.txt" />
-  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
