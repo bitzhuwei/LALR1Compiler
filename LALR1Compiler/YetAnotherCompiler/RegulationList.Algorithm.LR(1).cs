@@ -38,7 +38,7 @@ namespace LALR1Compiler
             decoratedGrammar.GetFirstCollection(out firstCollection, nullableDict);
             firstState = decoratedGrammar.Closure(firstState, nullableDict, firstCollection);
             stateCollection = new LR1StateCollection(firstState);
-            edgeCollection = new LR1EdgeCollection();
+            edgeCollection = new LR1EdgeCollection(stateCollection);
             Queue<LR1State> queue = new Queue<LR1State>();
             queue.Enqueue(firstState);
             int lastOutputLength = 0;
