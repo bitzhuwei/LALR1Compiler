@@ -44,6 +44,7 @@
     <Compile Include="GetTokenBase.cs" />
     <Compile Include="SourceCodeCharType.cs" />
     <Compile Include="SourceCodeCharTypeHelper.cs" />
+    <Compile Include="States.cs" />
     <Compile Include="Symbol.cs" />
     <Compile Include="Program.DumpEnum.cs" />
     <Compile Include="Program.DumpLexicalAnalyzer.cs" />

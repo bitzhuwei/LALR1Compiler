@@ -142,195 +142,6 @@ namespace ContextfreeGrammarCompiler.Test
         }
     }
 
-    /// <summary>
-    /// 特殊处理"/"
-    /// </summary>
-    class DivideState : LexiState
-    {
-        public DivideState(LexiState state)
-        {
-            this.charTypeList = state.CharTypeList;
-            this.getTokenList = new DivideGetTokenList(state.GetTokenList);
-        }
-
-        protected override string GetTokenName()
-        {
-            return ConstString2IdentifierHelper.ConstString2Identifier("/");
-        }
-
-        /// <summary>
-        /// 特殊处理"/"
-        /// </summary>
-        /// <returns></returns>
-        public override CodeMemberMethod GetMethodDefinitionStatement()
-        {
-            var method = new CodeMemberMethod();
-            method.Name = string.Format("Get{0}", this.GetTokenName());
-            method.Attributes = MemberAttributes.Family;
-            method.ReturnType = new CodeTypeReference(typeof(bool));
-            {
-                // var count = context.SourceCode.Length;
-                var count = new CodeVariableDeclarationStatement(typeof(int), "count");
-                count.InitExpression = new CodePropertyReferenceExpression(
-                    new CodePropertyReferenceExpression(
-                        new CodeVariableReferenceExpression("context"), "SourceCode"), "Length");
-                method.Statements.Add(count);
-            }
-            {
-                CodeStatement[] statements = this.GetTokenList.DumpReadToken();
-                method.Statements.AddRange(statements);
-            }
-            {
-                // return false;
-                var returnFalse = new CodeMethodReturnStatement(new CodePrimitiveExpression(false));
-                method.Statements.Add(returnFalse);
-            }
-
-            return method;
-        }
-    }
-    class LexiState
-    {
-
-        public static LexiState GetUnknownState()
-        {
-            var unknown = new LexiState();
-            unknown.charTypeList.Add(SourceCodeCharType.Unknown);
-            unknown.getTokenList.TryInsert(new CodeGetUnknown());
-            return unknown;
-        }
-
-
-        protected List<SourceCodeCharType> charTypeList = new List<SourceCodeCharType>();
-
-        internal List<SourceCodeCharType> CharTypeList
-        {
-            get { return charTypeList; }
-        }
-
-        protected GetTokenList getTokenList = new GetTokenList();
-
-        internal GetTokenList GetTokenList
-        {
-            get { return getTokenList; }
-        }
-
-        public CodeExpression GetCondition()
-        {
-            // charType == SourceCodeCharType.Letter
-            //    || charType == SourceCodeCharType.UnderLine
-            var first = new CodeBinaryOperatorExpression(
-                new CodeVariableReferenceExpression("charType"),
-               CodeBinaryOperatorType.IdentityEquality,
-               new CodeSnippetExpression("SourceCodeCharType." + this.charTypeList[0]));
-            for (int i = 1; i < this.charTypeList.Count; i++)
-            {
-                var expression = new CodeBinaryOperatorExpression(
-                    first, CodeBinaryOperatorType.BooleanOr,
-                    new CodeBinaryOperatorExpression(
-                        new CodeVariableReferenceExpression("charType"),
-                        CodeBinaryOperatorType.IdentityEquality,
-                        new CodeSnippetExpression("SourceCodeCharType." + this.charTypeList[i])));
-                first = expression;
-            }
-
-            return first;
-        }
-
-        public virtual CodeMemberMethod GetMethodDefinitionStatement()
-        {
-            if (this.IsContextfreeGrammarKeyword()) { return null; }
-
-            var method = new CodeMemberMethod();
-            method.Name = string.Format("Get{0}", this.GetTokenName());
-            method.Attributes = MemberAttributes.Family;
-            method.ReturnType = new CodeTypeReference(typeof(bool));
-            {
-                // var count = context.SourceCode.Length;
-                var count = new CodeVariableDeclarationStatement(typeof(int), "count");
-                count.InitExpression = new CodePropertyReferenceExpression(
-                    new CodePropertyReferenceExpression(
-                        new CodeVariableReferenceExpression("context"), "SourceCode"), "Length");
-                method.Statements.Add(count);
-            }
-            {
-                CodeStatement[] statements = this.GetTokenList.DumpReadToken();
-                method.Statements.AddRange(statements);
-            }
-            {
-                // return false;
-                var returnFalse = new CodeMethodReturnStatement(new CodePrimitiveExpression(false));
-                method.Statements.Add(returnFalse);
-            }
-
-            return method;
-        }
-
-        private bool IsContextfreeGrammarKeyword()
-        {
-            SourceCodeCharType charType = this.charTypeList[0];
-            // identifier
-            if (charType == SourceCodeCharType.UnderLine) { return true; }
-            if (charType == SourceCodeCharType.Letter) { return true; }
-            // number
-            if (charType == SourceCodeCharType.Number) { return true; }
-            // constString
-            if (charType == SourceCodeCharType.DoubleQuotation) { return true; }
-            // char
-            if (charType == SourceCodeCharType.Quotation) { return true; }
-            // null
-            // null is not a node.
-
-            return false;
-        }
-
-        public CodeStatement[] GetMethodInvokeStatement()
-        {
-            var statements = new CodeStatement[2];
-
-            // gotToken = GetUnknown(result, context);
-            // return gotToken;
-            var gotToken = new CodeVariableReferenceExpression("gotToken");
-            var callMethod = new CodeMethodInvokeExpression(
-                new CodeThisReferenceExpression(),
-                string.Format("Get{0}", this.GetTokenName()),
-                new CodeVariableReferenceExpression("result"),
-                new CodeVariableReferenceExpression("context"));
-            statements[0] = new CodeAssignStatement(gotToken, callMethod);
-            statements[1] = new CodeMethodReturnStatement(gotToken);
-            return statements;
-        }
-
-        protected virtual string GetTokenName()
-        {
-            if (this.charTypeList.Count > 1)
-            {
-                if (this.charTypeList.Contains(SourceCodeCharType.UnderLine)
-                    && this.charTypeList.Contains(SourceCodeCharType.Letter))
-                {
-                    return "Identifier";
-                }
-                else
-                {
-                    throw new Exception();
-                }
-            }
-            else if (this.charTypeList.Count == 1)
-            {
-                return this.charTypeList[0].ToString();
-            }
-            else
-            {
-                throw new Exception();
-            }
-        }
-
-        internal bool Contains(SourceCodeCharType sourceCodeCharType)
-        {
-            return this.charTypeList.Contains(sourceCodeCharType);
-        }
-    }
-
     class DivideGetTokenList : GetTokenList
     {
         public DivideGetTokenList(GetTokenList getTokenList)
@@ -344,112 +155,107 @@ namespace ContextfreeGrammarCompiler.Test
         internal override CodeStatement[] DumpReadToken()
         {
             List<CodeStatement> result = new List<CodeStatement>();
-            if (this.Count > 0)
+            if (this.Count > 0)// 有除了"//"和"/*"之外的项，例如可能是"/", "/="
             {
-                for (int length = this[0].Value.Type.Length; length > 0; length--)
-                {
-                    bool exists = false;
-                    var ifStatement = new CodeConditionStatement(
-                        new CodeSnippetExpression(string.Format(
-                            "context.NextLetterIndex + {0} <= count", length)));
-                    {
-                        var str = new CodeVariableDeclarationStatement(typeof(string), "str");
-                        str.InitExpression = new CodeSnippetExpression(string.Format(
-                            "context.SourceCode.Substring(context.NextLetterIndex, {0});", length));
-                        ifStatement.TrueStatements.Add(str);
-                    }
-                    foreach (var item in this)
-                    {
-                        // if ("xxx" == str) { ... }
-                        if (item.Value.Content.Length == length)
-                        {
-                            CodeStatement[] statements = item.DumpReadToken();
-                            if (statements != null)
-                            {
-                                ifStatement.TrueStatements.AddRange(statements);
-                                exists = true;
-                            }
-                        }
-                    }
-
-                    if (length == 2)// 注释
-                    {
-                        {
-                            var singleLine = new CodeConditionStatement(
-                                new CodeBinaryOperatorExpression(
-                                    new CodePrimitiveExpression("//"),
-                                    CodeBinaryOperatorType.IdentityEquality,
-                                    new CodeVariableReferenceExpression("str")));
-                            singleLine.TrueStatements.Add(
-                                new CodeMethodInvokeExpression(
-                                    new CodeThisReferenceExpression(),
-                                    "SkipSingleLineNote",
-                                    new CodeVariableReferenceExpression("context")));
-                            ifStatement.TrueStatements.Add(singleLine);
-                        }
-                        {
-                            var multiLine = new CodeConditionStatement(
-                                new CodeBinaryOperatorExpression(
-                                    new CodePrimitiveExpression("/*"),
-                                    CodeBinaryOperatorType.IdentityEquality,
-                                    new CodeVariableReferenceExpression("str")));
-                            multiLine.TrueStatements.Add(
-                                new CodeMethodInvokeExpression(
-                                    new CodeThisReferenceExpression(),
-                                    "SkipMultilineNote",
-                                    new CodeVariableReferenceExpression("context")));
-                            ifStatement.TrueStatements.Add(multiLine);
-                        }
-
-                        exists = true;
-                    }
-                    if (exists)
-                    {
-                        result.Add(ifStatement);
-                    }
-                }
+                OtherItemsAndNote(result);
             }
             else
             {
-                int length = 2;
+                OnlyNote(result);
+            }
+            return result.ToArray();
+        }
+
+        private static void OnlyNote(List<CodeStatement> result)
+        {
+            int length = 2;
+            var ifStatement = new CodeConditionStatement(
+                new CodeSnippetExpression(string.Format(
+                    "context.NextLetterIndex + {0} <= count", length)));
+            {
+                var str = new CodeVariableDeclarationStatement(typeof(string), "str");
+                str.InitExpression = new CodeSnippetExpression(string.Format(
+                    "context.SourceCode.Substring(context.NextLetterIndex, {0});", length));
+                ifStatement.TrueStatements.Add(str);
+            }
+            SingleLine(ifStatement);
+            MultiLine(ifStatement);
+
+            result.Add(ifStatement);
+        }
+
+        private void OtherItemsAndNote(List<CodeStatement> result)
+        {
+            for (int length = this[0].Value.Type.Length; length > 0; length--)
+            {
+                bool exists = false;
+                // if (context.NextLetterIndex + {0} <= count)
                 var ifStatement = new CodeConditionStatement(
                     new CodeSnippetExpression(string.Format(
                         "context.NextLetterIndex + {0} <= count", length)));
                 {
+                    // str = context.SourceCode.SubString(context.NextLetterIndex, {0});
                     var str = new CodeVariableDeclarationStatement(typeof(string), "str");
                     str.InitExpression = new CodeSnippetExpression(string.Format(
                         "context.SourceCode.Substring(context.NextLetterIndex, {0});", length));
                     ifStatement.TrueStatements.Add(str);
                 }
+                foreach (var item in this)
                 {
-                    var singleLine = new CodeConditionStatement(
-                        new CodeBinaryOperatorExpression(
-                            new CodePrimitiveExpression("//"),
-                            CodeBinaryOperatorType.IdentityEquality,
-                            new CodeVariableReferenceExpression("str")));
-                    singleLine.TrueStatements.Add(
-                        new CodeMethodInvokeExpression(
-                            new CodeThisReferenceExpression(),
-                            "SkipSingleLineNote",
-                            new CodeVariableReferenceExpression("context")));
-                    ifStatement.TrueStatements.Add(singleLine);
+                    // if ("xxx" == str) { ... }
+                    if (item.Value.Content.Length != length) { continue; }
+
+                    CodeStatement[] statements = item.DumpReadToken();
+                    if (statements != null)
+                    {
+                        ifStatement.TrueStatements.AddRange(statements);
+                        exists = true;
+                    }
                 }
+
+                if (length == 2)// 轮到添加对注释的处理了
                 {
-                    var multiLine = new CodeConditionStatement(
-                        new CodeBinaryOperatorExpression(
-                            new CodePrimitiveExpression("/*"),
-                            CodeBinaryOperatorType.IdentityEquality,
-                            new CodeVariableReferenceExpression("str")));
-                    multiLine.TrueStatements.Add(
-                        new CodeMethodInvokeExpression(
-                            new CodeThisReferenceExpression(),
-                            "SkipMultilineNote",
-                            new CodeVariableReferenceExpression("context")));
-                    ifStatement.TrueStatements.Add(multiLine);
+                    SingleLine(ifStatement);
+                    MultiLine(ifStatement);
+
+                    exists = true;
                 }
-                result.Add(ifStatement);
+
+                if (exists)
+                {
+                    result.Add(ifStatement);
+                }
             }
-            return result.ToArray();
+        }
+
+        private static void MultiLine(CodeConditionStatement ifStatement)
+        {
+            var multiLine = new CodeConditionStatement(
+                new CodeBinaryOperatorExpression(
+                    new CodePrimitiveExpression("/*"),
+                    CodeBinaryOperatorType.IdentityEquality,
+                    new CodeVariableReferenceExpression("str")));
+            multiLine.TrueStatements.Add(
+                new CodeMethodInvokeExpression(
+                    new CodeThisReferenceExpression(),
+                    "SkipMultilineNote",
+                    new CodeVariableReferenceExpression("context")));
+            ifStatement.TrueStatements.Add(multiLine);
+        }
+
+        private static void SingleLine(CodeConditionStatement ifStatement)
+        {
+            var singleLine = new CodeConditionStatement(
+                new CodeBinaryOperatorExpression(
+                    new CodePrimitiveExpression("//"),
+                    CodeBinaryOperatorType.IdentityEquality,
+                    new CodeVariableReferenceExpression("str")));
+            singleLine.TrueStatements.Add(
+                new CodeMethodInvokeExpression(
+                    new CodeThisReferenceExpression(),
+                    "SkipSingleLineNote",
+                    new CodeVariableReferenceExpression("context")));
+            ifStatement.TrueStatements.Add(singleLine);
         }
     }
     class GetTokenList : OrderedCollection<CodeGetToken>
@@ -475,14 +281,13 @@ namespace ContextfreeGrammarCompiler.Test
                 }
                 foreach (var item in this)
                 {
-                    if (item.Value.Content.Length == length)
+                    if (item.Value.Content.Length != length) { continue; }
+
+                    CodeStatement[] statements = item.DumpReadToken();
+                    if (statements != null)
                     {
-                        CodeStatement[] statements = item.DumpReadToken();
-                        if (statements != null)
-                        {
-                            ifStatement.TrueStatements.AddRange(statements);
-                            exists = true;
-                        }
+                        ifStatement.TrueStatements.AddRange(statements);
+                        exists = true;
                     }
                 }
                 if (exists)
