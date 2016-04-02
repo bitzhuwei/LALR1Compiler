@@ -71,9 +71,9 @@ namespace ContextfreeGrammarCompiler.Test
             method.Parameters.Add(new CodeParameterDeclarationExpression(typeof(AnalyzingContext), "context"));
             method.Parameters.Add(new CodeParameterDeclarationExpression(typeof(Token), "result"));
             method.Parameters.Add(new CodeParameterDeclarationExpression(typeof(SourceCodeCharType), "charType"));
-            string vargotToken = "gotToken";
             {
                 // bool gotToken = false;
+                string vargotToken = "gotToken"; // :(
                 var varDeclaration = new CodeVariableDeclarationStatement(typeof(bool), vargotToken);
                 varDeclaration.InitExpression = new CodePrimitiveExpression(false);
                 method.Statements.Add(varDeclaration);
