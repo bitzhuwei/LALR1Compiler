@@ -15,12 +15,6 @@ namespace ContextfreeGrammarCompiler
             AnalyzingContext context, Token result, ContextfreeGrammarCharType charType)
         {
             bool gotToken = false;
-            if(charType== ContextfreeGrammarCharType.Letter
-                ||charType== ContextfreeGrammarCharType.UnderLine)
-            {
-                gotToken = GetIdentifier(result, context);
-                return gotToken;
-            }
             switch (charType)
             {
                 case ContextfreeGrammarCharType.Letter:
