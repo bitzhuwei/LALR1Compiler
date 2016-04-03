@@ -1,9 +1,5 @@
-<Production> ::= <Vn> "::=" <Canditate> <RightPartList> ";" ;
-<Canditate> ::= <V> <VList> ;
 <VList> ::= <V> <VList> ;
 <VList> ::= null ;
-<RightPartList> ::= "|" <Canditate> <RightPartList> ;
-<RightPartList> ::= null ;
 <V> ::= <Vn> ;
 <V> ::= <Vt> ;
 <Vn> ::= "<" identifier ">" ;

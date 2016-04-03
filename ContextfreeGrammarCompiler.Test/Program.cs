@@ -285,21 +285,20 @@ namespace ContextfreeGrammarCompiler.Test
 
         private static bool TestParsingMap(LRParsingMap parsingMap)
         {
-            bool existsConflicts = false;
+            int conflicts = 0;
             foreach (var item in parsingMap)
             {
                 if (item.Value.Count > 1)
                 {
-                    existsConflicts = true;
-                    break;
+                    conflicts += item.Value.Count - 1;
                 }
             }
 
-            if (existsConflicts)
+            if (conflicts > 0)
             {
-                Console.WriteLine("        【Exists Conflicts in Parsingmap】");
+                Console.WriteLine("        【Exists {0} Conflicts in Parsingmap】", conflicts);
             }
-            return existsConflicts;
+            return conflicts > 0;
         }
 
     }
