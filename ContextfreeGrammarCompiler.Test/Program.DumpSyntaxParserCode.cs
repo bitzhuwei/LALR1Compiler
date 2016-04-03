@@ -56,27 +56,16 @@ namespace ContextfreeGrammarCompiler.Test
             method.Name = "GetParsingMap";
             method.Attributes = MemberAttributes.Override | MemberAttributes.Family;
             method.ReturnType = new CodeTypeReference(typeof(LRParsingMap));
-            {
-                // if (parsingMap != null) { return parsingMap; }
-                var ifStatement = new CodeConditionStatement(
-                    new CodeBinaryOperatorExpression(
-                        new CodeVariableReferenceExpression("parsingMap"),
-                        CodeBinaryOperatorType.IdentityInequality,
-                        new CodeSnippetExpression("null")),
-                    new CodeMethodReturnStatement(
-                        new CodeVariableReferenceExpression("parsingMap")));
-                method.Statements.Add(ifStatement);
-            }
+            // if (parsingMap != null) { return parsingMap; }
+            DumpSyntaxParserMethod_GetParsingMap_1(method);
             string varName = "map";
-            {
-                // LALR1Compiler.LRParsingMap map = new LALR1Compiler.LRParsingMap();
-                var varDeclaration = new CodeVariableDeclarationStatement(typeof(LRParsingMap), varName);
-                varDeclaration.InitExpression = new CodeObjectCreateExpression(typeof(LRParsingMap));
-                method.Statements.Add(varDeclaration);
-            }
+            // LALR1Compiler.LRParsingMap map = new LALR1Compiler.LRParsingMap();
+            DumpSyntaxParserMethod_GetParsingMap_2(method, varName);
+            int setActionCount = 0;
             foreach (var action in map)
             {
-                var parametes = new List<CodeExpression>();
+                setActionCount += action.Value.Count;
+                //var parametes = new List<CodeExpression>();
                 string[] parts = action.Key.Split('+');
                 var stateId = new CodePrimitiveExpression(int.Parse(parts[0]));
                 var nodeType = new CodeVariableReferenceExpression(
@@ -118,6 +107,10 @@ namespace ContextfreeGrammarCompiler.Test
                 }
             }
             {
+                method.Comments.Insert(0, new CodeCommentStatement(string.Format(
+                    "{0} SetAction() items", setActionCount)));
+            }
+            {
                 // parsingMap = map;
                 var assign = new CodeAssignStatement(
                     new CodeVariableReferenceExpression("parsingMap"),
@@ -132,6 +125,34 @@ namespace ContextfreeGrammarCompiler.Test
             }
 
             parserType.Members.Add(method);
+        }
+
+        /// <summary>
+        /// LALR1Compiler.LRParsingMap map = new LALR1Compiler.LRParsingMap();
+        /// </summary>
+        /// <param name="method"></param>
+        /// <param name="varName"></param>
+        private static void DumpSyntaxParserMethod_GetParsingMap_2(CodeMemberMethod method, string varName)
+        {
+            var varDeclaration = new CodeVariableDeclarationStatement(typeof(LRParsingMap), varName);
+            varDeclaration.InitExpression = new CodeObjectCreateExpression(typeof(LRParsingMap));
+            method.Statements.Add(varDeclaration);
+        }
+
+        /// <summary>
+        /// if (parsingMap != null) { return parsingMap; }
+        /// </summary>
+        /// <param name="method"></param>
+        private static void DumpSyntaxParserMethod_GetParsingMap_1(CodeMemberMethod method)
+        {
+            var ifStatement = new CodeConditionStatement(
+                new CodeBinaryOperatorExpression(
+                    new CodeVariableReferenceExpression("parsingMap"),
+                    CodeBinaryOperatorType.IdentityInequality,
+                    new CodeSnippetExpression("null")),
+                new CodeMethodReturnStatement(
+                    new CodeVariableReferenceExpression("parsingMap")));
+            method.Statements.Add(ifStatement);
         }
 
         private static void DumpSyntaxParserMethod_GetGrammar(RegulationList grammar, CodeTypeDeclaration parserType)
