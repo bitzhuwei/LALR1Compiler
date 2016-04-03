@@ -39,6 +39,12 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="LexicalAnalyzer.Fixed.Space.cs" />
+    <Compile Include="LexicalAnalyzer.Fixed.Noet.cs" />
+    <Compile Include="LexicalAnalyzer.Fixed.Unknown.cs" />
+    <Compile Include="LexicalAnalyzer.Fixed.Identifier.cs" />
+    <Compile Include="LexicalAnalyzer.Fixed.ConstString.cs" />
+    <Compile Include="LexicalAnalyzer.Fixed.Number.cs" />
     <Compile Include="LexicalAnalyzer.Fixed.cs" />
     <Compile Include="SourceCodeCharType.cs" />
     <Compile Include="Utilities\ConstString2IdentifierHelper.cs" />

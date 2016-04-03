@@ -50,11 +50,13 @@ namespace ContextfreeGrammarCompiler.Test
             SourceCodeCharType charType = grammarId[0].GetCharType();
             if (charType == SourceCodeCharType.Letter || charType == SourceCodeCharType.UnderLine)
             {
-                return string.Format("{0}LexicalAnalyzer", grammarId);
+                return string.Format("{0}LexicalAnalyzer",
+                    ConstString2IdentifierHelper.ConstString2Identifier(grammarId));
             }
             else
             {
-                return string.Format("_{0}LexicalAnalyzer", grammarId);
+                return string.Format("_{0}LexicalAnalyzer",
+                    ConstString2IdentifierHelper.ConstString2Identifier(grammarId));
             }
         }
 
@@ -68,11 +70,15 @@ namespace ContextfreeGrammarCompiler.Test
             SourceCodeCharType charType = grammarId[0].GetCharType();
             if (charType == SourceCodeCharType.Letter || charType == SourceCodeCharType.UnderLine)
             {
-                return string.Format("{0}{1}SyntaxParser", grammarId, algorithm);
+                return string.Format("{0}{1}SyntaxParser",
+                    ConstString2IdentifierHelper.ConstString2Identifier(grammarId),
+                    algorithm);
             }
             else
             {
-                return string.Format("_{0}{1}SyntaxParser", grammarId, algorithm);
+                return string.Format("_{0}{1}SyntaxParser",
+                    ConstString2IdentifierHelper.ConstString2Identifier(grammarId), 
+                    algorithm);
             }
         }
 
@@ -81,11 +87,13 @@ namespace ContextfreeGrammarCompiler.Test
             SourceCodeCharType charType = grammarId[0].GetCharType();
             if (charType == SourceCodeCharType.Letter || charType == SourceCodeCharType.UnderLine)
             {
-                return string.Format("{0}Compiler", grammarId);
+                return string.Format("{0}Compiler",
+                    ConstString2IdentifierHelper.ConstString2Identifier(grammarId));
             }
             else
             {
-                return string.Format("_{0}Compiler", grammarId);
+                return string.Format("_{0}Compiler",
+                    ConstString2IdentifierHelper.ConstString2Identifier(grammarId));
             }
         }
 
