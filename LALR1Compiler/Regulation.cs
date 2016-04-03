@@ -39,7 +39,8 @@ namespace LALR1Compiler
 
         TreeNodeTypeList rightPart = new TreeNodeTypeList();
 
-        public IEnumerable<TreeNodeType> RightPart { get { return this.rightPart; } }
+        //public IEnumerable<TreeNodeType> RightPart { get { return this.rightPart; } }
+        public IReadOnlyList<TreeNodeType> RightPart { get { return this.rightPart; } }
 
         public TreeNodeType RightNode(int index)
         {

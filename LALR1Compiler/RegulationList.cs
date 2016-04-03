@@ -121,6 +121,7 @@ namespace LALR1Compiler
             foreach (var item in this)
             {
                 item.Dump(stream);
+                stream.WriteLine();
             }
         }
 

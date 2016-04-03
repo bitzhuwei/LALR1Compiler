@@ -84,7 +84,7 @@ namespace LALR1Compiler
         }
 
         private List<TreeNodeType> target = new List<TreeNodeType>();
-        public IEnumerable<TreeNodeType> Target { get { return this.target; } }
+        public IReadOnlyList<TreeNodeType> Target { get { return this.target; } }
 
         public TreeNodeType GetNode(int index)
         {

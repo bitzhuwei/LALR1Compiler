@@ -336,23 +336,17 @@ namespace LALR1Compiler
         /// <param name="count"></param>
         /// <param name="nullableDict"></param>
         /// <returns></returns>
-        static bool Nullable(IEnumerable<TreeNodeType> list, int startIndex, int count, Dictionary<TreeNodeType, bool> nullableDict)
+        static bool Nullable(IReadOnlyList<TreeNodeType> list, int startIndex, int count, Dictionary<TreeNodeType, bool> nullableDict)
         {
             bool result = true;
-            int i = 0;
-            foreach (var node in list)
+            for (int i = 0; i < count; i++)
             {
-                if (i < startIndex) { continue; }
-
-                if (i - startIndex >= count) { break; }
-
+                TreeNodeType node = list[i + startIndex];
                 if (!nullableDict[node])
                 {
                     result = false;
                     break;
                 }
-
-                i++;
             }
 
             return result;

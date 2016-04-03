@@ -27,12 +27,15 @@ namespace ContextfreeGrammarCompiler.Test
             foreach (var directory in directories)
             {
                 Console.WriteLine("Testing {0}", directory);
-                FileStream fs = new FileStream("ContextfreeGrammarCompiler.Test.log", FileMode.Append, FileAccess.Write);
-                StreamWriter writer = new StreamWriter(fs);
-                writer.AutoFlush = true;
-                Console.SetOut(writer);
-                Run(directory);
-                writer.Close();
+                using (var fs = new FileStream("ContextfreeGrammarCompiler.Test.log", FileMode.Append, FileAccess.Write))
+                {
+                    using (var writer = new StreamWriter(fs))
+                    {
+                        writer.AutoFlush = true;
+                        Console.SetOut(writer);
+                        Run(directory);
+                    }
+                }
                 Console.SetOut(originalOut);
             }
         }
