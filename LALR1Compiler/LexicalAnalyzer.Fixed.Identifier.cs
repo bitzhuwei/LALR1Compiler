@@ -46,7 +46,7 @@ namespace LALR1Compiler
             string content = builder.ToString();
             // specify if this string is a keyword
             bool isKeyword = false;
-            foreach (var item in LexicalAnalyzer.keywords)
+            foreach (var item in this.GetKeywords())
             {
                 if (item.NickName == content)
                 {

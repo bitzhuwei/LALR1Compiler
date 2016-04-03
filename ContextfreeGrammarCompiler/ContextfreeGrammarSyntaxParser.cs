@@ -9,6 +9,17 @@ namespace ContextfreeGrammarCompiler
 {
     public class ContextfreeGrammarSyntaxParser : LRSyntaxParser
     {
+
+        /// <summary>
+        /// LR1分析表。
+        /// </summary>
+        protected static LRParsingMap parsingMap;
+
+        /// <summary>
+        /// 规则列表。即文法。
+        /// </summary>
+        protected static RegulationList grammar;
+
         // 非叶结点
         private static readonly TreeNodeType __Grammar = new TreeNodeType("__Grammar", "Grammar", "<Grammar>");
         private static readonly TreeNodeType __ProductionList = new TreeNodeType("__ProductionList", "ProductionList", "<ProductionList>");
@@ -36,40 +47,45 @@ namespace ContextfreeGrammarCompiler
 
         protected override RegulationList GetGrammar()
         {
-            
-            var grammar = new RegulationList();
+            if (grammar != null) { return grammar; }
+
+            var list = new RegulationList();
             // <Grammar> ::= <Production> <ProductionList> ;
-            grammar.Add(new Regulation(__Grammar, __Production, __ProductionList));
+            list.Add(new Regulation(__Grammar, __Production, __ProductionList));
             // <ProductionList> ::= <Production> <RegulationList> | null ;
-            grammar.Add(new Regulation(__ProductionList, __Production, __ProductionList));
-            grammar.Add(new Regulation(__ProductionList));
+            list.Add(new Regulation(__ProductionList, __Production, __ProductionList));
+            list.Add(new Regulation(__ProductionList));
             // <Production> ::= <Vn> "::=" <Canditate> <RightPartList> ";" ;
-            grammar.Add(new Regulation(__Production, __Vn, __colon_colon_equalLeave__, __Canditate, __RightPartList, __semicolonLeave__));
+            list.Add(new Regulation(__Production, __Vn, __colon_colon_equalLeave__, __Canditate, __RightPartList, __semicolonLeave__));
             // <Canditate> ::= <V> <VList> ;
-            grammar.Add(new Regulation(__Canditate, __V, __VList));
+            list.Add(new Regulation(__Canditate, __V, __VList));
             // <VList> ::= <V> <VList> | null ;
-            grammar.Add(new Regulation(__VList, __V, __VList));
-            grammar.Add(new Regulation(__VList));
+            list.Add(new Regulation(__VList, __V, __VList));
+            list.Add(new Regulation(__VList));
             // <RightPartList> ::= "|" <Canditate> <RightPartList> | null ;
-            grammar.Add(new Regulation(__RightPartList, __vertical_barLeave__, __Canditate, __RightPartList));
-            grammar.Add(new Regulation(__RightPartList));
+            list.Add(new Regulation(__RightPartList, __vertical_barLeave__, __Canditate, __RightPartList));
+            list.Add(new Regulation(__RightPartList));
             // <V> ::= <Vn> | <Vt> ;
-            grammar.Add(new Regulation(__V, __Vn));
-            grammar.Add(new Regulation(__V, __Vt));
+            list.Add(new Regulation(__V, __Vn));
+            list.Add(new Regulation(__V, __Vt));
             // <Vn> ::= "<" identifier ">" ;
-            grammar.Add(new Regulation(__Vn, __left_angleLeave__, identifierLeave__, __right_angleLeave__));
+            list.Add(new Regulation(__Vn, __left_angleLeave__, identifierLeave__, __right_angleLeave__));
             // <Vt> ::= "null" | "identifier" | "number" | "constString" | constString ;
-            grammar.Add(new Regulation(__Vt, __nullLeave__));
-            grammar.Add(new Regulation(__Vt, __identifierLeave__));
-            grammar.Add(new Regulation(__Vt, __numberLeave__));
-            grammar.Add(new Regulation(__Vt, __constStringLeave__));
-            grammar.Add(new Regulation(__Vt, constStringLeave__));
+            list.Add(new Regulation(__Vt, __nullLeave__));
+            list.Add(new Regulation(__Vt, __identifierLeave__));
+            list.Add(new Regulation(__Vt, __numberLeave__));
+            list.Add(new Regulation(__Vt, __constStringLeave__));
+            list.Add(new Regulation(__Vt, constStringLeave__));
+
+            grammar = list;
 
             return grammar;
         }
 
         protected override LRParsingMap GetParsingMap()
         {
+            if (parsingMap != null) { return parsingMap; }
+
             var map = new LRParsingMap();
             map.SetAction(1, __Grammar, new LR1GotoAction(2));
             map.SetAction(1, __Production, new LR1GotoAction(3));
@@ -215,7 +231,8 @@ namespace ContextfreeGrammarCompiler
             map.SetAction(27, __semicolonLeave__, new LR1ReducitonAction(6));
             map.SetAction(28, __semicolonLeave__, new LR1ReducitonAction(8));
 
-            return map;
+            parsingMap = map;
+            return parsingMap;
         }
     }
 }

@@ -12,35 +12,10 @@ namespace LALR1Compiler
     /// </summary>
     public abstract partial class LRSyntaxParser : ISyntaxParser
     {
-        static readonly object synObj = new object();
-        public LRSyntaxParser()
-        {
-            if (parsingMap == null)
-            {
-                lock (synObj)
-                {
-                    if (parsingMap == null)
-                    {
-                        parsingMap = GetParsingMap();
-                        grammar = GetGrammar();
-                    }
-                }
-            }
-        }
 
         protected abstract LRParsingMap GetParsingMap();
 
         protected abstract RegulationList GetGrammar();
-
-        /// <summary>
-        /// LR1分析表。
-        /// </summary>
-        protected LRParsingMap parsingMap;
-
-        /// <summary>
-        /// 规则列表。即文法。
-        /// </summary>
-        protected RegulationList grammar;
 
 #if DEBUG
         static bool print = false;
@@ -48,6 +23,9 @@ namespace LALR1Compiler
 
         public SyntaxTree Parse(TokenList tokenList)
         {
+            LRParsingMap parsingMap = GetParsingMap();
+            RegulationList grammar = GetGrammar();
+
             //TODO:这个convertor以后是可以配置的。
             var tokenTypeConvertor = new TokenType2TreeNodeType();
             var context = new ParsingContext(tokenList, grammar, parsingMap, tokenTypeConvertor);
@@ -106,7 +84,7 @@ namespace LALR1Compiler
                 Debug.WriteLine("Last action:");
                 TreeNodeType nodeType = context.CurrentNodeType();
                 int stateId = context.StateIdStack.Peek();
-                LRParsingAction action = this.parsingMap.GetAction(stateId, nodeType);
+                LRParsingAction action = context.ParsingMap.GetAction(stateId, nodeType);
                 Debug.Write("    "); Debug.WriteLine(action);
             }
             {
@@ -155,7 +133,7 @@ namespace LALR1Compiler
                 Debug.WriteLine("Next action:");
                 TreeNodeType nodeType = context.CurrentNodeType();
                 int stateId = context.StateIdStack.Peek();
-                LRParsingAction action = this.parsingMap.GetAction(stateId, nodeType);
+                LRParsingAction action = context.ParsingMap.GetAction(stateId, nodeType);
                 Debug.Write("    "); Debug.WriteLine(action);
             }
             {

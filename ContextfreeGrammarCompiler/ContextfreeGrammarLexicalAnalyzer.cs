@@ -203,6 +203,13 @@ namespace ContextfreeGrammarCompiler
             return false;
         }
 
+        protected static readonly List<Keyword> keywords = new List<Keyword>();
+
+        protected override IEnumerable<Keyword> GetKeywords()
+        {
+            return keywords;
+        }
+
         static ContextfreeGrammarLexicalAnalyzer()
         {
             keywords.Add(new Keyword(ContextfreeGrammarTokenType.__identifier, ContextfreeGrammarTokenType.__identifier.Substring(2)));
@@ -210,5 +217,6 @@ namespace ContextfreeGrammarCompiler
             keywords.Add(new Keyword(ContextfreeGrammarTokenType.__constString, ContextfreeGrammarTokenType.__constString.Substring(2)));
             keywords.Add(new Keyword(ContextfreeGrammarTokenType.__number, ContextfreeGrammarTokenType.__number.Substring(2)));
         }
+
     }
 }

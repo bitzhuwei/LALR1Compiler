@@ -12,6 +12,12 @@ namespace LALR1Compiler
     public abstract partial class LexicalAnalyzer
         : ILexicalAnalyzer
     {
+        
+        protected virtual bool GetNumber(Token result, AnalyzingContext context)
+        {
+            return GetConstentNumber(result, context);
+        }
+
         #region GetConstentNumber
         /// <summary>
         /// 数值

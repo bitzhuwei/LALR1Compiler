@@ -40,10 +40,8 @@ namespace LALR1Compiler
             }
         }
 
-        /// <summary>
-        /// 在子类的静态构造函数中填充此列表。
-        /// </summary>
-        protected static readonly List<Keyword> keywords = new List<Keyword>();
+       
+        protected abstract IEnumerable<Keyword> GetKeywords();
     }
 
     /// <summary>

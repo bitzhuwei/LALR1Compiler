@@ -8,7 +8,7 @@ namespace LALR1Compiler
 {
     public static class ConstString2IdentifierHelper
     {
-        
+
         static Dictionary<char, string> punctuationDict = new Dictionary<char, string>();
 
         static ConstString2IdentifierHelper()
@@ -25,7 +25,7 @@ namespace LALR1Compiler
             punctuationDict.Add('*', "star");
             punctuationDict.Add('(', "left_paren");
             punctuationDict.Add(')', "right_paren");
-            punctuationDict.Add('_', "underline");
+            //punctuationDict.Add('_', "underline");
             punctuationDict.Add('-', "dash");
             punctuationDict.Add('+', "plus");
             punctuationDict.Add('=', "equal");
@@ -49,6 +49,8 @@ namespace LALR1Compiler
 
         public static string ConstString2Identifier(string content)
         {
+            if (string.IsNullOrEmpty(content)) { throw new ArgumentNullException(); }
+
             StringBuilder builder = new StringBuilder();
             for (int i = 0; i < content.Length; i++)
             {
@@ -60,19 +62,20 @@ namespace LALR1Compiler
                 }
 
                 builder.Append(part);
-                if (i + 1 < content.Length)
-                {
-                    bool need = true;
-                    if ('a' <= ch && ch <= 'z') { need = false; }
-                    if ('A' <= ch && ch <= 'Z') { need = false; }
-                    if ('0' <= ch && ch <= '9') { need = false; }
+            }
+            string str = builder.ToString();
+            {
+                char ch = str[0];
+                bool need = true;
+                if ('a' <= ch && ch <= 'z') { need = false; }
+                if ('A' <= ch && ch <= 'Z') { need = false; }
+                if (ch == '_') { need = false; }
 
-                    if (need)
-                    { builder.Append('_'); }
-                }
+                if (need)
+                { str = "_" + str; }
             }
 
-            return builder.ToString();
+            return str;
         }
 
     }

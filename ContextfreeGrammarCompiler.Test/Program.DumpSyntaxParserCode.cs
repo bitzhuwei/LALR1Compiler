@@ -56,11 +56,24 @@ namespace ContextfreeGrammarCompiler.Test
             method.Name = "GetParsingMap";
             method.Attributes = MemberAttributes.Override | MemberAttributes.Family;
             method.ReturnType = new CodeTypeReference(typeof(LRParsingMap));
+            {
+                // if (parsingMap != null) { return parsingMap; }
+                var ifStatement = new CodeConditionStatement(
+                    new CodeBinaryOperatorExpression(
+                        new CodeVariableReferenceExpression("parsingMap"),
+                        CodeBinaryOperatorType.IdentityInequality,
+                        new CodeSnippetExpression("null")),
+                    new CodeMethodReturnStatement(
+                        new CodeVariableReferenceExpression("parsingMap")));
+                method.Statements.Add(ifStatement);
+            }
             string varName = "map";
-            // LALR1Compiler.LRParsingMap map = new LALR1Compiler.LRParsingMap();
-            var varDeclaration = new CodeVariableDeclarationStatement(typeof(LRParsingMap), varName);
-            varDeclaration.InitExpression = new CodeObjectCreateExpression(typeof(LRParsingMap));
-            method.Statements.Add(varDeclaration);
+            {
+                // LALR1Compiler.LRParsingMap map = new LALR1Compiler.LRParsingMap();
+                var varDeclaration = new CodeVariableDeclarationStatement(typeof(LRParsingMap), varName);
+                varDeclaration.InitExpression = new CodeObjectCreateExpression(typeof(LRParsingMap));
+                method.Statements.Add(varDeclaration);
+            }
             foreach (var action in map)
             {
                 var parametes = new List<CodeExpression>();
@@ -105,9 +118,16 @@ namespace ContextfreeGrammarCompiler.Test
                 }
             }
             {
+                // parsingMap = map;
+                var assign = new CodeAssignStatement(
+                    new CodeVariableReferenceExpression("parsingMap"),
+                    new CodeVariableReferenceExpression("map"));
+                method.Statements.Add(assign);
+            }
+            {
                 // return map;
                 var returnMap = new CodeMethodReturnStatement(
-                    new CodeVariableReferenceExpression(varName));
+                    new CodeVariableReferenceExpression("parsingMap"));
                 method.Statements.Add(returnMap);
             }
 
@@ -120,9 +140,20 @@ namespace ContextfreeGrammarCompiler.Test
             method.Name = "GetGrammar";
             method.Attributes = MemberAttributes.Override | MemberAttributes.Family;
             method.ReturnType = new CodeTypeReference(typeof(RegulationList));
-            string varName = "grammar";
             {
-                // LALR1Compiler.RegulationList grammar = new LALR1Compiler.RegulationList();
+                // if (grammar != null) { return grammar; }
+                var ifStatement = new CodeConditionStatement(
+                    new CodeBinaryOperatorExpression(
+                        new CodeVariableReferenceExpression("grammar"),
+                        CodeBinaryOperatorType.IdentityInequality,
+                        new CodeSnippetExpression("null")),
+                    new CodeMethodReturnStatement(
+                        new CodeVariableReferenceExpression("grammar")));
+                method.Statements.Add(ifStatement);
+            }
+            string varName = "list";
+            {
+                // LALR1Compiler.RegulationList list = new LALR1Compiler.RegulationList();
                 var varDeclaration = new CodeVariableDeclarationStatement(typeof(RegulationList), varName);
                 varDeclaration.InitExpression = new CodeObjectCreateExpression(typeof(RegulationList));
                 method.Statements.Add(varDeclaration);
@@ -148,6 +179,13 @@ namespace ContextfreeGrammarCompiler.Test
                 method.Statements.Add(addRegulation);
             }
             {
+                // grammar = list;
+                var assign = new CodeAssignStatement(
+                    new CodeVariableReferenceExpression("grammar"),
+                    new CodeVariableReferenceExpression("list"));
+                method.Statements.Add(assign);
+            }
+            {
                 // return grammar;
                 var returnGrammar = new CodeMethodReturnStatement(
                     new CodeVariableReferenceExpression(varName));
@@ -159,6 +197,20 @@ namespace ContextfreeGrammarCompiler.Test
 
         private static void DumpSyntaxParserFields(RegulationList grammar, CodeTypeDeclaration parserType)
         {
+            {
+                // protected static LRParsingMap parsingMap;
+                CodeMemberField field = new CodeMemberField(typeof(LRParsingMap), "parsingMap");
+                // field.Attributes 不支持readonly，遗憾了。
+                field.Attributes = MemberAttributes.Private | MemberAttributes.Static;
+                parserType.Members.Add(field);
+            }
+            {
+                // protected static RegulationList grammar;
+                CodeMemberField field = new CodeMemberField(typeof(RegulationList), "grammar");
+                // field.Attributes 不支持readonly，遗憾了。
+                field.Attributes = MemberAttributes.Private | MemberAttributes.Static;
+                parserType.Members.Add(field);
+            }
             foreach (var node in grammar.GetAllTreeNodeNonLeaveTypes())
             {
                 CodeMemberField field = new CodeMemberField(typeof(TreeNodeType), GetNodeNameInParser(node));

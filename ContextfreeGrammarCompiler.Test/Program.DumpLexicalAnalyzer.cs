@@ -79,12 +79,24 @@ namespace ContextfreeGrammarCompiler.Test
         private static void DumpLexicalAnalyzer_GetKeywordList(
             RegulationList grammar, string grammarId, CodeTypeDeclaration lexiType)
         {
-            //{
-            //    // private static readonly IEnumerable<Keyword> keywords;
-            //    var field = new CodeMemberField("IEnumerable<Keyword>", "keywords");
-            //    field.Attributes = MemberAttributes.Private | MemberAttributes.Static;
-            //    lexiType.Members.Add(field);
-            //}
+            {
+                // private static readonly List<Keyword> keywords = new List<Keyword>();
+                var field = new CodeMemberField(typeof(List<Keyword>), "keywords");
+                field.Attributes = MemberAttributes.Private | MemberAttributes.Static;
+                field.InitExpression = new CodeObjectCreateExpression(typeof(List<Keyword>));
+                lexiType.Members.Add(field);
+            }
+            {
+                // protected override IEnumerable<Keyword> GetKeywords()
+                var method = new CodeMemberMethod();
+                method.Name = "GetKeywords";
+                method.Attributes = MemberAttributes.Family | MemberAttributes.Override;
+                method.ReturnType = new CodeTypeReference(typeof(IEnumerable<Keyword>));
+                var returnKeywords = new CodeMethodReturnStatement(
+                    new CodeVariableReferenceExpression("keywords"));
+                method.Statements.Add(returnKeywords);
+                lexiType.Members.Add(method);
+            }
             {
                 // static DemoLexicalAnalyzer()
                 var method = new CodeTypeConstructor();
@@ -103,7 +115,7 @@ namespace ContextfreeGrammarCompiler.Test
                     if (node.IsIdentifier())
                     {
                         TokenType tokenType = convertor.GetTokenType(node);
-                        var ctor = new CodeObjectCreateExpression("Keyword",
+                        var ctor = new CodeObjectCreateExpression(typeof(Keyword),
                             new CodePrimitiveExpression(tokenType.Type),
                             new CodePrimitiveExpression(tokenType.Content));
                         var add = new CodeMethodInvokeExpression(
