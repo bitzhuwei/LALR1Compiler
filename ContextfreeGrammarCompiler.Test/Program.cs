@@ -16,24 +16,19 @@ namespace ContextfreeGrammarCompiler.Test
     {
         static void Main(string[] args)
         {
-            string[] directories = Directory.GetDirectories(
-                ".", "*.Grammar", SearchOption.AllDirectories)
-                .OrderBy(x =>
-                    (new FileInfo(Directory.GetFiles(
-                        x, "*.Grammar", SearchOption.TopDirectoryOnly)[0]).Length))
-                    .ToArray();
             DeleteFiles();
+            string[] filenames = Directory.GetFiles(".", "*.Grammar", SearchOption.AllDirectories);
             TextWriter originalOut = Console.Out;
-            foreach (var directory in directories)
+            foreach (var filename in filenames)
             {
-                Console.WriteLine("Testing {0}", directory);
+                Console.WriteLine("Testing {0}", filename);
                 using (var fs = new FileStream("ContextfreeGrammarCompiler.Test.log", FileMode.Append, FileAccess.Write))
                 {
                     using (var writer = new StreamWriter(fs))
                     {
                         writer.AutoFlush = true;
                         Console.SetOut(writer);
-                        Run(directory);
+                        ProcessGrammar(filename);
                     }
                 }
                 Console.SetOut(originalOut);
@@ -55,16 +50,6 @@ namespace ContextfreeGrammarCompiler.Test
                 {
                     File.Delete(item);
                 }
-            }
-        }
-
-        private static void Run(string directory)
-        {
-            string[] grammarFullnames = Directory.GetFiles(
-                directory, "*.Grammar", SearchOption.TopDirectoryOnly);
-            foreach (var grammarFullname in grammarFullnames)
-            {
-                ProcessGrammar(grammarFullname);
             }
         }
 
