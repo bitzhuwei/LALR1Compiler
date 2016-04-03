@@ -70,7 +70,7 @@ namespace LALR1Compiler
                     edgeCollection.TryInsert(edge);
                 }
             }
-            Console.WriteLine();
+            //Console.WriteLine();
 
             map = new LRParsingMap();
             foreach (var edge in edgeCollection)
