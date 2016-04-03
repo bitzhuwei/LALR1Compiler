@@ -63,19 +63,19 @@ namespace LALR1Compiler
 
                 builder.Append(part);
             }
-            string str = builder.ToString();
+            string result = builder.ToString();
             {
-                char ch = str[0];
-                bool need = true;
-                if ('a' <= ch && ch <= 'z') { need = false; }
-                if ('A' <= ch && ch <= 'Z') { need = false; }
-                if (ch == '_') { need = false; }
+                char firstChar = result[0];
+                bool needPrefix = true;
+                if ('a' <= firstChar && firstChar <= 'z') { needPrefix = false; }
+                if ('A' <= firstChar && firstChar <= 'Z') { needPrefix = false; }
+                if (firstChar == '_') { needPrefix = false; }
 
-                if (need)
-                { str = "_" + str; }
+                if (needPrefix)
+                { result = "_" + result; }
             }
 
-            return str;
+            return result;
         }
 
     }
