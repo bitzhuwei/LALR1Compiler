@@ -28,7 +28,14 @@ namespace ContextfreeGrammarCompiler.Test
             if ((Object)obj == null) { return -1; }
             if (obj.Value == null) { return -1; }
 
-            return -(this.Value.Type.Length - obj.Value.Type.Length);
+            int thisLength = this.Value.Type.Length;
+            int otherLength = obj.Value.Type.Length;
+            if (thisLength > otherLength)
+            { return -1; }
+            else if (thisLength == otherLength)
+            { return 0; }
+            else
+            { return 1; }
         }
 
         public virtual CodeStatement[] DumpReadToken()

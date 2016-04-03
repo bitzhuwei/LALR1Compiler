@@ -70,15 +70,15 @@ namespace LALR1Compiler
             map = new LRParsingMap();
             foreach (var edge in edgeCollection)
             {
+                int stateId = stateCollection.IndexOf(edge.From) + 1;
+                int nextStateId = stateCollection.IndexOf(edge.To) + 1;
                 if (edge.X.IsLeave)
                 {
-                    map.SetAction(stateCollection.IndexOf(edge.From) + 1, edge.X,
-                        new LR1ShiftInAction(stateCollection.IndexOf(edge.To) + 1));
+                    map.SetAction(stateId, edge.X, new LR1ShiftInAction(nextStateId));
                 }
                 else
                 {
-                    map.SetAction(stateCollection.IndexOf(edge.From) + 1, edge.X,
-                        new LR1GotoAction(stateCollection.IndexOf(edge.To) + 1));
+                    map.SetAction(stateId, edge.X, new LR1GotoAction(nextStateId));
                 }
             }
             var endItem = new LR0Item(decoratedRegulation, 1);
@@ -99,8 +99,6 @@ namespace LALR1Compiler
                             map.SetAction(stateCollection.IndexOf(state) + 1, treeNodeType,
                                 new LR1ReducitonAction(decoratedGrammar.IndexOf(item.Regulation)));
                         }
-                        map.SetAction(stateCollection.IndexOf(state) + 1, decoratedEnd,
-                            new LR1ReducitonAction(decoratedGrammar.IndexOf(item.Regulation)));
                     }
                 }
             }
