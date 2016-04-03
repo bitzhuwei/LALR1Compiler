@@ -211,8 +211,8 @@ namespace ContextfreeGrammarCompiler.Test
                 Console.WriteLine("    LR(0) parsing...");
                 LR0StateCollection stateCollection;
                 LR0EdgeCollection edgeCollection;
-                LRParsingMap LR0Map;
-                grammar.GetLR0ParsingMap(out LR0Map, out stateCollection, out edgeCollection);
+                LRParsingMap parsingMap;
+                grammar.GetLR0ParsingMap(out parsingMap, out stateCollection, out edgeCollection);
 
                 string LR0Directory = Path.Combine(directory, "LR(0)");
                 if (!Directory.Exists(LR0Directory)) { Directory.CreateDirectory(LR0Directory); }
@@ -226,16 +226,17 @@ namespace ContextfreeGrammarCompiler.Test
                     Path.Combine(LR0Directory, grammarId + ".Edge.log")))
                 { edgeCollection.Dump(stream); }
                 Console.WriteLine("        Dump LR(0) Compiler's source code...");
-                DumpSyntaxParserCode(grammar, LR0Map, grammarId, LR0Directory, SyntaxParserMapAlgorithm.LR0);
+                DumpSyntaxParserCode(grammar, parsingMap, grammarId, LR0Directory, SyntaxParserMapAlgorithm.LR0);
                 DumpLexicalAnalyzerCode(grammar, grammarId, LR0Directory);
+                TestParsingMap(parsingMap);
             }
 
             {
                 Console.WriteLine("    SLR parsing...");
-                LRParsingMap SLRMap;
+                LRParsingMap parsingMap;
                 LR0StateCollection stateCollection;
                 LR0EdgeCollection edgeCollection;
-                grammar.GetSLRParsingMap(out SLRMap, out stateCollection, out edgeCollection);
+                grammar.GetSLRParsingMap(out parsingMap, out stateCollection, out edgeCollection);
 
                 string SLRDirectory = Path.Combine(directory, "SLR");
                 if (!Directory.Exists(SLRDirectory)) { Directory.CreateDirectory(SLRDirectory); }
@@ -249,16 +250,17 @@ namespace ContextfreeGrammarCompiler.Test
                     Path.Combine(SLRDirectory, grammarId + ".Edge.log")))
                 { edgeCollection.Dump(stream); }
                 Console.WriteLine("        Dump SLR Compiler's source code...");
-                DumpSyntaxParserCode(grammar, SLRMap, grammarId, SLRDirectory, SyntaxParserMapAlgorithm.SLR);
+                DumpSyntaxParserCode(grammar, parsingMap, grammarId, SLRDirectory, SyntaxParserMapAlgorithm.SLR);
                 DumpLexicalAnalyzerCode(grammar, grammarId, SLRDirectory);
+                TestParsingMap(parsingMap);
             }
 
             {
                 Console.WriteLine("    LR(1) parsing...");
-                LRParsingMap LR1Map;
+                LRParsingMap parsingMap;
                 LR1StateCollection stateCollection;
                 LR1EdgeCollection edgeCollection;
-                grammar.GetLR1ParsingMap(out LR1Map, out stateCollection, out edgeCollection);
+                grammar.GetLR1ParsingMap(out parsingMap, out stateCollection, out edgeCollection);
 
                 string LR1Directory = Path.Combine(directory, "LR(1)");
                 if (!Directory.Exists(LR1Directory)) { Directory.CreateDirectory(LR1Directory); }
@@ -272,9 +274,29 @@ namespace ContextfreeGrammarCompiler.Test
                     Path.Combine(LR1Directory, grammarId + ".Edge.log")))
                 { edgeCollection.Dump(stream); }
                 Console.WriteLine("        Dump LR(1) Compiler's source code...");
-                DumpSyntaxParserCode(grammar, LR1Map, grammarId, LR1Directory, SyntaxParserMapAlgorithm.LR1);
+                DumpSyntaxParserCode(grammar, parsingMap, grammarId, LR1Directory, SyntaxParserMapAlgorithm.LR1);
                 DumpLexicalAnalyzerCode(grammar, grammarId, LR1Directory);
+                TestParsingMap(parsingMap);
             }
+        }
+
+        private static bool TestParsingMap(LRParsingMap parsingMap)
+        {
+            bool existsConflicts = false;
+            foreach (var item in parsingMap)
+            {
+                if (item.Value.Count > 1)
+                {
+                    existsConflicts = true;
+                    break;
+                }
+            }
+
+            if (existsConflicts)
+            {
+                Console.WriteLine("        【Exists Conflicts in Parsingmap】");
+            }
+            return existsConflicts;
         }
 
     }
