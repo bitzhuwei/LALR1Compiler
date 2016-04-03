@@ -47,7 +47,7 @@ namespace LALR1Compiler
         /// </summary>
         /// <param name="result"></param>
         /// <returns></returns>
-        protected virtual bool GetConstentString(Token result, AnalyzingContext context)
+        protected virtual bool GetDoubleQuotation(Token result, AnalyzingContext context)
         {
             int count = context.SourceCode.Length;
             StringBuilder builder = new StringBuilder("\"");
@@ -78,12 +78,16 @@ namespace LALR1Compiler
             return true;
         }
 
+        protected virtual bool Getunderline(Token result, AnalyzingContext context)
+        {
+            return GetLetter(result, context);
+        }
         /// <summary>
         /// 获取标识符（函数名，变量名，等）
         /// </summary>
         /// <param name="result"></param>
         /// <returns></returns>
-        protected virtual bool GetIdentifier(Token result, AnalyzingContext context)
+        protected virtual bool GetLetter(Token result, AnalyzingContext context)
         {
             StringBuilder builder = new StringBuilder();
             while (context.NextLetterIndex < context.SourceCode.Length)

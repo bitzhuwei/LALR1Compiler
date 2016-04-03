@@ -79,23 +79,23 @@ namespace ContextfreeGrammarCompiler.Test
         private static void DumpLexicalAnalyzer_GetKeywordList(
             RegulationList grammar, string grammarId, CodeTypeDeclaration lexiType)
         {
-            {
-                // private static readonly IEnumerable<Keyword> keywords;
-                var field = new CodeMemberField("IEnumerable<Keyword>", "keywords");
-                field.Attributes = MemberAttributes.Private | MemberAttributes.Static;
-                lexiType.Members.Add(field);
-            }
+            //{
+            //    // private static readonly IEnumerable<Keyword> keywords;
+            //    var field = new CodeMemberField("IEnumerable<Keyword>", "keywords");
+            //    field.Attributes = MemberAttributes.Private | MemberAttributes.Static;
+            //    lexiType.Members.Add(field);
+            //}
             {
                 // static DemoLexicalAnalyzer()
                 var method = new CodeTypeConstructor();
                 method.Name = GetLexicalAnalyzerName(grammarId);
                 method.Attributes = MemberAttributes.Static;
-                {
-                    // List<Keyword> keyword = new List<Keyword>();
-                    var keyword = new CodeVariableDeclarationStatement("List<Keyword>", "keyword");
-                    keyword.InitExpression = new CodeObjectCreateExpression("List<Keyword>");
-                    method.Statements.Add(keyword);
-                }
+                //{
+                //    // List<Keyword> keyword = new List<Keyword>();
+                //    var keyword = new CodeVariableDeclarationStatement("List<Keyword>", "keyword");
+                //    keyword.InitExpression = new CodeObjectCreateExpression("List<Keyword>");
+                //    method.Statements.Add(keyword);
+                //}
                 var convertor = new TreeNodeType2TokenType();
                 foreach (var node in grammar.GetAllTreeNodeLeaveTypes())
                 {
@@ -113,14 +113,14 @@ namespace ContextfreeGrammarCompiler.Test
                         method.Statements.Add(add);
                     }
                 }
-                {
-                    // DemoLexicalAnalyzer.keywords = keywords;
-                    var assign = new CodeAssignStatement(
-                        new CodeFieldReferenceExpression(
-                            new CodeSnippetExpression(GetLexicalAnalyzerName(grammarId)), "keywords"),
-                        new CodeVariableReferenceExpression("keywords"));
-                    method.Statements.Add(assign);
-                }
+                //{
+                //    // DemoLexicalAnalyzer.keywords = keywords;
+                //    var assign = new CodeAssignStatement(
+                //        new CodeFieldReferenceExpression(
+                //            new CodeSnippetExpression(GetLexicalAnalyzerName(grammarId)), "keywords"),
+                //        new CodeVariableReferenceExpression("keywords"));
+                //    method.Statements.Add(assign);
+                //}
                 lexiType.Members.Add(method);
             }
         }

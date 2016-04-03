@@ -18,10 +18,10 @@ namespace ContextfreeGrammarCompiler
             switch (charType)
             {
                 case SourceCodeCharType.Letter:
-                    gotToken = GetIdentifier(result, context);
+                    gotToken = GetLetter(result, context);
                     break;
                 case SourceCodeCharType.UnderLine:
-                    gotToken = GetIdentifier(result, context);
+                    gotToken = Getunderline(result, context);
                     break;
                 case SourceCodeCharType.Or:
                     gotToken = GetOr(result, context);
@@ -33,7 +33,7 @@ namespace ContextfreeGrammarCompiler
                     gotToken = GetGreaterThan(result, context);
                     break;
                 case SourceCodeCharType.DoubleQuotation:
-                    gotToken = GetConstentString(result, context);
+                    gotToken = GetDoubleQuotation(result, context);
                     break;
                 case SourceCodeCharType.Semicolon:
                     gotToken = GetSemicolon(result, context);

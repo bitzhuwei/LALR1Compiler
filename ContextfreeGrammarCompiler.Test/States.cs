@@ -103,8 +103,8 @@ namespace ContextfreeGrammarCompiler.Test
             method.Name = string.Format("Get{0}", this.GetTokenName());
             method.Attributes = MemberAttributes.Family;
             method.ReturnType = new CodeTypeReference(typeof(bool));
-            method.Parameters.Add(new CodeParameterDeclarationExpression("AnalyzingContext", "context"));
             method.Parameters.Add(new CodeParameterDeclarationExpression(typeof(Token), "result"));
+            method.Parameters.Add(new CodeParameterDeclarationExpression("AnalyzingContext", "context"));
             {
                 // var count = context.SourceCode.Length;
                 var count = new CodeVariableDeclarationStatement(typeof(int), "count");
