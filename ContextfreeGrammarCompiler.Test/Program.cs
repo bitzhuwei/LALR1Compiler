@@ -228,7 +228,6 @@ namespace ContextfreeGrammarCompiler.Test
                 Console.WriteLine("        Dump LR(0) Compiler's source code...");
                 DumpSyntaxParserCode(grammar, LR0Map, grammarId, LR0Directory, SyntaxParserMapAlgorithm.LR0);
                 DumpLexicalAnalyzerCode(grammar, grammarId, LR0Directory);
-                CopyFixedPart(grammar, grammarId, LR0Directory);
             }
 
             {
@@ -277,13 +276,6 @@ namespace ContextfreeGrammarCompiler.Test
                 DumpLexicalAnalyzerCode(grammar, grammarId, LR1Directory);
             }
         }
-
-        private static void CopyFixedPart(RegulationList grammar, string grammarId, string directory)
-        {
-
-            //throw new NotImplementedException();
-        }
-
 
     }
 
