@@ -1,5 +1,5 @@
-<Grammar> ::= <Production> <ProductionList> ;
-<ProductionList> ::= <Production> <ProductionList> ;
+<Grammar> ::= <ProductionList> <Production> ;
+<ProductionList> ::= <ProductionList> <Production> ;
 <ProductionList> ::= null ;
 <Production> ::= <Vn> "::=" <Canditate> <RightPartList> ";" ;
 <Canditate> ::= <V> <VList> ;

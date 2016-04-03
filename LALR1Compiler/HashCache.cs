@@ -122,7 +122,12 @@ namespace LALR1Compiler
         {
             if (other == null) { return 1; }
 
-            return this.HashCode - other.HashCode;
+            if (this.HashCode < other.HashCode)
+            { return -1; }
+            else if (this.HashCode == other.HashCode)
+            { return 0; }
+            else
+            { return 1; }
         }
 
         /// <summary>

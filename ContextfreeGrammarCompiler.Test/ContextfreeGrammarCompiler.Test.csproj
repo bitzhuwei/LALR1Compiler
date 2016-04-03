@@ -71,6 +71,7 @@
   <ItemGroup>
     <None Include="TestCases\ContextfreeGrammar.Grammar\ContextfreeGrammar.Grammar">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <SubType>Designer</SubType>
     </None>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

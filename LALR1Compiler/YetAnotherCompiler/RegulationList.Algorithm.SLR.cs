@@ -98,8 +98,10 @@ namespace LALR1Compiler
                         FOLLOW follow = FindFollow(followCollection, lr0Item.Regulation.Left);
                         foreach (var value in follow.Values)
                         {
-                            map.SetAction(stateCollection.IndexOf(state) + 1, value,
-                                new LR1ReducitonAction(decoratedGrammar.IndexOf(lr0Item.Regulation)));
+                            int stateId = stateCollection.IndexOf(state) + 1;
+                            int reductionId = decoratedGrammar.IndexOf(lr0Item.Regulation);
+                            var action = new LR1ReducitonAction(reductionId);
+                            map.SetAction(stateId, value, action);
                         }
                     }
                 }
