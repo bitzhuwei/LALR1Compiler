@@ -208,6 +208,7 @@ namespace ContextfreeGrammarCompiler.Test
                 { followCollection.Dump(stream); }
             }
             {
+                Console.WriteLine("    LR(0) parsing...");
                 LR0StateCollection stateCollection;
                 LR0EdgeCollection edgeCollection;
                 LRParsingMap LR0Map;
@@ -216,21 +217,22 @@ namespace ContextfreeGrammarCompiler.Test
                 string LR0Directory = Path.Combine(directory, "LR(0)");
                 if (!Directory.Exists(LR0Directory)) { Directory.CreateDirectory(LR0Directory); }
 
-                Console.WriteLine("    Dump {0}", grammarId + ".State.log");
+                Console.WriteLine("        Dump {0}", grammarId + ".State.log");
                 using (StreamWriter stream = new StreamWriter(
                     Path.Combine(LR0Directory, grammarId + ".State.log")))
                 { stateCollection.Dump(stream); }
-                Console.WriteLine("    Dump {0}", grammarId + ".Edge.log");
+                Console.WriteLine("        Dump {0}", grammarId + ".Edge.log");
                 using (StreamWriter stream = new StreamWriter(
                     Path.Combine(LR0Directory, grammarId + ".Edge.log")))
                 { edgeCollection.Dump(stream); }
-                Console.WriteLine("    Dump LR(0) Compiler's source code...");
+                Console.WriteLine("        Dump LR(0) Compiler's source code...");
                 DumpSyntaxParserCode(grammar, LR0Map, grammarId, LR0Directory, SyntaxParserMapAlgorithm.LR0);
                 DumpLexicalAnalyzerCode(grammar, grammarId, LR0Directory);
                 CopyFixedPart(grammar, grammarId, LR0Directory);
             }
 
             {
+                Console.WriteLine("    SLR parsing...");
                 LRParsingMap SLRMap;
                 LR0StateCollection stateCollection;
                 LR0EdgeCollection edgeCollection;
@@ -239,20 +241,21 @@ namespace ContextfreeGrammarCompiler.Test
                 string SLRDirectory = Path.Combine(directory, "SLR");
                 if (!Directory.Exists(SLRDirectory)) { Directory.CreateDirectory(SLRDirectory); }
 
-                Console.WriteLine("    Dump {0}", grammarId + ".State.log");
+                Console.WriteLine("        Dump {0}", grammarId + ".State.log");
                 using (StreamWriter stream = new StreamWriter(
                     Path.Combine(SLRDirectory, grammarId + ".State.log")))
                 { stateCollection.Dump(stream); }
-                Console.WriteLine("    Dump {0}", grammarId + ".Edge.log");
+                Console.WriteLine("        Dump {0}", grammarId + ".Edge.log");
                 using (StreamWriter stream = new StreamWriter(
                     Path.Combine(SLRDirectory, grammarId + ".Edge.log")))
                 { edgeCollection.Dump(stream); }
-                Console.WriteLine("    Dump SLR Compiler's source code...");
+                Console.WriteLine("        Dump SLR Compiler's source code...");
                 DumpSyntaxParserCode(grammar, SLRMap, grammarId, SLRDirectory, SyntaxParserMapAlgorithm.SLR);
                 DumpLexicalAnalyzerCode(grammar, grammarId, SLRDirectory);
             }
 
             {
+                Console.WriteLine("    LR(1) parsing...");
                 LRParsingMap LR1Map;
                 LR1StateCollection stateCollection;
                 LR1EdgeCollection edgeCollection;
@@ -261,15 +264,15 @@ namespace ContextfreeGrammarCompiler.Test
                 string LR1Directory = Path.Combine(directory, "LR(1)");
                 if (!Directory.Exists(LR1Directory)) { Directory.CreateDirectory(LR1Directory); }
 
-                Console.WriteLine("    Dump {0}", grammarId + ".State.log");
+                Console.WriteLine("        Dump {0}", grammarId + ".State.log");
                 using (StreamWriter stream = new StreamWriter(
                     Path.Combine(LR1Directory, grammarId + ".State.log")))
                 { stateCollection.Dump(stream); }
-                Console.WriteLine("    Dump {0}", grammarId + ".Edge.log");
+                Console.WriteLine("        Dump {0}", grammarId + ".Edge.log");
                 using (StreamWriter stream = new StreamWriter(
                     Path.Combine(LR1Directory, grammarId + ".Edge.log")))
                 { edgeCollection.Dump(stream); }
-                Console.WriteLine("    Dump LR(1) Compiler's source code...");
+                Console.WriteLine("        Dump LR(1) Compiler's source code...");
                 DumpSyntaxParserCode(grammar, LR1Map, grammarId, LR1Directory, SyntaxParserMapAlgorithm.LR1);
                 DumpLexicalAnalyzerCode(grammar, grammarId, LR1Directory);
             }
