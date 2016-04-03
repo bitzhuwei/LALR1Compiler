@@ -75,13 +75,7 @@
     <None Include="TestCases\Null.Grammar\Null.Grammar">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Include="TestCases\Production.Grammar\Production.Grammar">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
     <None Include="TestCases\Single.Grammar\Single.Grammar">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Include="TestCases\VList.Grammar\VList.Grammar">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
   </ItemGroup>
