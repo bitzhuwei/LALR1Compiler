@@ -57,6 +57,7 @@
     <Compile Include="YetAnotherCompiler\LALR%281%29StateCollection.cs" />
     <Compile Include="YetAnotherCompiler\LALR%281%29Edge.cs" />
     <Compile Include="YetAnotherCompiler\LALR%281%29EdgeCollection.cs" />
+    <Compile Include="YetAnotherCompiler\RegulationList.Algorithm.LALR%281%29.cs" />
     <Compile Include="YetAnotherCompiler\RegulationList.Completeness.cs" />
     <Compile Include="YetAnotherCompiler\LR%281%29EdgeCollection.cs" />
     <Compile Include="YetAnotherCompiler\LR%281%29Edge.cs" />
@@ -96,9 +97,6 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="readme.txt" />
-  </ItemGroup>
-  <ItemGroup>
-    <Compile Include="YetAnotherCompiler\ParsingMap.DumpCSharpCode.cs" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="YetAnotherCompiler\RegulationList.Algorithm.LR%280%29.cs" />
