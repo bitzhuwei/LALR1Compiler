@@ -57,6 +57,24 @@
   <ItemGroup>
     <None Include="App.config" />
     <Compile Include="Program.GetLexicalAnalyzer_TryGetToken_States.cs" />
+    <None Include="TestCases\3_10.Grammar\Code1.Code">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="TestCases\3_10.Grammar\Code3.Code">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="TestCases\3_10.Grammar\Code4.Code">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="TestCases\3_10.Grammar\Code5.Code">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="TestCases\3_10.Grammar\Code6.Code">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="TestCases\3_10.Grammar\Code2.Code">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
     <None Include="TestCases\exercise3.14.Grammar\exercise3.14.Grammar">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>

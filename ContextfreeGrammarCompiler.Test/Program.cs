@@ -99,8 +99,16 @@ namespace ContextfreeGrammarCompiler.Test
         {
             if (asm == null)
             {
-                Console.WriteLine("Get Compiled Compiler Failed...");
+                Console.WriteLine("        Get Compiled Compiler Failed...");
                 return;
+            }
+            {
+                string conflicts = File.ReadAllText(Path.Combine(compilerDir, "Conflicts.log"));
+                if (int.Parse(conflicts) > 0)
+                {
+                    Console.WriteLine("        No need to Test Code with conflicts in SyntaxParser");
+                    return;
+                }
             }
             try
             {
@@ -123,7 +131,7 @@ namespace ContextfreeGrammarCompiler.Test
                     }
                     catch (Exception e)
                     {
-                        Console.WriteLine("Testing Error:");
+                        Console.WriteLine("Testing Error for {0}:", fullname);
                         Console.WriteLine(e);
                     }
                 }
@@ -216,7 +224,7 @@ namespace ContextfreeGrammarCompiler.Test
                 Console.WriteLine("        Dump LR(0) Compiler's source code...");
                 DumpSyntaxParserCode(grammar, parsingMap, grammarId, LR0Directory, SyntaxParserMapAlgorithm.LR0);
                 DumpLexicalAnalyzerCode(grammar, grammarId, LR0Directory);
-                TestParsingMap(parsingMap);
+                TestParsingMap(LR0Directory, parsingMap);
             }
 
             {
@@ -240,7 +248,7 @@ namespace ContextfreeGrammarCompiler.Test
                 Console.WriteLine("        Dump SLR Compiler's source code...");
                 DumpSyntaxParserCode(grammar, parsingMap, grammarId, SLRDirectory, SyntaxParserMapAlgorithm.SLR);
                 DumpLexicalAnalyzerCode(grammar, grammarId, SLRDirectory);
-                TestParsingMap(parsingMap);
+                TestParsingMap(SLRDirectory, parsingMap);
             }
 
             {
@@ -264,11 +272,11 @@ namespace ContextfreeGrammarCompiler.Test
                 Console.WriteLine("        Dump LR(1) Compiler's source code...");
                 DumpSyntaxParserCode(grammar, parsingMap, grammarId, LR1Directory, SyntaxParserMapAlgorithm.LR1);
                 DumpLexicalAnalyzerCode(grammar, grammarId, LR1Directory);
-                TestParsingMap(parsingMap);
+                TestParsingMap(LR1Directory, parsingMap);
             }
         }
 
-        private static bool TestParsingMap(LRParsingMap parsingMap)
+        private static bool TestParsingMap(string directory, LRParsingMap parsingMap)
         {
             int conflicts = 0;
             foreach (var item in parsingMap)
@@ -283,6 +291,9 @@ namespace ContextfreeGrammarCompiler.Test
             {
                 Console.WriteLine("        【Exists {0} Conflicts in Parsingmap】", conflicts);
             }
+
+            File.WriteAllText(Path.Combine(directory, "Conflicts.log"), conflicts.ToString());
+
             return conflicts > 0;
         }
 
