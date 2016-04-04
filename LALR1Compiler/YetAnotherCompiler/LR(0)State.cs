@@ -27,6 +27,8 @@ namespace LALR1Compiler
         public LR0State(params LR0Item[] items)
             : base(Environment.NewLine)
         {
+            ParsingMapIndex = -1;// not ready
+
             if (items != null)
             {
                 foreach (var item in items)

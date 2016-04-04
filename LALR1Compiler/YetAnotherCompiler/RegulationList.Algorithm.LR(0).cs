@@ -60,9 +60,16 @@ namespace LALR1Compiler
                         queue.Enqueue(toState);
                         stateListCount++;
                         queueCount++;
+                        var edge = new LR0Edge(fromState, x, toState);
+                        edgeCollection.TryInsert(edge);
                     }
-                    LR0Edge edge = new LR0Edge(fromState, x, toState);
-                    edgeCollection.TryInsert(edge);
+                    else
+                    {
+                        int index = stateCollection.IndexOf(toState);
+                        toState = stateCollection[index];
+                        var edge = new LR0Edge(fromState, x, toState);
+                        edgeCollection.TryInsert(edge);
+                    }
                 }
             }
             //Console.WriteLine();

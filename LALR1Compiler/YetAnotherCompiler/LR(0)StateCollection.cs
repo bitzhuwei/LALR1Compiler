@@ -16,7 +16,7 @@ namespace LALR1Compiler
 
         public override bool TryInsert(LR0State item)
         {
-            if(base.TryInsert(item))
+            if (base.TryInsert(item))
             {
                 item.ParsingMapIndex = nextStateIndex;
                 nextStateIndex++;
@@ -49,7 +49,7 @@ namespace LALR1Compiler
         {
             for (int i = 0; i < this.Count; i++)
             {
-                stream.WriteLine("State [{0}]:", i + 1);
+                stream.WriteLine("State [{0}]:", this[i].ParsingMapIndex + 1);
                 this[i].Dump(stream);
                 if (i + 1 < this.Count)
                 {
