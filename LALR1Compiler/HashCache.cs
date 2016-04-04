@@ -118,7 +118,7 @@ namespace LALR1Compiler
             return this.UniqueString;
         }
 
-        public virtual int CompareTo(HashCache other)
+        public int CompareTo(HashCache other)
         {
             if (other == null) { return 1; }
 
