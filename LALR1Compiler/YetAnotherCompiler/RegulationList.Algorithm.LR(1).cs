@@ -77,13 +77,15 @@ namespace LALR1Compiler
             {
                 if (edge.X.IsLeave)
                 {
-                    map.SetAction(stateCollection.IndexOf(edge.From) + 1, edge.X,
-                        new LR1ShiftInAction(stateCollection.IndexOf(edge.To) + 1));
+                    int stateId = edge.From.ParsingMapIndex + 1;// stateCollection.IndexOf(edge.From) + 1;
+                    int gotoId = edge.To.ParsingMapIndex + 1;//stateCollection.IndexOf(edge.To) + 1
+                    map.SetAction(stateId, edge.X, new LR1ShiftInAction(gotoId));
                 }
                 else
                 {
-                    map.SetAction(stateCollection.IndexOf(edge.From) + 1, edge.X,
-                        new LR1GotoAction(stateCollection.IndexOf(edge.To) + 1));
+                    int stateId = edge.From.ParsingMapIndex + 1;// stateCollection.IndexOf(edge.From) + 1;
+                    int gotoId = edge.To.ParsingMapIndex + 1;//stateCollection.IndexOf(edge.To) + 1
+                    map.SetAction(stateId, edge.X, new LR1GotoAction(gotoId));
                 }
             }
             // TODO: not implemented
@@ -92,14 +94,15 @@ namespace LALR1Compiler
             {
                 if (state.Contains(endItem))
                 {
-                    map.SetAction(stateCollection.IndexOf(state) + 1, decoratedEnd,
-                        new LR1AceptAction());
+                    int stateId = state.ParsingMapIndex + 1;// stateCollection.IndexOf(state) + 1;
+                    map.SetAction(stateId, decoratedEnd, new LR1AceptAction());
                 }
                 foreach (var LR1Item in state)
                 {
                     if (LR1Item.GetNodeNext2Dot() == null)
                     {
-                        map.SetAction(stateCollection.IndexOf(state) + 1, LR1Item.LookAheadNodeType,
+                        int stateId = state.ParsingMapIndex + 1;// stateCollection.IndexOf(state) + 1;
+                        map.SetAction(stateId, LR1Item.LookAheadNodeType,
                             new LR1ReducitonAction(decoratedGrammar.IndexOf(LR1Item.Regulation)));
                     }
                 }

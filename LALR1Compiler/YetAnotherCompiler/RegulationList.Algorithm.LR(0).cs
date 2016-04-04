@@ -70,8 +70,8 @@ namespace LALR1Compiler
             map = new LRParsingMap();
             foreach (var edge in edgeCollection)
             {
-                int stateId = stateCollection.IndexOf(edge.From) + 1;
-                int nextStateId = stateCollection.IndexOf(edge.To) + 1;
+                int stateId = edge.From.ParsingMapIndex + 1;//stateCollection.IndexOf(edge.From) + 1;
+                int nextStateId = edge.To.ParsingMapIndex + 1;//stateCollection.IndexOf(edge.To) + 1;
                 if (edge.X.IsLeave)
                 {
                     map.SetAction(stateId, edge.X, new LR1ShiftInAction(nextStateId));
@@ -86,7 +86,8 @@ namespace LALR1Compiler
             {
                 if (state.Contains(endItem))
                 {
-                    map.SetAction(stateCollection.IndexOf(state) + 1, decoratedEnd,
+                    int stateId = state.ParsingMapIndex + 1;// stateCollection.IndexOf(state) + 1;
+                    map.SetAction(stateId, decoratedEnd,
                         new LR1AceptAction());
                 }
                 foreach (var item in state)
@@ -96,7 +97,8 @@ namespace LALR1Compiler
                         List<TreeNodeType> allTreeNodeTypes = decoratedGrammar.GetAllTreeNodeLeaveTypes();
                         foreach (var treeNodeType in allTreeNodeTypes)
                         {
-                            map.SetAction(stateCollection.IndexOf(state) + 1, treeNodeType,
+                            int stateId = state.ParsingMapIndex + 1;//stateCollection.IndexOf(state) + 1
+                            map.SetAction(stateId, treeNodeType,
                                 new LR1ReducitonAction(decoratedGrammar.IndexOf(item.Regulation)));
                         }
                     }

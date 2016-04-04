@@ -47,7 +47,7 @@ namespace LALR1Compiler
             //return builder.ToString();
         }
 
-        public bool TryInsert(T item)
+        public virtual bool TryInsert(T item)
         {
             if (this.list.TryBinaryInsert(item))
             {

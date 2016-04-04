@@ -13,6 +13,11 @@ namespace LALR1Compiler
     /// </summary>
     public class LR0State : OrderedCollection<LR0Item>
     {
+        /// <summary>
+        /// 由外部指定的索引。
+        /// 分析表对第一个State是有要求的。必须是<S'> ::= . <S> "$" ;所在的state。
+        /// </summary>
+        public int ParsingMapIndex { get; set; }
 
         /// <summary>
         /// LR(0)状态

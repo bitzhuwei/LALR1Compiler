@@ -37,8 +37,8 @@ namespace LALR1Compiler
             for (int i = 0; i < this.Count; i++)
             {
                 stream.WriteLine("Edge [{0}]:", i + 1);
-                int fromId = this.StateCollection.IndexOf(this[i].From) + 1;
-                int toId = this.StateCollection.IndexOf(this[i].To) + 1;
+                int fromId = this[i].From.ParsingMapIndex + 1;// this.StateCollection.IndexOf(this[i].From) + 1;
+                int toId = this[i].To.ParsingMapIndex + 1;// this.StateCollection.IndexOf(this[i].To) + 1;
                 stream.WriteLine("State[{0}] ==[{1}]==> State[{2}]", fromId, this[i].X.Nickname, toId);
                 this[i].Dump(stream);
                 if (i + 1 < this.Count)

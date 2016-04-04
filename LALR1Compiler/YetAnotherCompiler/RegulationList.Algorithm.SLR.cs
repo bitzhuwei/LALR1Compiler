@@ -72,13 +72,15 @@ namespace LALR1Compiler
             {
                 if (edge.X.IsLeave)
                 {
-                    map.SetAction(stateCollection.IndexOf(edge.From) + 1, edge.X,
-                        new LR1ShiftInAction(stateCollection.IndexOf(edge.To) + 1));
+                    int stateId = edge.From.ParsingMapIndex + 1;//stateCollection.IndexOf(edge.From) + 1
+                    int gotoStateId = edge.To.ParsingMapIndex + 1;//stateCollection.IndexOf(edge.To) + 1
+                    map.SetAction(stateId, edge.X, new LR1ShiftInAction(gotoStateId));
                 }
                 else
                 {
-                    map.SetAction(stateCollection.IndexOf(edge.From) + 1, edge.X,
-                        new LR1GotoAction(stateCollection.IndexOf(edge.To) + 1));
+                    int stateId = edge.From.ParsingMapIndex + 1;//stateCollection.IndexOf(edge.From) + 1
+                    int gotoStateId = edge.To.ParsingMapIndex + 1;//stateCollection.IndexOf(edge.To) + 1
+                    map.SetAction(stateId, edge.X, new LR1GotoAction(gotoStateId));
                 }
             }
             var endItem = new LR0Item(decoratedRegulation, 1);
@@ -88,8 +90,8 @@ namespace LALR1Compiler
             {
                 if (state.Contains(endItem))
                 {
-                    map.SetAction(stateCollection.IndexOf(state) + 1, decoratedEnd,
-                        new LR1AceptAction());
+                    int stateId = state.ParsingMapIndex + 1;//stateCollection.IndexOf(state) + 1
+                    map.SetAction(stateId, decoratedEnd, new LR1AceptAction());
                 }
                 foreach (var lr0Item in state)
                 {
@@ -98,7 +100,7 @@ namespace LALR1Compiler
                         FOLLOW follow = FindFollow(followCollection, lr0Item.Regulation.Left);
                         foreach (var value in follow.Values)
                         {
-                            int stateId = stateCollection.IndexOf(state) + 1;
+                            int stateId = state.ParsingMapIndex + 1;// stateCollection.IndexOf(state) + 1;
                             int reductionId = decoratedGrammar.IndexOf(lr0Item.Regulation);
                             var action = new LR1ReducitonAction(reductionId);
                             map.SetAction(stateId, value, action);

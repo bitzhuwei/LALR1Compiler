@@ -12,6 +12,21 @@ namespace LALR1Compiler
     /// </summary>
     public class LR0StateCollection : OrderedCollection<LR0State>
     {
+        private int nextStateIndex = 0;
+
+        public override bool TryInsert(LR0State item)
+        {
+            if(base.TryInsert(item))
+            {
+                item.ParsingMapIndex = nextStateIndex;
+                nextStateIndex++;
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+        }
 
         /// <summary>
         /// LR(0)状态的列表
