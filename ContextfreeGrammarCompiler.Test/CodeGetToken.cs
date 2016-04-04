@@ -11,25 +11,26 @@ namespace ContextfreeGrammarCompiler.Test
     /// <summary>
     /// 产生处理某种字符的GetXXX();的定义的关键部分中的最小的一条语句
     /// </summary>
-    class CodeGetToken : HashCache
+    class CodeGetToken : 
+        //HashCache
+        IComparable<CodeGetToken>//, IDump2Stream
     {
 
         public CodeGetToken(TreeNodeType value)
-            : base(GetUniqueString)
+            //: base(GetUniqueString)
         {
             this.Value = value;
         }
 
         public TreeNodeType Value { get; set; }
 
-        public override int CompareTo(HashCache other)
+        public int CompareTo(CodeGetToken other)
         {
-            CodeGetToken obj = other as CodeGetToken;
-            if ((Object)obj == null) { return -1; }
-            if (obj.Value == null) { return -1; }
+            if ((Object)other == null) { return -1; }
+            if (other.Value == null) { return -1; }
 
             int thisLength = this.Value.Type.Length;
-            int otherLength = obj.Value.Type.Length;
+            int otherLength = other.Value.Type.Length;
             if (thisLength > otherLength)
             { return -1; }
             else if (thisLength == otherLength)
@@ -77,17 +78,6 @@ namespace ContextfreeGrammarCompiler.Test
             }
 
             return list.ToArray();
-        }
-
-        static string GetUniqueString(HashCache cache)
-        {
-            CodeGetToken obj = cache as CodeGetToken;
-            return obj.Dump();
-        }
-
-        public override void Dump(System.IO.TextWriter stream)
-        {
-            stream.Write(this.Value);
         }
 
     }

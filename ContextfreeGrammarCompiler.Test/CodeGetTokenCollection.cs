@@ -11,16 +11,27 @@ namespace ContextfreeGrammarCompiler.Test
     /// <summary>
     /// 产生处理某种字符的GetXXX();的定义的关键部分
     /// </summary>
-    class CodeGetTokenCollection : OrderedCollection<CodeGetToken>
+    class CodeGetTokenCollection :
+        //OrderedCollection<CodeGetToken>
+        IEnumerable<CodeGetToken>
     {
 
-        public CodeGetTokenCollection() : base(Environment.NewLine) { }
+        public int Count { get { return this.list.Count; } }
+
+        public CodeGetToken this[int index]
+        {
+            get { return this.list[index]; }
+        }
+
+        private List<CodeGetToken> list = new List<CodeGetToken>();
+
+        //public CodeGetTokenCollection() : base(Environment.NewLine) { }
 
         internal virtual CodeStatement[] DumpReadToken()
         {
             List<CodeStatement> result = new List<CodeStatement>();
 
-            for (int length = this[0].Value.Type.Length; length > 0; length--)
+            for (int length = this.list[0].Value.Type.Length; length > 0; length--)
             {
                 bool exists = false;
                 // if (context.NextLetterIndex + {0} <= count)
@@ -34,7 +45,7 @@ namespace ContextfreeGrammarCompiler.Test
                         "context.SourceCode.Substring(context.NextLetterIndex, {0});", length));
                     ifStatement.TrueStatements.Add(str);
                 }
-                foreach (var item in this)
+                foreach (var item in this.list)
                 {
                     if (item.Value.Content.Length != length) { continue; }
 
@@ -53,6 +64,27 @@ namespace ContextfreeGrammarCompiler.Test
             }
 
             return result.ToArray();
+        }
+
+        public IEnumerator<CodeGetToken> GetEnumerator()
+        {
+            foreach (var item in this.list)
+            {
+                yield return item;
+            }
+        }
+
+        System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator()
+        {
+            return this.GetEnumerator();
+        }
+
+        public void TryInsert(CodeGetToken codeGetToken)
+        {
+            if (!this.list.Contains(codeGetToken))
+            {
+                this.list.Add(codeGetToken);
+            }
         }
     }
 }
