@@ -31,7 +31,7 @@ namespace LALR1Compiler
             decoratedGrammar.AddRange(grammar);
             // 初始化T为{ Closure(S' -> S $) }
             var firstItem = new LR1Item(decoratedGrammar[0], 0, decoratedEnd);
-            var firstState = new LR1State(firstItem);
+            var firstState = new SmallerLR1State(firstItem);
             Dictionary<TreeNodeType, bool> nullableDict;
             decoratedGrammar.GetNullableDict(out nullableDict);
             FIRSTCollection firstCollection;
@@ -39,14 +39,14 @@ namespace LALR1Compiler
             firstState = decoratedGrammar.Closure(firstState, nullableDict, firstCollection);
             stateCollection = new LR1StateCollection(firstState);
             edgeCollection = new LR1EdgeCollection(stateCollection);
-            Queue<LR1State> queue = new Queue<LR1State>();
+            var queue = new Queue<SmallerLR1State>();
             queue.Enqueue(firstState);
             //int lastOutputLength = 0;
             int stateListCount = 1;
             int queueCount = 1;
             while (queue.Count > 0)
             {
-                LR1State fromState = queue.Dequeue(); queueCount--;
+                SmallerLR1State fromState = queue.Dequeue(); queueCount--;
                 //int itemIndex = 0;
                 int itemCount = fromState.Count();
                 foreach (var item in fromState)
@@ -59,7 +59,7 @@ namespace LALR1Compiler
                     TreeNodeType x = item.GetNodeNext2Dot();
                     if (x == decoratedEnd || x == null) { continue; }
 
-                    LR1State toState = decoratedGrammar.Goto(fromState, x, nullableDict, firstCollection);
+                    SmallerLR1State toState = decoratedGrammar.Goto(fromState, x, nullableDict, firstCollection);
                     if (stateCollection.TryInsert(toState))
                     {
                         queue.Enqueue(toState);
@@ -123,7 +123,7 @@ namespace LALR1Compiler
         /// <param name="grammar"></param>
         /// <param name="state"></param>
         /// <returns></returns>
-        static LR1State Closure(this RegulationList grammar, LR1State state,
+        static SmallerLR1State Closure(this RegulationList grammar, SmallerLR1State state,
             Dictionary<TreeNodeType, bool> nullableDict = null, FIRSTCollection firstCollection = null)
         {
             if (nullableDict == null)
@@ -219,9 +219,9 @@ namespace LALR1Compiler
         /// <param name="x">一个文法符号，终结点或非终结点。</param>
         /// <param name="firstList"></param>
         /// <returns></returns>
-        static LR1State Goto(this RegulationList list, LR1State state, TreeNodeType x, Dictionary<TreeNodeType, bool> nullableDict, FIRSTCollection firstList = null)
+        static SmallerLR1State Goto(this RegulationList list, SmallerLR1State state, TreeNodeType x, Dictionary<TreeNodeType, bool> nullableDict, FIRSTCollection firstList = null)
         {
-            LR1State toState = new LR1State();
+            var toState = new SmallerLR1State();
             foreach (var item in state)
             {
                 TreeNodeType nextNode = item.GetNodeNext2Dot();

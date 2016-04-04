@@ -40,6 +40,7 @@ namespace LALR1Compiler
 
     }
 
+
     /// <summary>
     /// 占用内存更少的LR1State
     /// </summary>
@@ -52,51 +53,21 @@ namespace LALR1Compiler
         /// </summary>
         public int ParsingMapIndex { get; set; }
 
-        class LR1ItemGroup : HashCache
-        {
-            public LR0Item Item { get; private set; }
-            public OrderedCollection<TreeNodeType> LookAheadNodeList { get; private set; }
-
-            public LR1ItemGroup(Regulation regulation, int dotPosition, params TreeNodeType[] lookAheadNodes)
-                : base(GetUniqueString)
-            {
-                this.Item = new LR0Item(regulation, dotPosition);
-                this.LookAheadNodeList = new OrderedCollection<TreeNodeType>(", ");
-                foreach (var node in lookAheadNodes)
-                {
-                    this.LookAheadNodeList.TryInsert(node);
-                }
-            }
-            private static string GetUniqueString(HashCache cache)
-            {
-                LR1ItemGroup obj = cache as LR1ItemGroup;
-                return obj.Dump();
-            }
-
-            public override void Dump(System.IO.TextWriter stream)
-            {
-                this.Item.Dump(stream);
-                stream.Write(", ");
-                this.LookAheadNodeList.Dump(stream);
-            }
-
-            public override int CompareTo(HashCache other)
-            {
-                LR1ItemGroup obj = other as LR1ItemGroup;
-                if ((Object)obj == null) { return -1; }
-                return this.Item.CompareTo(obj.Item);
-            }
-        }
-        private OrderedCollection<LR1ItemGroup> list = new OrderedCollection<LR1ItemGroup>(Environment.NewLine);
+        private OrderedCollection<LR0Item> regulationDotList = new OrderedCollection<LR0Item>("this should not occur");
+        private List<OrderedCollection<TreeNodeType>> lookAheadCollectionList = new List<OrderedCollection<TreeNodeType>>();
 
         /// <summary>
         /// 这是一个只能添加元素的集合，其元素是有序的，是按二分法插入的。
         /// 但是使用者不能控制元素的顺序。
         /// </summary>
         /// <param name="separator">在Dump到流时用什么分隔符分隔各个元素？</param>
-        public SmallerLR1State()
+        public SmallerLR1State(params LR1Item[] items)
             : base(GetUniqueString)
         {
+            foreach (var item in items)
+            {
+                this.TryInsert(item);
+            }
         }
 
         private static string GetUniqueString(HashCache cache)
@@ -118,17 +89,21 @@ namespace LALR1Compiler
 
         public bool TryInsert(LR1Item item)
         {
-            var fakeGroup = new LR1ItemGroup(item.Regulation, item.DotPosition);
-            if (this.list.TryInsert(fakeGroup))
+            LR0Item lr0Item = new LR0Item(item.Regulation, item.DotPosition);
+            if (this.regulationDotList.TryInsert(lr0Item))
             {
+                int index = this.regulationDotList.IndexOf(lr0Item);
+                var collection = new OrderedCollection<TreeNodeType>(", ");
+                collection.TryInsert(item.LookAheadNodeType);
+                this.lookAheadCollectionList.Insert(index, collection);
+
                 this.SetDirty();
                 return true;
             }
             else
             {
-                int index = this.list.IndexOf(fakeGroup);
-                LR1ItemGroup group = this.list[index];
-                if (group.LookAheadNodeList.TryInsert(item.LookAheadNodeType))
+                int index = this.regulationDotList.IndexOf(lr0Item);
+                if (this.lookAheadCollectionList[index].TryInsert(item.LookAheadNodeType))
                 {
                     this.SetDirty();
                     return true;
@@ -141,33 +116,36 @@ namespace LALR1Compiler
         public int IndexOf(LR1Item item)
         {
             int index = 0;
-            foreach (var group in this.list)
+            LR0Item lr0Item = new LR0Item(item.Regulation, item.DotPosition);
+            int groupIndex = this.regulationDotList.IndexOf(lr0Item);
+            if (0 <= groupIndex && groupIndex < this.regulationDotList.Count)
             {
-                if (group.Item.Regulation == item.Regulation
-                    && group.Item.DotPosition == item.DotPosition)
+                for (int i = 0; i < groupIndex; i++)
                 {
-                    foreach (var node in group.LookAheadNodeList)
-                    {
-                        if (node == item.LookAheadNodeType)
-                        {
-                            return index;
-                        }
-
-                        index++;
-                    }
+                    index += this.lookAheadCollectionList[i].Count;
                 }
-
-                index += group.LookAheadNodeList.Count;
+                index += this.lookAheadCollectionList[groupIndex].IndexOf(item.LookAheadNodeType);
             }
+            else
+            { index = -1; }
 
-            return -1;
+            return index;
         }
 
         public bool Contains(LR1Item item)
         {
-            var fakeGroup = new LR1ItemGroup(item.Regulation, item.DotPosition);
-            int index = this.list.IndexOf(fakeGroup);
-            return (0 <= index && index < this.list.Count);
+            LR0Item lr0Item = new LR0Item(item.Regulation, item.DotPosition);
+            int groupIndex = this.regulationDotList.IndexOf(lr0Item);
+            if (0 <= groupIndex && groupIndex < this.regulationDotList.Count)
+            {
+                int index = this.lookAheadCollectionList[groupIndex].IndexOf(item.LookAheadNodeType);
+                if (0 <= index && index < this.lookAheadCollectionList[groupIndex].Count)
+                { return true; }
+                else
+                { return false; }
+            }
+            else
+            { return false; }
         }
 
         public LR1Item this[int index]
@@ -176,19 +154,17 @@ namespace LALR1Compiler
             {
                 if (index < 0) { throw new ArgumentOutOfRangeException(); }
 
-                int i = 0;
-                foreach (var group in this.list)
+                int current = 0;
+                for (int i = 0; i < this.regulationDotList.Count; i++)
                 {
-                    foreach (var node in group.LookAheadNodeList)
+                    if (index <= current + this.regulationDotList.Count)
                     {
-                        if (i == index)
-                        {
-                            return new LR1Item(
-                                group.Item.Regulation, group.Item.DotPosition, node);
-                        }
-                        else
-                        { i++; }
+                        TreeNodeType node = this.lookAheadCollectionList[i][index - current];
+                        LR0Item item = this.regulationDotList[i];
+                        return new LR1Item(item.Regulation, item.DotPosition, node);
                     }
+                    else
+                    { current += this.regulationDotList.Count; }
                 }
 
                 throw new ArgumentOutOfRangeException();
@@ -197,19 +173,19 @@ namespace LALR1Compiler
 
         public IEnumerator<LR1Item> GetEnumerator()
         {
-            foreach (var group in this.list)
+            for (int i = 0; i < this.regulationDotList.Count; i++)
             {
-                foreach (var node in group.LookAheadNodeList)
+                LR0Item item = this.regulationDotList[i];
+                foreach (var lookAheadNode in this.lookAheadCollectionList[i])
                 {
-                    yield return new LR1Item(
-                        group.Item.Regulation, group.Item.DotPosition, node);
+                    yield return new LR1Item(item.Regulation, item.DotPosition, lookAheadNode);
                 }
             }
         }
 
-        public int GroupCount { get { return this.list.Count; } }
+        public int GroupCount { get { return this.regulationDotList.Count; } }
 
-        public int Count { get { return this.list.Sum(x => x.LookAheadNodeList.Count); } }
+        public int Count { get { return this.lookAheadCollectionList.Sum(x => x.Count); } }
 
         System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator()
         {
@@ -218,12 +194,17 @@ namespace LALR1Compiler
 
         public override void Dump(System.IO.TextWriter stream)
         {
-            for (int i = 0; i < this.list.Count; i++)
+            for (int i = 0; i < this.regulationDotList.Count; i++)
             {
-                this.list[i].Dump(stream);
-                if (i + 1 < this.list.Count)
+                this.regulationDotList[i].Dump(stream);
+                stream.Write(", ");
+                foreach (var lookAheadNode in this.lookAheadCollectionList[i])
                 {
-                    stream.Write(Environment.NewLine);
+                    lookAheadNode.Dump(stream);
+                }
+                if (i + 1 < this.regulationDotList.Count)
+                {
+                    stream.WriteLine();
                 }
             }
         }

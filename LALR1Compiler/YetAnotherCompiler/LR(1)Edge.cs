@@ -17,7 +17,7 @@ namespace LALR1Compiler
         /// <param name="from"></param>
         /// <param name="x"></param>
         /// <param name="to"></param>
-        public LR1Edge(LR1State from, TreeNodeType x, LR1State to)
+        public LR1Edge(SmallerLR1State from, TreeNodeType x, SmallerLR1State to)
             : base(GetUniqueString)
         {
             this.From = from;
@@ -39,11 +39,11 @@ namespace LALR1Compiler
             //return builder.ToString();
         }
 
-        public LR1State From { get; set; }
+        public SmallerLR1State From { get; set; }
 
         public TreeNodeType X { get; set; }
 
-        public LR1State To { get; set; }
+        public SmallerLR1State To { get; set; }
 
 
         public override void Dump(System.IO.TextWriter stream)

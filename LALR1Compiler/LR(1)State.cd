@@ -1,29 +1,21 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <ClassDiagram MajorVersion="1" MinorVersion="1">
-  <Class Name="LALR1Compiler.LR1State">
-    <Position X="1.25" Y="4.5" Width="2" />
-    <TypeIdentifier>
-      <HashCode>AAACAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
-      <FileName>YetAnotherCompiler\LR(1)State.cs</FileName>
-    </TypeIdentifier>
-  </Class>
   <Class Name="LALR1Compiler.SmallerLR1State">
     <Position X="7" Y="0.5" Width="3.5" />
-    <NestedTypes>
-      <Class Name="LALR1Compiler.SmallerLR1State.LR1ItemGroup">
-        <TypeIdentifier>
-          <NewMemberFileName>YetAnotherCompiler\LR(1)State.cs</NewMemberFileName>
-        </TypeIdentifier>
-      </Class>
-    </NestedTypes>
+    <Compartments>
+      <Compartment Name="Fields" Collapsed="true" />
+    </Compartments>
     <TypeIdentifier>
-      <HashCode>QGAAAgAAAAAAABAACAAAgAQAAAAAAAAAAAAAgAAQAAA=</HashCode>
+      <HashCode>QGBCAAAAAAAAABAACAAAgAQAAAAAAAAAAAAAgAAQABA=</HashCode>
       <FileName>YetAnotherCompiler\LR(1)State.cs</FileName>
     </TypeIdentifier>
     <Lollipop Position="0.2" />
   </Class>
   <Class Name="LALR1Compiler.OrderedCollection&lt;T&gt;">
     <Position X="0.5" Y="0.5" Width="3.5" />
+    <Compartments>
+      <Compartment Name="Fields" Collapsed="true" />
+    </Compartments>
     <TypeIdentifier>
       <HashCode>AGAAAwAAAAAAABAACAAAgAQAAAAAAAAAAAAAgAAQAAA=</HashCode>
       <FileName>OrderedCollection.cs</FileName>
@@ -41,6 +33,13 @@
       <FileName>HashCache.cs</FileName>
     </TypeIdentifier>
     <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="LALR1Compiler.LR1State">
+    <Position X="1.25" Y="4.5" Width="2" />
+    <TypeIdentifier>
+      <HashCode>AAACAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>YetAnotherCompiler\LR(1)State.cs</FileName>
+    </TypeIdentifier>
   </Class>
   <Font Name="Microsoft YaHei UI" Size="9" />
 </ClassDiagram>
