@@ -48,6 +48,7 @@ namespace LALR1Compiler
         {
             for (int i = 0; i < this.Count; i++)
             {
+                stream.WriteLine("State [{0}]:", this[i].ParsingMapIndex + 1);
                 this[i].Dump(stream);
                 if (i + 1 < this.Count)
                 {
