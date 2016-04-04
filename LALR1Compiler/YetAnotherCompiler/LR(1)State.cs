@@ -45,6 +45,13 @@ namespace LALR1Compiler
     /// </summary>
     public class SmallerLR1State : HashCache, IEnumerable<LR1Item>
     {
+        // 分析表对第一个State是有要求的。必须是<S'> ::= . <S> "$" ;所在的state。
+        /// <summary>
+        /// 由外部（<see cref="LR1StateCollection"/>）指定的索引。
+        /// 分析表对第一个State是有要求的。必须是&lt;S'&gt; ::= . &lt;S&gt; "$" ;所在的state。
+        /// </summary>
+        public int ParsingMapIndex { get; set; }
+
         class LR1ItemGroup : HashCache
         {
             public LR0Item Item { get; private set; }
@@ -90,11 +97,6 @@ namespace LALR1Compiler
         public SmallerLR1State()
             : base(GetUniqueString)
         {
-        }
-
-        public override int CompareTo(HashCache other)
-        {
-            return base.CompareTo(other);
         }
 
         private static string GetUniqueString(HashCache cache)
