@@ -43,7 +43,7 @@ namespace LALR1Compiler
 
         public override void Dump(System.IO.TextWriter stream)
         {
-            stream.Write("({0})[{1}][{2}]", this.Type, this.Content, this.Nickname);
+            stream.Write("[{0}]({1})[{2}]", this.Content, this.Type, this.Nickname);
         }
     }
 }

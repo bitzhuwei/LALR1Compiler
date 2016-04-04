@@ -47,7 +47,7 @@ namespace LALR1Compiler
         {
             TreeNodeType obj = cache as TreeNodeType;
             return obj.Dump();
-            //return string.Format("*({0})*[{1}][{2}]", obj.Type, obj.Content, obj.Nickname);
+            //return string.Format("({0})[{1}][{2}]", obj.Type, obj.Content, obj.Nickname);
         }
 
         // “__E”or “numberLeave__”

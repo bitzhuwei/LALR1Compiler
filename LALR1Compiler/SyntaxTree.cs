@@ -155,7 +155,7 @@ namespace LALR1Compiler
             }
             else
             {
-                stream.WriteLine("*({0})*[{1}][{2}]",
+                stream.WriteLine("({0})[{1}][{2}]",
                     syntaxTree.NodeType.Type, syntaxTree.NodeType.Content, syntaxTree.NodeType.Nickname);
             }
 
