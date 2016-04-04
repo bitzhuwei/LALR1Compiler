@@ -53,6 +53,10 @@
     <Compile Include="Utilities\SourceCodeCharTypeHelper.cs" />
     <Compile Include="YetAnotherCompiler\FOLLOWCollection.cs" />
     <Compile Include="YetAnotherCompiler\FIRSTCollection.cs" />
+    <Compile Include="YetAnotherCompiler\LALR%281%29State.cs" />
+    <Compile Include="YetAnotherCompiler\LALR%281%29StateCollection.cs" />
+    <Compile Include="YetAnotherCompiler\LALR%281%29Edge.cs" />
+    <Compile Include="YetAnotherCompiler\LALR%281%29EdgeCollection.cs" />
     <Compile Include="YetAnotherCompiler\RegulationList.Completeness.cs" />
     <Compile Include="YetAnotherCompiler\LR%281%29EdgeCollection.cs" />
     <Compile Include="YetAnotherCompiler\LR%281%29Edge.cs" />
