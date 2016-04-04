@@ -54,7 +54,6 @@
     <Compile Include="YetAnotherCompiler\FOLLOWCollection.cs" />
     <Compile Include="YetAnotherCompiler\FIRSTCollection.cs" />
     <Compile Include="YetAnotherCompiler\RegulationList.Completeness.cs" />
-    <Compile Include="YetAnotherCompiler\LR%281%29ParserGeneratorInfo.cs" />
     <Compile Include="YetAnotherCompiler\LR%281%29EdgeCollection.cs" />
     <Compile Include="YetAnotherCompiler\LR%281%29Edge.cs" />
     <Compile Include="YetAnotherCompiler\LR%281%29StateCollection.cs" />
@@ -62,7 +61,6 @@
     <Compile Include="YetAnotherCompiler\LR%281%29Item.cs" />
     <Compile Include="YetAnotherCompiler\RegulationList.Algorithm.LR%281%29.cs" />
     <Compile Include="YetAnotherCompiler\SLRParserGeneratorInfo.cs" />
-    <Compile Include="YetAnotherCompiler\LR%280%29ParserGeneratorInfo.cs" />
     <Compile Include="YetAnotherCompiler\LR%280%29EdgeCollection.cs" />
     <Compile Include="YetAnotherCompiler\LR%280%29Edge.cs" />
     <Compile Include="YetAnotherCompiler\LR%280%29StateCollection.cs" />
