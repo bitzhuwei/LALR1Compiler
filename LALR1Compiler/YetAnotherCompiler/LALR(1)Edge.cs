@@ -28,15 +28,17 @@ namespace LALR1Compiler
         private static string GetUniqueString(HashCache cache)
         {
             var obj = cache as LALR1Edge;
-            return obj.Dump();
-            //StringBuilder builder = new StringBuilder();
-            //builder.Append(obj.From);
-            //builder.AppendLine();
-            //builder.Append("    └──("); builder.Append(obj.X); builder.Append(")──┒");
-            //builder.AppendLine();
-            //builder.Append(obj.To);
+            // 绝对不能用obj.Dump()了。LALR(1)的edge.CompareTo()不关注LookAheadNode
+            //return obj.Dump();
 
-            //return builder.ToString();
+            StringBuilder builder = new StringBuilder();
+            builder.Append(obj.From);
+            builder.AppendLine();
+            builder.Append("    └──("); builder.Append(obj.X); builder.Append(")──┒");
+            builder.AppendLine();
+            builder.Append(obj.To);
+
+            return builder.ToString();
         }
 
         public LALR1State From { get; set; }

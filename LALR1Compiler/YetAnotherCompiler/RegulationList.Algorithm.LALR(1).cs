@@ -68,8 +68,10 @@ namespace LALR1Compiler
                     if (x == decoratedEnd || x == null) { continue; }
 
                     LALR1State toState = decoratedGrammar.Goto(fromState, x, nullableDict, firstCollection);
-                    if (stateCollection.TryInsert(toState))
+                    if (stateCollection.TryInsert(toState))//融入组织之中吧
                     {
+                        int index = stateCollection.IndexOf(toState);
+                        toState = stateCollection[index];
                         queue.Enqueue(toState);
                         stateListCount++;
                         queueCount++;
