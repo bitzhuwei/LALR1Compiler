@@ -87,6 +87,13 @@ namespace ContextfreeGrammarCompiler.Test
                 TestCode(asm, directory, SLRDirectory, grammarId, SyntaxParserMapAlgorithm.SLR);
             }
             {
+                Console.WriteLine("    Compiling {0} of LALR(1) version", grammarId);
+                string LALR1Directory = Path.Combine(directory, "LALR(1)");
+                Assembly asm = CompileCode(LALR1Directory, grammarId, SyntaxParserMapAlgorithm.LALR1);
+                Console.WriteLine("    Test Code {0} of LALR(1) version", grammarId);
+                TestCode(asm, directory, LALR1Directory, grammarId, SyntaxParserMapAlgorithm.LALR1);
+            }
+            {
                 Console.WriteLine("    Compiling {0} of LR(1) version", grammarId);
                 string LR1Directory = Path.Combine(directory, "LR(1)");
                 Assembly asm = CompileCode(LR1Directory, grammarId, SyntaxParserMapAlgorithm.LR1);
@@ -226,7 +233,6 @@ namespace ContextfreeGrammarCompiler.Test
                 DumpLexicalAnalyzerCode(grammar, grammarId, LR0Directory);
                 TestParsingMap(LR0Directory, parsingMap);
             }
-
             {
                 Console.WriteLine("    SLR parsing...");
                 LRParsingMap parsingMap;
@@ -250,7 +256,29 @@ namespace ContextfreeGrammarCompiler.Test
                 DumpLexicalAnalyzerCode(grammar, grammarId, SLRDirectory);
                 TestParsingMap(SLRDirectory, parsingMap);
             }
+            {
+                Console.WriteLine("    LALR(1) parsing...");
+                LRParsingMap parsingMap;
+                LALR1StateCollection stateCollection;
+                LALR1EdgeCollection edgeCollection;
+                grammar.GetLALR1ParsingMap(out parsingMap, out stateCollection, out edgeCollection);
 
+                string LALR1Directory = Path.Combine(directory, "LALR(1)");
+                if (!Directory.Exists(LALR1Directory)) { Directory.CreateDirectory(LALR1Directory); }
+
+                Console.WriteLine("        Dump {0}", grammarId + ".State.log");
+                using (StreamWriter stream = new StreamWriter(
+                    Path.Combine(LALR1Directory, grammarId + ".State.log")))
+                { stateCollection.Dump(stream); }
+                Console.WriteLine("        Dump {0}", grammarId + ".Edge.log");
+                using (StreamWriter stream = new StreamWriter(
+                    Path.Combine(LALR1Directory, grammarId + ".Edge.log")))
+                { edgeCollection.Dump(stream); }
+                Console.WriteLine("        Dump LALR(1) Compiler's source code...");
+                DumpSyntaxParserCode(grammar, parsingMap, grammarId, LALR1Directory, SyntaxParserMapAlgorithm.LALR1);
+                DumpLexicalAnalyzerCode(grammar, grammarId, LALR1Directory);
+                TestParsingMap(LALR1Directory, parsingMap);
+            }
             {
                 Console.WriteLine("    LR(1) parsing...");
                 LRParsingMap parsingMap;
