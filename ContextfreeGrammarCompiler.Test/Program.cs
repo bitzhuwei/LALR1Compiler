@@ -234,6 +234,7 @@ namespace ContextfreeGrammarCompiler.Test
                     Path.Combine(LR0Directory, grammarId + ".Edge.log")))
                 { edgeCollection.Dump(stream); }
                 Console.WriteLine("        Dump LR(0) Compiler's source code...");
+                DumpTreeNodeTypeConstCode(grammar, parsingMap, grammarId, LR0Directory, SyntaxParserMapAlgorithm.LR0);
                 DumpSyntaxParserCode(grammar, parsingMap, grammarId, LR0Directory, SyntaxParserMapAlgorithm.LR0);
                 DumpLexicalAnalyzerCode(grammar, grammarId, LR0Directory);
                 TestParsingMap(LR0Directory, parsingMap);
@@ -258,6 +259,7 @@ namespace ContextfreeGrammarCompiler.Test
                     Path.Combine(SLRDirectory, grammarId + ".Edge.log")))
                 { edgeCollection.Dump(stream); }
                 Console.WriteLine("        Dump SLR Compiler's source code...");
+                DumpTreeNodeTypeConstCode(grammar, parsingMap, grammarId, SLRDirectory, SyntaxParserMapAlgorithm.SLR);
                 DumpSyntaxParserCode(grammar, parsingMap, grammarId, SLRDirectory, SyntaxParserMapAlgorithm.SLR);
                 DumpLexicalAnalyzerCode(grammar, grammarId, SLRDirectory);
                 TestParsingMap(SLRDirectory, parsingMap);
@@ -283,6 +285,7 @@ namespace ContextfreeGrammarCompiler.Test
                     Path.Combine(LALR1Directory, grammarId + ".Edge.log")))
                 { edgeCollection.Dump(stream); }
                 Console.WriteLine("        Dump LALR(1) Compiler's source code...");
+                DumpTreeNodeTypeConstCode(grammar, parsingMap, grammarId, LALR1Directory, SyntaxParserMapAlgorithm.LALR1);
                 DumpSyntaxParserCode(grammar, parsingMap, grammarId, LALR1Directory, SyntaxParserMapAlgorithm.LALR1);
                 DumpLexicalAnalyzerCode(grammar, grammarId, LALR1Directory);
                 TestParsingMap(LALR1Directory, parsingMap);
@@ -308,6 +311,7 @@ namespace ContextfreeGrammarCompiler.Test
                     Path.Combine(LR1Directory, grammarId + ".Edge.log")))
                 { edgeCollection.Dump(stream); }
                 Console.WriteLine("        Dump LR(1) Compiler's source code...");
+                DumpTreeNodeTypeConstCode(grammar, parsingMap, grammarId, LR1Directory, SyntaxParserMapAlgorithm.LR1);
                 DumpSyntaxParserCode(grammar, parsingMap, grammarId, LR1Directory, SyntaxParserMapAlgorithm.LR1);
                 DumpLexicalAnalyzerCode(grammar, grammarId, LR1Directory);
                 TestParsingMap(LR1Directory, parsingMap);
