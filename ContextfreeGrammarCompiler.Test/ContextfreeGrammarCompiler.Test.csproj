@@ -183,18 +183,6 @@
     <None Include="TestCases\GLSL.Grammar\GLSL.Grammar">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Include="TestCases\Identifier.Grammar\Identifier.Grammar">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Include="TestCases\List.Grammar\List.Grammar">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Include="TestCases\Null.Grammar\Null.Grammar">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Include="TestCases\Single.Grammar\Single.Grammar">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\ContextfreeGrammarCompiler\ContextfreeGrammarCompiler.csproj">
