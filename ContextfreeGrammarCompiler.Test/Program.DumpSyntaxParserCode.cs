@@ -209,7 +209,7 @@ namespace ContextfreeGrammarCompiler.Test
             {
                 // return grammar;
                 var returnGrammar = new CodeMethodReturnStatement(
-                    new CodeVariableReferenceExpression(varName));
+                    new CodeVariableReferenceExpression("grammar"));
                 method.Statements.Add(returnGrammar);
             }
 
