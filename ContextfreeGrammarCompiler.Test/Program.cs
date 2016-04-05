@@ -14,11 +14,14 @@ namespace ContextfreeGrammarCompiler.Test
 {
     partial class Program
     {
+        static TextWriter consoleOriginalOut;
+
         static void Main(string[] args)
         {
+            consoleOriginalOut = Console.Out;
+
             DeleteFiles();
             string[] filenames = Directory.GetFiles(".", "*.Grammar", SearchOption.AllDirectories);
-            TextWriter originalOut = Console.Out;
             foreach (var filename in filenames)
             {
                 Console.WriteLine("Testing {0}", filename);
@@ -31,7 +34,7 @@ namespace ContextfreeGrammarCompiler.Test
                         ProcessGrammar(filename);
                     }
                 }
-                Console.SetOut(originalOut);
+                Console.SetOut(consoleOriginalOut);
             }
         }
 
@@ -215,7 +218,9 @@ namespace ContextfreeGrammarCompiler.Test
                 LR0StateCollection stateCollection;
                 LR0EdgeCollection edgeCollection;
                 LRParsingMap parsingMap;
-                grammar.GetLR0ParsingMap(out parsingMap, out stateCollection, out edgeCollection);
+                grammar.GetLR0ParsingMap(
+                    out parsingMap, out stateCollection, out edgeCollection,
+                    Program.consoleOriginalOut);
 
                 string LR0Directory = Path.Combine(directory, "LR(0)");
                 if (!Directory.Exists(LR0Directory)) { Directory.CreateDirectory(LR0Directory); }
@@ -238,8 +243,9 @@ namespace ContextfreeGrammarCompiler.Test
                 LRParsingMap parsingMap;
                 LR0StateCollection stateCollection;
                 LR0EdgeCollection edgeCollection;
-                grammar.GetSLRParsingMap(out parsingMap, out stateCollection, out edgeCollection);
-
+                grammar.GetSLRParsingMap(
+                    out parsingMap, out stateCollection, out edgeCollection,
+                    Program.consoleOriginalOut);
                 string SLRDirectory = Path.Combine(directory, "SLR");
                 if (!Directory.Exists(SLRDirectory)) { Directory.CreateDirectory(SLRDirectory); }
 
@@ -261,7 +267,9 @@ namespace ContextfreeGrammarCompiler.Test
                 LRParsingMap parsingMap;
                 LALR1StateCollection stateCollection;
                 LALR1EdgeCollection edgeCollection;
-                grammar.GetLALR1ParsingMap(out parsingMap, out stateCollection, out edgeCollection);
+                grammar.GetLALR1ParsingMap(
+                    out parsingMap, out stateCollection, out edgeCollection,
+                    Program.consoleOriginalOut);
 
                 string LALR1Directory = Path.Combine(directory, "LALR(1)");
                 if (!Directory.Exists(LALR1Directory)) { Directory.CreateDirectory(LALR1Directory); }
@@ -284,7 +292,9 @@ namespace ContextfreeGrammarCompiler.Test
                 LRParsingMap parsingMap;
                 LR1StateCollection stateCollection;
                 LR1EdgeCollection edgeCollection;
-                grammar.GetLR1ParsingMap(out parsingMap, out stateCollection, out edgeCollection);
+                grammar.GetLR1ParsingMap(
+                    out parsingMap, out stateCollection, out edgeCollection,
+                    Program.consoleOriginalOut);
 
                 string LR1Directory = Path.Combine(directory, "LR(1)");
                 if (!Directory.Exists(LR1Directory)) { Directory.CreateDirectory(LR1Directory); }

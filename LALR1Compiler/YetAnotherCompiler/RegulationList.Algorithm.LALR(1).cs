@@ -19,7 +19,7 @@ namespace LALR1Compiler
         public static void GetLALR1ParsingMap(this RegulationList grammar,
             out LRParsingMap map,
             out LALR1StateCollection stateCollection,
-            out LALR1EdgeCollection edgeCollection)
+            out LALR1EdgeCollection edgeCollection, TextWriter writer)
         {
             // 给文法添加一个辅助的开始产生式 S' -> S $
             // 如何添加一个外来的结点类型？用Enum是无法做到的。
@@ -51,13 +51,18 @@ namespace LALR1Compiler
                 int itemCount = fromState.Count();
                 foreach (var item in fromState)
                 {
-                    if (!(Console.Out is System.IO.StreamWriter))
                     {
+                        TextWriter currentWriter = Console.Out;
+                        if (Console.Out != writer)
+                        {
+                            Console.SetOut(writer);
+                        }
                         for (int i = 0; i < lastOutputLength; i++) { Console.Write('\u0008'); }
                         string output = string.Format("Calculating LALR(1) State List: {0} <-- {1}, working on {2}/{3} ...",
                             stateListCount, queueCount, 1 + itemIndex++, itemCount);
                         Console.Write(output);
                         lastOutputLength = output.Length;
+                        Console.SetOut(currentWriter);
                     }
                     TreeNodeType x = item.GetNodeNext2Dot();
                     if (x == decoratedEnd || x == null) { continue; }
@@ -80,7 +85,15 @@ namespace LALR1Compiler
                     }
                 }
             }
-            if (!(Console.Out is System.IO.StreamWriter)) { Console.WriteLine(); }
+            {
+                TextWriter currentWriter = Console.Out;
+                if (Console.Out != writer)
+                {
+                    Console.SetOut(writer);
+                }
+                Console.WriteLine();
+                Console.SetOut(currentWriter);
+            }
 
             map = new LRParsingMap();
             foreach (var edge in edgeCollection)
