@@ -39,7 +39,7 @@ namespace LALR1Compiler
 
         private static string GetUniqueString(HashCache cache)
         {
-            LALR1State obj = cache as LALR1State;
+            var obj = cache as LALR1State;
             // 绝对不能用obj.Dump()了。LALR(1)的state.CompareTo()不关注LookAheadNode
             //return obj.Dump();
 

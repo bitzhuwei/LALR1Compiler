@@ -36,21 +36,24 @@ namespace LALR1Compiler
             edgeCollection = new LR0EdgeCollection(stateCollection);
             var queue = new Queue<LR0State>();
             queue.Enqueue(firstState);
-            //int lastOutputLength = 0;
+            int lastOutputLength = 0;
             int stateListCount = 1;
             int queueCount = 1;
             while (queue.Count > 0)
             {
                 LR0State fromState = queue.Dequeue(); queueCount--;
-                //int itemIndex = 0;
+                int itemIndex = 0;
                 int itemCount = fromState.Count();
                 foreach (var item in fromState)
                 {
-                    //for (int i = 0; i < lastOutputLength; i++) { Console.Write('\u0008'); }
-                    //string output = string.Format("Calculating SLR State List: {0} <-- {1}, working on {2}/{3} ...",
-                    //    stateListCount, queueCount, 1 + itemIndex++, itemCount);
-                    //Console.Write(output);
-                    //lastOutputLength = output.Length;
+                    if (!(Console.Out is System.IO.StreamWriter))
+                    {
+                        for (int i = 0; i < lastOutputLength; i++) { Console.Write('\u0008'); }
+                        string output = string.Format("Calculating SLR State List: {0} <-- {1}, working on {2}/{3} ...",
+                            stateListCount, queueCount, 1 + itemIndex++, itemCount);
+                        Console.Write(output);
+                        lastOutputLength = output.Length;
+                    }
                     TreeNodeType x = item.GetNodeNext2Dot();
                     if (x == null || x == decoratedEnd) { continue; }
 
@@ -72,7 +75,7 @@ namespace LALR1Compiler
                     }
                 }
             }
-            //Console.WriteLine();
+            if (!(Console.Out is System.IO.StreamWriter)) { Console.WriteLine(); }
 
             map = new LRParsingMap();
             foreach (var edge in edgeCollection)

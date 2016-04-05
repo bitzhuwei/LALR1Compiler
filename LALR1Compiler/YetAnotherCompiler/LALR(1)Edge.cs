@@ -27,7 +27,7 @@ namespace LALR1Compiler
 
         private static string GetUniqueString(HashCache cache)
         {
-            LR1Edge obj = cache as LR1Edge;
+            var obj = cache as LALR1Edge;
             return obj.Dump();
             //StringBuilder builder = new StringBuilder();
             //builder.Append(obj.From);
