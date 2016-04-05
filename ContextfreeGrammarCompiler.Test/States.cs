@@ -15,6 +15,20 @@ namespace ContextfreeGrammarCompiler.Test
     {
 
         /// <summary>
+        /// 处理注释状态的字符。
+        /// </summary>
+        /// <returns></returns>
+        public static DivideState GetCommentState()
+        {
+            var slash = new LexiState();
+            slash.charTypeList.Add(SourceCodeCharType.Divide);
+            slash.getTokenList.TryInsert(new CodeGetToken(new TreeNodeType(
+                ConstString2IdentifierHelper.ConstString2Identifier("/"),
+                "/", "\"/\"")));
+            return new DivideState(slash);
+        }
+
+        /// <summary>
         /// 处理Unknown状态的字符。
         /// </summary>
         /// <returns></returns>
