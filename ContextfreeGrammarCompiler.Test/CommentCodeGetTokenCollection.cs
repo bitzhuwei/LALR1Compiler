@@ -20,12 +20,12 @@ namespace ContextfreeGrammarCompiler.Test
             }
         }
 
-        internal override CodeStatement[] DumpReadToken()
+        internal override CodeStatement[] DumpReadToken(string grammarId, SyntaxParserMapAlgorithm algorithm)
         {
             List<CodeStatement> result = new List<CodeStatement>();
             if (this.Count > 0)// 有除了"//"和"/*"之外的项，例如可能是"/", "/="
             {
-                OtherItemsAndNote(result);
+                OtherItemsAndNote(result, grammarId, algorithm);
             }
             else
             {
@@ -54,7 +54,7 @@ namespace ContextfreeGrammarCompiler.Test
             result.Add(ifStatement);
         }
 
-        private void OtherItemsAndNote(List<CodeStatement> result)
+        private void OtherItemsAndNote(List<CodeStatement> result, string grammarId, SyntaxParserMapAlgorithm algorithm)
         {
             for (int length = this[0].Value.Type.Length; length > 0; length--)
             {
@@ -75,7 +75,7 @@ namespace ContextfreeGrammarCompiler.Test
                     // if ("xxx" == str) { ... }
                     if (item.Value.Content.Length != length) { continue; }
 
-                    CodeStatement[] statements = item.DumpReadToken();
+                    CodeStatement[] statements = item.DumpReadToken(grammarId, algorithm);
                     if (statements != null)
                     {
                         ifStatement.TrueStatements.AddRange(statements);

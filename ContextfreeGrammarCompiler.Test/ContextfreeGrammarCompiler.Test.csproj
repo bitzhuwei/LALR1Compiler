@@ -44,6 +44,7 @@
     <Compile Include="CodeGetToken.cs" />
     <Compile Include="CommentCodeGetTokenCollection.cs" />
     <Compile Include="CodeGetTokenCollection.cs" />
+    <Compile Include="Program.DumpTokenTypeConstCode.cs" />
     <Compile Include="States.cs" />
     <Compile Include="Program.DumpEnum.cs" />
     <Compile Include="Program.DumpLexicalAnalyzer.cs" />

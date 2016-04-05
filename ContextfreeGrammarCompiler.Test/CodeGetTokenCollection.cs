@@ -27,7 +27,7 @@ namespace ContextfreeGrammarCompiler.Test
 
         //public CodeGetTokenCollection() : base(Environment.NewLine) { }
 
-        internal virtual CodeStatement[] DumpReadToken()
+        internal virtual CodeStatement[] DumpReadToken(string grammarId, SyntaxParserMapAlgorithm algorithm)
         {
             List<CodeStatement> result = new List<CodeStatement>();
 
@@ -50,7 +50,7 @@ namespace ContextfreeGrammarCompiler.Test
                     if (item.Value.Content.Length != length) { continue; }
 
                     // if ("XXX" == str) { ... }
-                    CodeStatement[] statements = item.DumpReadToken();
+                    CodeStatement[] statements = item.DumpReadToken(grammarId, algorithm);
                     if (statements != null)
                     {
                         ifStatement.TrueStatements.AddRange(statements);

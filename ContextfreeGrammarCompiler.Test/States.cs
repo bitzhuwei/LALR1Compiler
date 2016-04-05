@@ -22,9 +22,9 @@ namespace ContextfreeGrammarCompiler.Test
         {
             var slash = new LexiState();
             slash.charTypeList.Add(SourceCodeCharType.Divide);
-            slash.getTokenList.TryInsert(new CodeGetToken(new TreeNodeType(
-                ConstString2IdentifierHelper.ConstString2Identifier("/"),
-                "/", "\"/\"")));
+            //slash.getTokenList.TryInsert(new CodeGetToken(new TreeNodeType(
+            //    ConstString2IdentifierHelper.ConstString2Identifier("/") + "Leave__",
+            //    "/", "\"/\"")));
             return new DivideState(slash);
         }
 
@@ -109,7 +109,7 @@ namespace ContextfreeGrammarCompiler.Test
         /// 获取GetXXX()的定义
         /// </summary>
         /// <returns></returns>
-        public CodeMemberMethod GetMethodDefinitionStatement()
+        public CodeMemberMethod GetMethodDefinitionStatement(string grammarId, SyntaxParserMapAlgorithm algorithm)
         {
             if (this.IsContextfreeGrammarKeyword()) { return null; }
 
@@ -128,7 +128,7 @@ namespace ContextfreeGrammarCompiler.Test
                 method.Statements.Add(count);
             }
             {
-                CodeStatement[] statements = this.GetTokenList.DumpReadToken();
+                CodeStatement[] statements = this.GetTokenList.DumpReadToken(grammarId, algorithm);
                 method.Statements.AddRange(statements);
             }
             {
@@ -240,5 +240,5 @@ namespace ContextfreeGrammarCompiler.Test
             return false;
         }
     }
-  
+
 }

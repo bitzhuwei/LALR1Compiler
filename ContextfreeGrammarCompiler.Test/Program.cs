@@ -235,8 +235,9 @@ namespace ContextfreeGrammarCompiler.Test
                 { edgeCollection.Dump(stream); }
                 Console.WriteLine("        Dump LR(0) Compiler's source code...");
                 DumpTreeNodeTypeConstCode(grammar, parsingMap, grammarId, LR0Directory, SyntaxParserMapAlgorithm.LR0);
+                DumpTokenTypeConstCode(grammar, parsingMap, grammarId, LR0Directory, SyntaxParserMapAlgorithm.LR0);
                 DumpSyntaxParserCode(grammar, parsingMap, grammarId, LR0Directory, SyntaxParserMapAlgorithm.LR0);
-                DumpLexicalAnalyzerCode(grammar, grammarId, LR0Directory);
+                DumpLexicalAnalyzerCode(grammar, grammarId, SyntaxParserMapAlgorithm.LR0, LR0Directory);
                 TestParsingMap(LR0Directory, parsingMap);
             }
             {
@@ -260,8 +261,9 @@ namespace ContextfreeGrammarCompiler.Test
                 { edgeCollection.Dump(stream); }
                 Console.WriteLine("        Dump SLR Compiler's source code...");
                 DumpTreeNodeTypeConstCode(grammar, parsingMap, grammarId, SLRDirectory, SyntaxParserMapAlgorithm.SLR);
+                DumpTokenTypeConstCode(grammar, parsingMap, grammarId, SLRDirectory, SyntaxParserMapAlgorithm.SLR);
                 DumpSyntaxParserCode(grammar, parsingMap, grammarId, SLRDirectory, SyntaxParserMapAlgorithm.SLR);
-                DumpLexicalAnalyzerCode(grammar, grammarId, SLRDirectory);
+                DumpLexicalAnalyzerCode(grammar, grammarId, SyntaxParserMapAlgorithm.SLR, SLRDirectory);
                 TestParsingMap(SLRDirectory, parsingMap);
             }
             {
@@ -286,8 +288,9 @@ namespace ContextfreeGrammarCompiler.Test
                 { edgeCollection.Dump(stream); }
                 Console.WriteLine("        Dump LALR(1) Compiler's source code...");
                 DumpTreeNodeTypeConstCode(grammar, parsingMap, grammarId, LALR1Directory, SyntaxParserMapAlgorithm.LALR1);
+                DumpTokenTypeConstCode(grammar, parsingMap, grammarId, LALR1Directory, SyntaxParserMapAlgorithm.LALR1);
                 DumpSyntaxParserCode(grammar, parsingMap, grammarId, LALR1Directory, SyntaxParserMapAlgorithm.LALR1);
-                DumpLexicalAnalyzerCode(grammar, grammarId, LALR1Directory);
+                DumpLexicalAnalyzerCode(grammar, grammarId, SyntaxParserMapAlgorithm.LALR1, LALR1Directory);
                 TestParsingMap(LALR1Directory, parsingMap);
             }
             {
@@ -312,8 +315,9 @@ namespace ContextfreeGrammarCompiler.Test
                 { edgeCollection.Dump(stream); }
                 Console.WriteLine("        Dump LR(1) Compiler's source code...");
                 DumpTreeNodeTypeConstCode(grammar, parsingMap, grammarId, LR1Directory, SyntaxParserMapAlgorithm.LR1);
+                DumpTokenTypeConstCode(grammar, parsingMap, grammarId, LR1Directory, SyntaxParserMapAlgorithm.LR1);
                 DumpSyntaxParserCode(grammar, parsingMap, grammarId, LR1Directory, SyntaxParserMapAlgorithm.LR1);
-                DumpLexicalAnalyzerCode(grammar, grammarId, LR1Directory);
+                DumpLexicalAnalyzerCode(grammar, grammarId, SyntaxParserMapAlgorithm.LR1, LR1Directory);
                 TestParsingMap(LR1Directory, parsingMap);
             }
         }

@@ -14,14 +14,14 @@ namespace ContextfreeGrammarCompiler.Test
     partial class Program
     {
         private static void DumpLexicalAnalyzerCode(RegulationList grammar,
-            string grammarId, string directory)
+            string grammarId, SyntaxParserMapAlgorithm algorithm, string directory)
         {
             var lexiType = new CodeTypeDeclaration(GetLexicalAnalyzerName(grammarId));
             lexiType.IsClass = true;
             lexiType.IsPartial = true;
             lexiType.BaseTypes.Add(typeof(LexicalAnalyzer));
             DumpLexicalAnalyzer_TryGetToken(grammar, lexiType);
-            DumpLexicalAnalyzer_GetSymbol(grammar, lexiType);
+            DumpLexicalAnalyzer_GetSymbol(grammar, lexiType,grammarId, algorithm);
             DumpLexicalAnalyzer_GetKeywordList(grammar, grammarId, lexiType);
 
             var lexiNamespace = new CodeNamespace(GetNamespace(grammarId));
@@ -47,7 +47,8 @@ namespace ContextfreeGrammarCompiler.Test
         }
 
         private static void DumpLexicalAnalyzer_GetSymbol(
-            RegulationList grammar, CodeTypeDeclaration lexiType)
+            RegulationList grammar, CodeTypeDeclaration lexiType,
+            string grammarId, SyntaxParserMapAlgorithm algorithm)
         {
             List<LexiState> lexiStateList = grammar.GetLexiStateList();
             DivideState commentState = null;// 为了处理注释，"/"符号要特殊对待。
@@ -59,7 +60,7 @@ namespace ContextfreeGrammarCompiler.Test
                     continue;
                 }
 
-                CodeMemberMethod method = state.GetMethodDefinitionStatement();
+                CodeMemberMethod method = state.GetMethodDefinitionStatement(grammarId, algorithm);
                 if (method != null)
                 {
                     lexiType.Members.Add(method);
@@ -68,7 +69,7 @@ namespace ContextfreeGrammarCompiler.Test
             {
                 if (commentState == null)
                 { commentState = LexiState.GetCommentState(); }
-                CodeMemberMethod method = commentState.GetMethodDefinitionStatement();
+                CodeMemberMethod method = commentState.GetMethodDefinitionStatement(grammarId, algorithm);
                 if (method != null)
                 {
                     lexiType.Members.Add(method);

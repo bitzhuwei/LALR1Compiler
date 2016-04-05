@@ -60,12 +60,12 @@ namespace ContextfreeGrammarCompiler.Test
             }
         }
 
-        private static string GetNodeNameInParser(TreeNodeType node)
+        public static string GetNodeNameInParser(TreeNodeType node)
         {
             return string.Format("NODE{0}", node.Type);
         }
 
-        private static string GetTokenConstTypeName(string grammarId, SyntaxParserMapAlgorithm algorithm)
+        public static string GetTokenConstTypeName(string grammarId, SyntaxParserMapAlgorithm algorithm)
         {
             SourceCodeCharType charType = grammarId[0].GetCharType();
             if (charType == SourceCodeCharType.Letter || charType == SourceCodeCharType.UnderLine)
