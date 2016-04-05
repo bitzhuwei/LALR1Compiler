@@ -16,7 +16,7 @@ namespace LALR1Compiler
 
         public override bool TryInsert(LALR1State item)
         {
-            if(base.TryInsert(item))
+            if (base.TryInsert(item))// 插入新state
             {
                 item.ParsingMapIndex = nextStateIndex;
                 nextStateIndex++;
@@ -24,7 +24,15 @@ namespace LALR1Compiler
             }
             else
             {
-                return false;
+                // 将item中的LookAheadNodeList并入现有state中
+                int index = this.IndexOf(item);
+                LALR1State state = this[index];
+                bool dirty = false;
+                foreach (LR1Item lr1Item in item)
+                {
+                    dirty = state.TryInsert(lr1Item) || dirty;
+                }
+                return dirty;
             }
         }
         /// <summary>
