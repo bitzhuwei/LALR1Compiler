@@ -221,32 +221,24 @@ namespace ContextfreeGrammarCompiler.Test
             {
                 // protected static LRParsingMap parsingMap;
                 CodeMemberField field = new CodeMemberField(typeof(LRParsingMap), "parsingMap");
-                // field.Attributes 不支持readonly，遗憾了。
                 field.Attributes = MemberAttributes.Private | MemberAttributes.Static;
                 parserType.Members.Add(field);
             }
             {
                 // protected static RegulationList grammar;
                 CodeMemberField field = new CodeMemberField(typeof(RegulationList), "grammar");
-                // field.Attributes 不支持readonly，遗憾了。
                 field.Attributes = MemberAttributes.Private | MemberAttributes.Static;
                 parserType.Members.Add(field);
             }
-            foreach (var node in grammar.GetAllTreeNodeNonLeaveTypes())
+            foreach (var node in grammar.GetAllTreeNodeTypes())
             {
+                //var field = new CodeSnippetTypeMember(string.Format(
+                //    "        public static readonly {0} {1} = new {0}(\"{2}\", \"{3}\", \"{4}\");",
+                //    typeof(TreeNodeType).Name, GetNodeNameInParser(node),
+                //    node.Type, node.Content, node.Nickname));
+                //parserType.Members.Add(field);
                 CodeMemberField field = new CodeMemberField(typeof(TreeNodeType), GetNodeNameInParser(node));
                 // field.Attributes 不支持readonly，遗憾了。
-                field.Attributes = MemberAttributes.Private | MemberAttributes.Static;
-                var ctor = new CodeObjectCreateExpression(typeof(TreeNodeType),
-                    new CodePrimitiveExpression(node.Type),
-                    new CodePrimitiveExpression(node.Content),
-                    new CodePrimitiveExpression(node.Nickname));
-                field.InitExpression = ctor;
-                parserType.Members.Add(field);
-            }
-            foreach (var node in grammar.GetAllTreeNodeLeaveTypes())
-            {
-                CodeMemberField field = new CodeMemberField(typeof(TreeNodeType), GetNodeNameInParser(node));
                 field.Attributes = MemberAttributes.Private | MemberAttributes.Static;
                 var ctor = new CodeObjectCreateExpression(typeof(TreeNodeType),
                     new CodePrimitiveExpression(node.Type),
