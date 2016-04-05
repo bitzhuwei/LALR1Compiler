@@ -54,7 +54,7 @@ namespace LALR1Compiler
                     if (!(Console.Out is System.IO.StreamWriter))
                     {
                         for (int i = 0; i < lastOutputLength; i++) { Console.Write('\u0008'); }
-                        string output = string.Format("Calculating LR(1) State List: {0} <-- {1}, working on {2}/{3} ...",
+                        string output = string.Format("Calculating LALR(1) State List: {0} <-- {1}, working on {2}/{3} ...",
                             stateListCount, queueCount, 1 + itemIndex++, itemCount);
                         Console.Write(output);
                         lastOutputLength = output.Length;
