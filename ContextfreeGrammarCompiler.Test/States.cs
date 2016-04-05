@@ -22,9 +22,6 @@ namespace ContextfreeGrammarCompiler.Test
         {
             var slash = new LexiState();
             slash.charTypeList.Add(SourceCodeCharType.Divide);
-            //slash.getTokenList.TryInsert(new CodeGetToken(new TreeNodeType(
-            //    ConstString2IdentifierHelper.ConstString2Identifier("/") + "Leave__",
-            //    "/", "\"/\"")));
             return new DivideState(slash);
         }
 
