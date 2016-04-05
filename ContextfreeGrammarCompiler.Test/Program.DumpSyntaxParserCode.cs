@@ -21,7 +21,7 @@ namespace ContextfreeGrammarCompiler.Test
             var parserType = new CodeTypeDeclaration(GetParserName(grammarId, algorithm));
             parserType.IsClass = true;
             parserType.BaseTypes.Add(typeof(LRSyntaxParser));
-            DumpSyntaxParserFields(grammar, parserType);
+            DumpSyntaxParserFields(grammar, parserType, grammarId, algorithm);
             DumpSyntaxParserMethod_GetGrammar(grammar, parserType);
             DumpSyntaxParserMethod_GetParsingMap(grammar, map, parserType);
 
@@ -216,7 +216,8 @@ namespace ContextfreeGrammarCompiler.Test
             parserType.Members.Add(method);
         }
 
-        private static void DumpSyntaxParserFields(RegulationList grammar, CodeTypeDeclaration parserType)
+        private static void DumpSyntaxParserFields(RegulationList grammar, CodeTypeDeclaration parserType,
+            string grammarId, SyntaxParserMapAlgorithm algorithm)
         {
             {
                 // protected static LRParsingMap parsingMap;
@@ -237,25 +238,27 @@ namespace ContextfreeGrammarCompiler.Test
                 //    typeof(TreeNodeType).Name, GetNodeNameInParser(node),
                 //    node.Type, node.Content, node.Nickname));
                 //parserType.Members.Add(field);
+                // private static TreeNodeType NODE__Grammar = new TreeNodeType(ContextfreeGrammarSLRTreeNodeType.NODE__Grammar, "Grammar", "<Grammar>");
                 CodeMemberField field = new CodeMemberField(typeof(TreeNodeType), GetNodeNameInParser(node));
                 // field.Attributes 不支持readonly，遗憾了。
                 field.Attributes = MemberAttributes.Private | MemberAttributes.Static;
                 var ctor = new CodeObjectCreateExpression(typeof(TreeNodeType),
-                    new CodePrimitiveExpression(node.Type),
+                    new CodeFieldReferenceExpression(
+                        new CodeTypeReferenceExpression(GetTreeNodeConstTypeName(grammarId, algorithm)),
+                        GetNodeNameInParser(node)),
                     new CodePrimitiveExpression(node.Content),
                     new CodePrimitiveExpression(node.Nickname));
                 field.InitExpression = ctor;
                 parserType.Members.Add(field);
             }
             {
+                // private static readonly TreeNodeType end_of_token_listLeave__ = TreeNodeType.endOfTokenListNode;
                 var node = TreeNodeType.endOfTokenListNode;
                 CodeMemberField field = new CodeMemberField(typeof(TreeNodeType), GetNodeNameInParser(node));
                 field.Attributes = MemberAttributes.Private | MemberAttributes.Static;
-                var ctor = new CodeObjectCreateExpression(typeof(TreeNodeType),
-                    new CodePrimitiveExpression(node.Type),
-                    new CodePrimitiveExpression(node.Content),
-                    new CodePrimitiveExpression(node.Nickname));
-                field.InitExpression = ctor;
+                field.InitExpression=new CodeFieldReferenceExpression(
+                    new CodeTypeReferenceExpression(typeof(TreeNodeType)),
+                    "endOfTokenListNode");
                 parserType.Members.Add(field);
             }
         }
