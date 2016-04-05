@@ -50,12 +50,12 @@ namespace ContextfreeGrammarCompiler.Test
             RegulationList grammar, CodeTypeDeclaration lexiType)
         {
             List<LexiState> lexiStateList = grammar.GetLexiStateList();
-            DivideState divideState = null;// 为了处理注释，"/"符号要特殊对待。
+            DivideState commentState = null;// 为了处理注释，"/"符号要特殊对待。
             foreach (var state in lexiStateList)
             {
                 if (state.CharTypeList.Contains(SourceCodeCharType.Divide))
                 {
-                    divideState = new DivideState(state);
+                    commentState = new DivideState(state);
                     continue;
                 }
 
@@ -66,9 +66,9 @@ namespace ContextfreeGrammarCompiler.Test
                 }
             }
             {
-                if (divideState == null)
-                { divideState = new DivideState(new LexiState()); }
-                CodeMemberMethod method = divideState.GetMethodDefinitionStatement();
+                if (commentState == null)
+                { commentState = LexiState.GetCommentState(); }
+                CodeMemberMethod method = commentState.GetMethodDefinitionStatement();
                 if (method != null)
                 {
                     lexiType.Members.Add(method);
@@ -156,17 +156,36 @@ namespace ContextfreeGrammarCompiler.Test
             }
             {
                 List<LexiState> lexiStateList = grammar.GetLexiStateList();
+                DivideState commentState = null;// 为了处理注释，"/"符号要特殊对待。
                 foreach (var state in lexiStateList)
                 {
+                    if (state.CharTypeList.Contains(SourceCodeCharType.Divide))
+                    {
+                        commentState = new DivideState(state);
+                        continue;
+                    }
+
                     var condition = new CodeConditionStatement(
                         state.GetCondition(),
                         state.GetMethodInvokeStatement());
                     method.Statements.Add(condition);
                 }
                 {
+                    if (commentState == null)
+                    {
+                        commentState = LexiState.GetCommentState();
+                    }
+                    var condition = new CodeConditionStatement(
+                        commentState.GetCondition(),
+                        commentState.GetMethodInvokeStatement());
+                    method.Statements.Add(condition);
+                }
+                {
                     var getSpaceState = LexiState.GetSpaceState();
-                    var lastCondition = getSpaceState.GetMethodInvokeStatement();
-                    method.Statements.AddRange(lastCondition);
+                    var condition = new CodeConditionStatement(
+                        getSpaceState.GetCondition(),
+                        getSpaceState.GetMethodInvokeStatement());
+                    method.Statements.Add(condition);
                 }
                 {
                     var getUnknownState = LexiState.GetUnknownState();
