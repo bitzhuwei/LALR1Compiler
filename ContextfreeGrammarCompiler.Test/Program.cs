@@ -66,12 +66,18 @@ namespace ContextfreeGrammarCompiler.Test
                 fileInfo.Name.Length - (".Grammar").Length);
 
             string sourceCode = File.ReadAllText(grammarFullname);
-            RegulationList grammar = GetGrammar(sourceCode, directory, grammarId);
-
             string errorInfo;
+            RegulationList grammar;
+            if (!GetGrammar(sourceCode, directory, grammarId, out grammar, out errorInfo))
+            {
+                Console.WriteLine("        Error in token list of {0}", grammarId);
+                Console.WriteLine(errorInfo);
+                return;
+            }
+
             if (!grammar.SemanticCheck(out errorInfo))
             {
-                Console.WriteLine("        Error in grammar {0}", grammarId);
+                Console.WriteLine("        Error in semantics of {0}", grammarId);
                 Console.WriteLine(errorInfo);
                 return;
             }

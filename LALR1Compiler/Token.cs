@@ -16,11 +16,6 @@ namespace LALR1Compiler
         /// </summary>
         public TokenType TokenType { get; set; }
 
-        /// <summary>
-        /// 异常信息，一般在LexicalError为true的时候不为空
-        /// </summary>
-        public string ErrorInfo { get; set; }
-
         ///// <summary>
         ///// 附属到此单词对象上的某对象。
         ///// </summary>
@@ -79,7 +74,7 @@ namespace LALR1Compiler
         {
             return string.Format("[{0}]$[Ln:{1}, Col:{2}]{3}",
                 TokenType, Line, Column,
-                LexicalError ? "[" + ErrorInfo + "]" : "");
+                LexicalError ? "ERROR" : "");
         }
 
     }
