@@ -41,7 +41,7 @@ namespace LALR1Compiler
         }
 
        
-        protected abstract IEnumerable<Keyword> GetKeywords();
+        public abstract IEnumerable<Keyword> GetKeywords();
     }
 
     /// <summary>

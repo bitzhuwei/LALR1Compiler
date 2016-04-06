@@ -205,7 +205,7 @@ namespace ContextfreeGrammarCompiler
 
         protected static readonly List<Keyword> keywords = new List<Keyword>();
 
-        protected override IEnumerable<Keyword> GetKeywords()
+        public override IEnumerable<Keyword> GetKeywords()
         {
             return keywords;
         }

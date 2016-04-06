@@ -91,7 +91,7 @@ namespace ContextfreeGrammarCompiler.Test
                 // protected override IEnumerable<Keyword> GetKeywords()
                 var method = new CodeMemberMethod();
                 method.Name = "GetKeywords";
-                method.Attributes = MemberAttributes.Family | MemberAttributes.Override;
+                method.Attributes = MemberAttributes.Public | MemberAttributes.Override;
                 method.ReturnType = new CodeTypeReference(typeof(IEnumerable<Keyword>));
                 var returnKeywords = new CodeMethodReturnStatement(
                     new CodeVariableReferenceExpression("keywords"));
