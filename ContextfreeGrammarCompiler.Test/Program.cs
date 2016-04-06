@@ -68,6 +68,14 @@ namespace ContextfreeGrammarCompiler.Test
             string sourceCode = File.ReadAllText(grammarFullname);
             RegulationList grammar = GetGrammar(sourceCode, directory, grammarId);
 
+            string errorInfo;
+            if (!grammar.SemanticCheck(out errorInfo))
+            {
+                Console.WriteLine("        Error in grammar {0}", grammarId);
+                Console.WriteLine(errorInfo);
+                return;
+            }
+
             DumpCode(grammar, directory, grammarId);
 
             CompileAndTestCode(directory, grammarId);

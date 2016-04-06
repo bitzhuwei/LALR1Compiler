@@ -13,9 +13,9 @@ namespace LALR1Compiler
         /// </summary>
         /// <param name="grammar"></param>
         /// <returns></returns>
-        public static string CheckCompleteness(this RegulationList grammar, out bool error)
+        public static bool SemanticCheck(this RegulationList grammar, out string errorInfo)
         {
-            error = false;
+            bool error = false;
 
             StringBuilder builder = new StringBuilder();
             {
@@ -41,7 +41,13 @@ namespace LALR1Compiler
                 builder.AppendLine(lack);
                 if (innerError) { error = true; }
             }
-            return builder.ToString();
+            {
+
+            }
+
+            errorInfo = builder.ToString();
+
+            return !error;
         }
 
         private static string GetUnused(RegulationList grammar, out bool error)

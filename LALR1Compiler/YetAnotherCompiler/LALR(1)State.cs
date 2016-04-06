@@ -168,10 +168,7 @@ namespace LALR1Compiler
             {
                 this.regulationDotList[i].Dump(stream);
                 stream.Write(", ");
-                foreach (var lookAheadNode in this.lookAheadCollectionList[i])
-                {
-                    lookAheadNode.Dump(stream);
-                }
+                this.lookAheadCollectionList[i].Dump(stream);
                 if (i + 1 < this.regulationDotList.Count)
                 {
                     stream.WriteLine();
