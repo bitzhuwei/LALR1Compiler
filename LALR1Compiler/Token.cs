@@ -73,7 +73,7 @@ namespace LALR1Compiler
         public override string ToString()
         {
             return string.Format("[{0}]$[Ln:{1}, Col:{2}]{3}",
-                TokenType, Line, Column,
+                TokenType.Dump(), Line, Column,
                 LexicalError ? "ERROR" : "");
         }
 

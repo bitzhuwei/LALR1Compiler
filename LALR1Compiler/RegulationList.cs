@@ -82,18 +82,7 @@ namespace LALR1Compiler
 
         public override string ToString()
         {
-            StringBuilder builder = new StringBuilder();
-            for (int i = 0; i < this.Count; i++)
-            {
-                Regulation item = this[i];
-                builder.Append(item);
-                if (i + 1 < this.Count)
-                {
-                    builder.AppendLine();
-                }
-            }
-
-            return builder.ToString();
+            return this.Dump();
         }
 
         /// <summary>
@@ -118,10 +107,13 @@ namespace LALR1Compiler
 
         public void Dump(System.IO.TextWriter stream)
         {
-            foreach (var item in this)
+            for (int i = 0; i < this.Count; i++)
             {
-                item.Dump(stream);
-                stream.WriteLine();
+                this[i].Dump(stream);
+                if (i + 1 < this.Count)
+                {
+                    stream.WriteLine();
+                }
             }
         }
 

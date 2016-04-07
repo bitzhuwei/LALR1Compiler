@@ -14,7 +14,7 @@ namespace LALR1Compiler
         /// </summary>
         /// <param name="cache"></param>
         /// <returns></returns>
-        public static string Dump(this HashCache cache)
+        public static string Dump(this IDump2Stream cache)
         {
             StringBuilder builder = new StringBuilder();
             using (StringWriter writer = new StringWriter(builder))

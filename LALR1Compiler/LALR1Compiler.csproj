@@ -64,7 +64,6 @@
     <Compile Include="YetAnotherCompiler\LR%281%29State.cs" />
     <Compile Include="YetAnotherCompiler\LR%281%29Item.cs" />
     <Compile Include="YetAnotherCompiler\RegulationList.Algorithm.LR%281%29.cs" />
-    <Compile Include="YetAnotherCompiler\SLRParserGeneratorInfo.cs" />
     <Compile Include="YetAnotherCompiler\LR%280%29EdgeCollection.cs" />
     <Compile Include="YetAnotherCompiler\LR%280%29Edge.cs" />
     <Compile Include="YetAnotherCompiler\LR%280%29StateCollection.cs" />

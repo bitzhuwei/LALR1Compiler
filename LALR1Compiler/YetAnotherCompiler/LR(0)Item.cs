@@ -84,7 +84,7 @@ namespace LALR1Compiler
 
         public override void Dump(System.IO.TextWriter stream)
         {
-            stream.Write(this.Regulation.Left.Nickname);
+            this.Regulation.Left.Dump(stream);
             stream.Write(" ::= ");
 
             int count = this.Regulation.RightPart.Count();

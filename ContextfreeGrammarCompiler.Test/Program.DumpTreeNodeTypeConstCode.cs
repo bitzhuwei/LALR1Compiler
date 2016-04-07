@@ -28,7 +28,7 @@ namespace ContextfreeGrammarCompiler.Test
 
             //生成代码  
             string fullname = Path.Combine(LR0Directory, GetTreeNodeConstTypeName(grammarId, algorithm) + ".cs");
-            using (var sw = new StreamWriter(fullname, false))
+            using (var stream = new StreamWriter(fullname, false))
             {
                 CSharpCodeProvider codeProvider = new CSharpCodeProvider();
                 CodeGeneratorOptions geneOptions = new CodeGeneratorOptions();//代码生成选项
@@ -38,7 +38,7 @@ namespace ContextfreeGrammarCompiler.Test
                 geneOptions.IndentString = "    ";
                 geneOptions.VerbatimOrder = true;
 
-                codeProvider.GenerateCodeFromNamespace(parserNamespace, sw, geneOptions);
+                codeProvider.GenerateCodeFromNamespace(parserNamespace, stream, geneOptions);
             }
         }
 

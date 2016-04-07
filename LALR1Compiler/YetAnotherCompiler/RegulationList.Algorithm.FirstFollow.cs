@@ -385,17 +385,17 @@ namespace LALR1Compiler
 
         public void Dump(string fullname)
         {
-            using (StreamWriter sw = new StreamWriter(fullname, false))
+            using (StreamWriter stream = new StreamWriter(fullname, false))
             {
-                sw.WriteLine("FIRST list:");
+                stream.WriteLine("FIRST list:");
                 foreach (var item in this.FirstList)
                 {
-                    sw.WriteLine(item.ToString());
+                    item.Dump(stream);
                 }
-                sw.WriteLine("FOLLOW list:");
+                stream.WriteLine("FOLLOW list:");
                 foreach (var item in this.FollowList)
                 {
-                    sw.WriteLine(item.ToString());
+                    item.Dump(stream);
                 }
             }
         }
