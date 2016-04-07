@@ -3,3 +3,4 @@
 <S> ::= "if" <E> "then" <S> ;
 <S> ::= <other> ;
 <other> ::= "something" ;
+<E> ::= "expr" ;
