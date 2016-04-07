@@ -1,0 +1,9 @@
+// if ... else ...
+<S> ::= <M> ;
+<S> ::= <U> ;
+<M> ::= "if" <E> "then" <M> "else" <M> ;
+<M> ::= <other> ;
+<U> ::= "if" <E> "then" <S> ;
+<U> ::= "if" <E> "then" <M> "else" <U> ;
+<E> ::= identifier;
+//<other> :: =identifier;

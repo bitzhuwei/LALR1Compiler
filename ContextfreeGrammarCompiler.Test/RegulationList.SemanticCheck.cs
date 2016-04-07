@@ -236,7 +236,7 @@ namespace ContextfreeGrammarCompiler.Test
             builder.AppendLine(string.Format("Lack of [{0}] regulation's definitions:", lackList.Count));
             foreach (var item in lackList)
             {
-                builder.AppendLine(string.Format("{0}", item));
+                builder.AppendLine(string.Format("{0}", item.Dump()));
             }
 
             error = lackList.Count > 0;
