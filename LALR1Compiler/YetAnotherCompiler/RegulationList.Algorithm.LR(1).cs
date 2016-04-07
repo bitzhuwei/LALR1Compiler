@@ -58,7 +58,7 @@ namespace LALR1Compiler
                             Console.SetOut(originalOut);
                         }
                         for (int i = 0; i < lastOutputLength; i++) { Console.Write('\u0008'); }
-                        string output = string.Format("Calculating LALR(1) State List: {0} <-- {1}, working on group {2}/{3} ...",
+                        string output = string.Format("Calculating LR(1) State List: {0} <-- {1}, working on group {2}/{3} ...",
                             stateListCount, queueCount, 1 + itemIndex++, groupCount);
                         Console.Write(output);
                         lastOutputLength = output.Length;
