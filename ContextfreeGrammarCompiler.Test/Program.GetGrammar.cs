@@ -31,7 +31,6 @@ namespace ContextfreeGrammarCompiler.Test
             TokenList tokenList = lexi.Analyze(sourceCode);
             if (!tokenList.Check(out errorInfo))
             {
-                Console.WriteLine(errorInfo);
                 return false;
             }
             Console.WriteLine("        Dump {0}", grammarId + ".TokenList.log");

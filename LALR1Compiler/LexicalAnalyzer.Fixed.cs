@@ -75,6 +75,9 @@ namespace LALR1Compiler
         public AnalyzingContext(string sourceCode)
         {
             this.SourceCode = sourceCode;
+
+            this.CurrentLine = 1;
+            this.CurrentColumn = 1;
         }
 
         /// <summary>
@@ -93,7 +96,7 @@ namespace LALR1Compiler
         /// <summary>
         /// 将要分析的字符索引（从0开始）
         /// </summary>
-        private int nextLetterIndex { get; set; }
+        private int nextLetterIndex;
 
         /// <summary>
         /// ptNextLetter所在行（从0开始）

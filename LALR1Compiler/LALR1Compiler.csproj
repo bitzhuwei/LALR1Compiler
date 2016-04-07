@@ -41,7 +41,7 @@
   <ItemGroup>
     <Compile Include="LexicalAnalyzer.Fixed.Null.cs" />
     <Compile Include="LexicalAnalyzer.Fixed.Space.cs" />
-    <Compile Include="LexicalAnalyzer.Fixed.Noet.cs" />
+    <Compile Include="LexicalAnalyzer.Fixed.Comment.cs" />
     <Compile Include="LexicalAnalyzer.Fixed.Unknown.cs" />
     <Compile Include="LexicalAnalyzer.Fixed.Identifier.cs" />
     <Compile Include="LexicalAnalyzer.Fixed.ConstString.cs" />

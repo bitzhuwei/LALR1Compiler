@@ -6,4 +6,3 @@
 <U> ::= "if" <E> "then" <S> ;
 <U> ::= "if" <E> "then" <M> "else" <U> ;
 <E> ::= identifier;
-//<other> :: =identifier;

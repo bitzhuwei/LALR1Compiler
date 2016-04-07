@@ -113,6 +113,9 @@ namespace ContextfreeGrammarCompiler.Test
                     "SkipMultilineNote",
                     new CodeVariableReferenceExpression("context")));
             ifStatement.TrueStatements.Add(multiLine);
+            // return false;
+            var returnFalse = new CodeMethodReturnStatement(new CodePrimitiveExpression(false));
+            ifStatement.TrueStatements.Add(returnFalse);
         }
 
         private static void SingleLine(CodeConditionStatement ifStatement)
@@ -130,6 +133,9 @@ namespace ContextfreeGrammarCompiler.Test
                     "SkipSingleLineNote",
                     new CodeVariableReferenceExpression("context")));
             ifStatement.TrueStatements.Add(singleLine);
+            // return false;
+            var returnFalse = new CodeMethodReturnStatement(new CodePrimitiveExpression(false));
+            ifStatement.TrueStatements.Add(returnFalse);
         }
     }
 }

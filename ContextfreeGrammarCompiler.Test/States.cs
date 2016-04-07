@@ -129,9 +129,41 @@ namespace ContextfreeGrammarCompiler.Test
                 method.Statements.AddRange(statements);
             }
             {
-                // return false;
-                var returnFalse = new CodeMethodReturnStatement(new CodePrimitiveExpression(false));
-                method.Statements.Add(returnFalse);
+                // var current = context.CurrentChar().ToString();
+                // result.TokenType = new TokenType("__error", current, current);
+                // result.LexicalError = true;
+                // context.NextLetterIndex++;
+                // return true;
+                var current = new CodeVariableDeclarationStatement(typeof(string), "current");
+                current.InitExpression = new CodeMethodInvokeExpression(
+                    new CodeMethodInvokeExpression(
+                        new CodeVariableReferenceExpression("context"), "CurrentChar"),
+                    "ToString");
+                var tokenType = new CodeAssignStatement(
+                    new CodePropertyReferenceExpression(
+                        new CodeVariableReferenceExpression("result"), "TokenType"),
+                    new CodeObjectCreateExpression(typeof(TokenType),
+                        new CodePrimitiveExpression("__error"),
+                        new CodeVariableReferenceExpression("current"),
+                        new CodeVariableReferenceExpression("current")));
+                var lexiError = new CodeAssignStatement(
+                    new CodePropertyReferenceExpression(
+                        new CodeVariableReferenceExpression("result"), "LexicalError"),
+                    new CodePrimitiveExpression(true));
+                var increase = new CodeAssignStatement(
+                    new CodePropertyReferenceExpression(
+                        new CodeVariableReferenceExpression("context"), "NextLetterIndex"),
+                    new CodeBinaryOperatorExpression(
+                        new CodePropertyReferenceExpression(
+                            new CodeVariableReferenceExpression("context"), "NextLetterIndex"),
+                        CodeBinaryOperatorType.Add,
+                        new CodePrimitiveExpression(1)));
+                var returnTrue = new CodeMethodReturnStatement(new CodePrimitiveExpression(false));
+                method.Statements.Add(current);
+                method.Statements.Add(tokenType);
+                method.Statements.Add(lexiError);
+                method.Statements.Add(increase);
+                method.Statements.Add(returnTrue);
             }
 
             return method;

@@ -67,14 +67,20 @@ namespace ContextfreeGrammarCompiler
                 if ("//" == str)
                 {
                     SkipSingleLineNote(context);
+                    return false;
                 }
                 else if ("/*" == str)
                 {
                     SkipMultilineNote(context);
+                    return false;
                 }
             }
 
-            return false;
+            result.TokenType = new TokenType(
+                "__error", context.CurrentChar().ToString(), context.CurrentChar().ToString());
+            result.LexicalError = true;
+            context.NextLetterIndex++;
+            return true;
         }
 
         /// <summary>
@@ -100,7 +106,11 @@ namespace ContextfreeGrammarCompiler
                 }
             }
 
-            return false;
+            result.TokenType = new TokenType(
+                "__error", context.CurrentChar().ToString(), context.CurrentChar().ToString());
+            result.LexicalError = true;
+            context.NextLetterIndex++;
+            return true;
         }
         /// <summary>
         /// |
@@ -125,7 +135,11 @@ namespace ContextfreeGrammarCompiler
                 }
             }
 
-            return false;
+            result.TokenType = new TokenType(
+                "__error", context.CurrentChar().ToString(), context.CurrentChar().ToString());
+            result.LexicalError = true;
+            context.NextLetterIndex++;
+            return true;
         }
         /// <summary>
         /// &lt;
@@ -150,7 +164,11 @@ namespace ContextfreeGrammarCompiler
                 }
             }
 
-            return false;
+            result.TokenType = new TokenType(
+                "__error", context.CurrentChar().ToString(), context.CurrentChar().ToString());
+            result.LexicalError = true;
+            context.NextLetterIndex++;
+            return true;
         }
         /// <summary>
         /// &gt;
@@ -175,7 +193,11 @@ namespace ContextfreeGrammarCompiler
                 }
             }
 
-            return false;
+            result.TokenType = new TokenType(
+                "__error", context.CurrentChar().ToString(), context.CurrentChar().ToString());
+            result.LexicalError = true;
+            context.NextLetterIndex++;
+            return true;
         }
         /// <summary>
         /// ;
@@ -200,7 +222,11 @@ namespace ContextfreeGrammarCompiler
                 }
             }
 
-            return false;
+            result.TokenType = new TokenType(
+                "__error", context.CurrentChar().ToString(), context.CurrentChar().ToString());
+            result.LexicalError = true;
+            context.NextLetterIndex++;
+            return true;
         }
 
         protected static readonly List<Keyword> keywords = new List<Keyword>();

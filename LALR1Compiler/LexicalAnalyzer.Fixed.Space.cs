@@ -25,7 +25,7 @@ namespace LALR1Compiler
             if (c == '\n')// || c == '\r') //换行：Windows：\r\n Linux：\n
             {
                 context.CurrentLine++;
-                context.CurrentColumn = 0;
+                context.CurrentColumn = 1;
             }
             return false;
         }
