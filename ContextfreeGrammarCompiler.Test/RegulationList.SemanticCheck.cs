@@ -102,7 +102,7 @@ namespace ContextfreeGrammarCompiler.Test
                 if (string.IsNullOrEmpty(content))
                 {
                     innderError = true;
-                    return string.Format("Empty node is not allowed in [{0}]", node);
+                    return string.Format("Empty node is not allowed in [{0}]", node.Dump());
                 }
             }
             {
@@ -205,7 +205,7 @@ namespace ContextfreeGrammarCompiler.Test
             builder.AppendLine(string.Format("{0} unused nodes:", unusedList.Count));
             foreach (var item in unusedList)
             {
-                builder.AppendLine(item.ToString());
+                builder.AppendLine(item.Dump());
             }
 
             error = unusedList.Count > 0;
