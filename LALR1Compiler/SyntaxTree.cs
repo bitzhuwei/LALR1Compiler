@@ -156,7 +156,7 @@ namespace LALR1Compiler
             else
             {
                 stream.WriteLine("({0})[{1}][{2}]",
-                    syntaxTree.NodeType.Type, syntaxTree.NodeType.Content, syntaxTree.NodeType.Nickname);
+                    syntaxTree.NodeType.Type, syntaxTree.NodeType.Nickname, syntaxTree.NodeType.Content);
             }
 
             foreach (var item in syntaxTree.Children)
