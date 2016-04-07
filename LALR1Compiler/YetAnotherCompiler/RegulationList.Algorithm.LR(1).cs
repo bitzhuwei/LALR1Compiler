@@ -19,7 +19,7 @@ namespace LALR1Compiler
         public static void GetLR1ParsingMap(this RegulationList grammar,
             out LRParsingMap map,
             out LR1StateCollection stateCollection,
-            out LR1EdgeCollection edgeCollection, TextWriter writer)
+            out LR1EdgeCollection edgeCollection, TextWriter originalOut)
         {
             // 给文法添加一个辅助的开始产生式 S' -> S $
             // 如何添加一个外来的结点类型？用Enum是无法做到的。
@@ -48,28 +48,29 @@ namespace LALR1Compiler
             {
                 SmallerLR1State fromState = queue.Dequeue(); queueCount--;
                 int itemIndex = 0;
-                int itemCount = fromState.Count();
-                foreach (var item in fromState)
+                int groupCount = fromState.GroupCount;
+                foreach (var group in fromState.GetGroups())
                 {
                     {
                         TextWriter currentWriter = Console.Out;
-                        if (Console.Out != writer)
+                        if (Console.Out != originalOut)
                         {
-                            Console.SetOut(writer);
+                            Console.SetOut(originalOut);
                         }
                         for (int i = 0; i < lastOutputLength; i++) { Console.Write('\u0008'); }
-                        string output = string.Format("Calculating LR(1) State List: {0} <-- {1}, working on {2}/{3} ...",
-                            stateListCount, queueCount, 1 + itemIndex++, itemCount);
+                        string output = string.Format("Calculating LALR(1) State List: {0} <-- {1}, working on group {2}/{3} ...",
+                            stateListCount, queueCount, 1 + itemIndex++, groupCount);
                         Console.Write(output);
                         lastOutputLength = output.Length;
                         Console.SetOut(currentWriter);
                     }
-                    TreeNodeType x = item.GetNodeNext2Dot();
-                    if (x == decoratedEnd || x == null) { continue; }
-
+                    TreeNodeType x = group.Item1.GetNodeNext2Dot();
+                    if (x == null || x == decoratedEnd) { continue; }
                     SmallerLR1State toState = decoratedGrammar.Goto(fromState, x, nullableDict, firstCollection);
-                    if (stateCollection.TryInsert(toState))
+                    if (stateCollection.TryInsert(toState))//融入组织之中吧
                     {
+                        int index = stateCollection.IndexOf(toState);
+                        toState = stateCollection[index];
                         queue.Enqueue(toState);
                         stateListCount++;
                         queueCount++;
@@ -87,9 +88,9 @@ namespace LALR1Compiler
             }
             {
                 TextWriter currentWriter = Console.Out;
-                if (Console.Out != writer)
+                if (Console.Out != originalOut)
                 {
-                    Console.SetOut(writer);
+                    Console.SetOut(originalOut);
                 }
                 Console.WriteLine();
                 Console.SetOut(currentWriter);
@@ -238,18 +239,44 @@ namespace LALR1Compiler
         static SmallerLR1State Goto(this RegulationList list, SmallerLR1State state, TreeNodeType x, Dictionary<TreeNodeType, bool> nullableDict, FIRSTCollection firstList = null)
         {
             var toState = new SmallerLR1State();
-            foreach (var item in state)
+            foreach (var group in state.GetGroups())
             {
-                TreeNodeType nextNode = item.GetNodeNext2Dot();
+                TreeNodeType nextNode = group.Item1.GetNodeNext2Dot();
                 if (nextNode == x)
                 {
-                    var newItem = new LR1Item(item.Regulation, item.DotPosition + 1, item.LookAheadNodeType);
-                    toState.TryInsert(newItem);
+                    toState.TryInsert(
+                        new LR0Item(group.Item1.Regulation, group.Item1.DotPosition + 1),
+                        group.Item2);
                 }
             }
 
             return Closure(list, toState, nullableDict, firstList);
         }
+
+        ///// <summary>
+        ///// LR(1)的Goto操作。
+        ///// 将圆点移到所有LR(1)项中的符号<paramref name="x"/>之后。
+        ///// </summary>
+        ///// <param name="list"></param>
+        ///// <param name="state"></param>
+        ///// <param name="x">一个文法符号，终结点或非终结点。</param>
+        ///// <param name="firstList"></param>
+        ///// <returns></returns>
+        //static SmallerLR1State Goto(this RegulationList list, SmallerLR1State state, TreeNodeType x, Dictionary<TreeNodeType, bool> nullableDict, FIRSTCollection firstList = null)
+        //{
+        //    var toState = new SmallerLR1State();
+        //    foreach (var item in state)
+        //    {
+        //        TreeNodeType nextNode = item.GetNodeNext2Dot();
+        //        if (nextNode == x)
+        //        {
+        //            var newItem = new LR1Item(item.Regulation, item.DotPosition + 1, item.LookAheadNodeType);
+        //            toState.TryInsert(newItem);
+        //        }
+        //    }
+
+        //    return Closure(list, toState, nullableDict, firstList);
+        //}
 
     }
 

@@ -27,16 +27,6 @@ namespace LALR1Compiler
             }
         }
 
-        // 分析表对第一个State是有要求的。必须是<S'> ::= . <S> "$" ;所在的state。
-        /// <summary>
-        /// 由外部（<see cref="LR1StateCollection"/>）指定的索引。
-        /// 分析表对第一个State是有要求的。必须是&lt;S'&gt; ::= . &lt;S&gt; "$" ;所在的state。
-        /// </summary>
-        public int ParsingMapIndex { get; set; }
-
-        private OrderedCollection<LR0Item> regulationDotList = new OrderedCollection<LR0Item>("this should not occur");
-        private List<OrderedCollection<TreeNodeType>> lookAheadCollectionList = new List<OrderedCollection<TreeNodeType>>();
-
         /// <summary>
         /// 
         /// </summary>
@@ -67,6 +57,16 @@ namespace LALR1Compiler
                 return result;
             }
         }
+
+        // 分析表对第一个State是有要求的。必须是<S'> ::= . <S> "$" ;所在的state。
+        /// <summary>
+        /// 由外部（<see cref="LR1StateCollection"/>）指定的索引。
+        /// 分析表对第一个State是有要求的。必须是&lt;S'&gt; ::= . &lt;S&gt; "$" ;所在的state。
+        /// </summary>
+        public int ParsingMapIndex { get; set; }
+
+        private OrderedCollection<LR0Item> regulationDotList = new OrderedCollection<LR0Item>("this should not occur");
+        private List<OrderedCollection<TreeNodeType>> lookAheadCollectionList = new List<OrderedCollection<TreeNodeType>>();
 
         /// <summary>
         /// 这是一个只能添加元素的集合，其元素是有序的，是按二分法插入的。
