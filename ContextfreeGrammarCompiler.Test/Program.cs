@@ -21,7 +21,10 @@ namespace ContextfreeGrammarCompiler.Test
             consoleOriginalOut = Console.Out;
 
             DeleteFiles();
-            string[] filenames = Directory.GetFiles(".", "*.Grammar", SearchOption.AllDirectories);
+            // 从最小的文法开始。
+            var filenames = from item in Directory.GetFiles(".", "*.Grammar", SearchOption.AllDirectories)
+                            orderby (File.ReadAllText(item).Length)
+                            select item;
             foreach (var filename in filenames)
             {
                 Console.WriteLine("Testing {0}", filename);
