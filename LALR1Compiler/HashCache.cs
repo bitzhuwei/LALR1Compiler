@@ -126,17 +126,6 @@ namespace LALR1Compiler
             return this.UniqueString;
         }
 
-#if DEBUG
-        /// <summary>
-        /// 调试时用次方式获取此对象的详细信息。
-        /// </summary>
-        /// <returns></returns>
-        public string DetailString()
-        {
-            return this.getUniqueString(this);
-        }
-#endif
-
         public int CompareTo(HashCache other)
         {
             if (other == null) { return 1; }
