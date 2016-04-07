@@ -68,13 +68,21 @@ namespace LALR1Compiler
             {
                 if (this.dirty)
                 {
-                    this.uniqueString = getUniqueString(this);
-                    this.hashCode = this.uniqueString.GetHashCode();
+                    Update();
+ 
                     this.dirty = false;
                 }
 
                 return this.hashCode;
             }
+        }
+
+        private void Update()
+        {
+            string str = getUniqueString(this);
+            int hashCode = str.GetHashCode();
+            this.hashCode = hashCode;
+            this.uniqueString = string.Format("[{0}]", hashCode);
         }
 
         // TODO: 功能稳定后应精简此字段的内容。
@@ -93,8 +101,8 @@ namespace LALR1Compiler
             {
                 if (this.dirty)
                 {
-                    this.uniqueString = getUniqueString(this);
-                    this.hashCode = this.uniqueString.GetHashCode();
+                    Update();
+
                     this.dirty = false;
                 }
 
