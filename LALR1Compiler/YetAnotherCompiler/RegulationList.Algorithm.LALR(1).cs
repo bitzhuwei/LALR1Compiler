@@ -19,7 +19,7 @@ namespace LALR1Compiler
         public static void GetLALR1ParsingMap(this RegulationList grammar,
             out LRParsingMap map,
             out LALR1StateCollection stateCollection,
-            out LALR1EdgeCollection edgeCollection, TextWriter writer)
+            out LALR1EdgeCollection edgeCollection, TextWriter originalOut)
         {
             // 给文法添加一个辅助的开始产生式 S' -> S $
             // 如何添加一个外来的结点类型？用Enum是无法做到的。
@@ -53,9 +53,9 @@ namespace LALR1Compiler
                 {
                     {
                         TextWriter currentWriter = Console.Out;
-                        if (Console.Out != writer)
+                        if (Console.Out != originalOut)
                         {
-                            Console.SetOut(writer);
+                            Console.SetOut(originalOut);
                         }
                         for (int i = 0; i < lastOutputLength; i++) { Console.Write('\u0008'); }
                         string output = string.Format("Calculating LALR(1) State List: {0} <-- {1}, working on group {2}/{3} ...",
@@ -88,9 +88,9 @@ namespace LALR1Compiler
             }
             {
                 TextWriter currentWriter = Console.Out;
-                if (Console.Out != writer)
+                if (Console.Out != originalOut)
                 {
-                    Console.SetOut(writer);
+                    Console.SetOut(originalOut);
                 }
                 Console.WriteLine();
                 Console.SetOut(currentWriter);
