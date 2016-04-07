@@ -13,6 +13,20 @@ namespace LALR1Compiler
     public class LALR1State : HashCache, IEnumerable<LR1Item>
     {
 
+        /// <summary>
+        /// 返回regulations+DotPosition（即LR0Item）都相同的一组LR1Item（即LALR1Item）。
+        /// </summary>
+        /// <returns></returns>
+        public IEnumerable<Tuple<LR0Item, OrderedCollection<TreeNodeType>>> GetGroups()
+        {
+            int count = this.regulationDotList.Count;
+            for (int i = 0; i < count; i++)
+            {
+                yield return new Tuple<LR0Item, OrderedCollection<TreeNodeType>>(
+                    this.regulationDotList[i], this.lookAheadCollectionList[i]);
+            }
+        }
+
         // 分析表对第一个State是有要求的。必须是<S'> ::= . <S> "$" ;所在的state。
         /// <summary>
         /// 由外部（<see cref="LR1StateCollection"/>）指定的索引。
@@ -24,10 +38,41 @@ namespace LALR1Compiler
         private List<OrderedCollection<TreeNodeType>> lookAheadCollectionList = new List<OrderedCollection<TreeNodeType>>();
 
         /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="lr0Item">group标识</param>
+        /// <param name="lookAheadNodes">此group下包含的lookAhead结点列表</param>
+        /// <returns></returns>
+        public bool TryInsert(LR0Item lr0Item, OrderedCollection<TreeNodeType> lookAheadNodes)
+        {
+            if (this.regulationDotList.TryInsert(lr0Item))
+            {
+                int index = this.regulationDotList.IndexOf(lr0Item);
+                this.lookAheadCollectionList.Insert(index, lookAheadNodes);
+
+                this.SetDirty();
+                return true;
+            }
+            else
+            {
+                int index = this.regulationDotList.IndexOf(lr0Item);
+                bool result = false;
+                OrderedCollection<TreeNodeType> list = this.lookAheadCollectionList[index];
+                foreach (var item in lookAheadNodes)
+                {
+                    result = list.TryInsert(item) || result;
+                }
+
+                //this.SetDirty();// 无论是否插入新的lookAheadNode，都不影响state的hashcode
+                return result;
+            }
+        }
+
+        /// <summary>
         /// 这是一个只能添加元素的集合，其元素是有序的，是按二分法插入的。
         /// 但是使用者不能控制元素的顺序。
         /// </summary>
-        /// <param name="separator">在Dump到流时用什么分隔符分隔各个元素？</param>
+        /// <param name="items"></param>
         public LALR1State(params LR1Item[] items)
             : base(GetUniqueString)
         {
