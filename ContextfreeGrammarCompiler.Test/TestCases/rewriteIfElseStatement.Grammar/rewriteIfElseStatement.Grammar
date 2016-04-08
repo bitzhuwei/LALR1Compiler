@@ -13,13 +13,34 @@
 <other_statement> ::= <iteration_statement> ;
 <other_statement> ::= <jump_statement> ;
 
-<compound_statement> ::= "compound_statement" ;
-<declaration_statement> ::= "declaration_statement" ;
-<expression_statement> ::= "expression_statement" ;
-<switch_statement> ::= "switch_statement" ;
-<case_label> ::= "case_label" ;
-<iteration_statement> ::= "iteration_statement" ;
-<jump_statement> ::= "jump_statement" ;
+
+<compound_statement> ::= "{" "}" ;
+<compound_statement> ::= "{" <statement_list> "}" ;
+<statement_list> ::= <statement> ;
+<statement_list> ::= <statement_list> <statement> ;
+
+<declaration_statement> ::= <declaration> ;
+<declaration> ::= "declaration" ;
+
+<expression_statement> ::= ";" ;
+<expression_statement> ::= <expression> ";" ;
+
+<switch_statement> ::= "switch" "(" <expression> ")" "{" <switch_statement_list> "}" ;
+<switch_statement_list> ::= <statement_list> ;
+
+<case_label> ::= "case" <expression> ":" ;
+<case_label> ::= "default" ":" ;
+
+<iteration_statement> ::= "while" "(" <condition> ")" <statement> ;
+<condition> ::= <expression> ;
+
+
+
+<jump_statement> ::= "continue" ";" ;
+<jump_statement> ::= "break" ";" ;
+<jump_statement> ::= "return" ";" ;
+<jump_statement> ::= "return" <expression> ";" ;
+<jump_statement> ::= "discard" ";" ;
 
 
 <expression> ::= "expression" ;

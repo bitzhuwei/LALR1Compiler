@@ -1,0 +1,23 @@
+<declaration> ::= <init_declarator_list> ";" ;
+<declaration> ::= <type_qualifier> identifier ";" ;
+<declaration> ::= <type_qualifier> identifier <identifier_list> ";" ;
+<identifier_list> ::= "," identifier ;
+<identifier_list> ::= <identifier_list> "," identifier ;
+<init_declarator_list> ::= <single_declaration> ;
+<init_declarator_list> ::= <init_declarator_list> "," identifier ;
+<single_declaration> ::= <fully_specified_type> ;
+<single_declaration> ::= <fully_specified_type> identifier ;
+<fully_specified_type> ::= <type_specifier> ;
+<fully_specified_type> ::= <type_qualifier> <type_specifier> ;
+<type_qualifier> ::= <single_type_qualifier> ;
+<type_qualifier> ::= <type_qualifier> <single_type_qualifier> ;
+<single_type_qualifier> ::= <storage_qualifier> ;
+<storage_qualifier> ::= "in" ;
+<type_specifier> ::= <type_specifier_nonarray> ;
+
+<type_specifier_nonarray> ::= "float" ;
+<type_specifier_nonarray> ::= <TYPE_NAME> ;
+<TYPE_NAME> ::= identifier ;
+
+
+
