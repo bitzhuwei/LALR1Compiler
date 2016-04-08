@@ -28,9 +28,10 @@ namespace LALR1Compiler
                 int index = this.IndexOf(item);
                 LALR1State state = this[index];
                 bool dirty = false;
-                foreach (LR1Item lr1Item in item)
+                foreach (var group in item.GetGroups())
                 {
-                    dirty = state.TryInsert(lr1Item) || dirty;
+                    if(state.TryInsert(group.Item1, group.Item2))
+                    { dirty = true; }
                 }
                 return dirty;
             }
