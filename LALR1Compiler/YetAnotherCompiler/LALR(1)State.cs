@@ -107,7 +107,7 @@ namespace LALR1Compiler
             if (this.regulationDotList.TryInsert(lr0Item))
             {
                 int index = this.regulationDotList.IndexOf(lr0Item);
-                var collection = new OrderedCollection<TreeNodeType>(", ");
+                var collection = new OrderedCollection<TreeNodeType>(" ");
                 collection.TryInsert(item.LookAheadNodeType);
                 this.lookAheadCollectionList.Insert(index, collection);
 
