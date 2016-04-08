@@ -1,9 +1,25 @@
 ﻿<statement> ::= <MatchedIfElse> ;
 <statement> ::= <UnmatchedIfElse> ;
 <MatchedIfElse> ::= "if" "(" <expression> ")" <MatchedIfElse> "else" <MatchedIfElse> ;
-<MatchedIfElse> ::= <other> ;
+<MatchedIfElse> ::= <other_statement> ;
 <UnmatchedIfElse> ::= "if" "(" <expression> ")" <statement> ;
 <UnmatchedIfElse> ::= "if" "(" <expression> ")" <MatchedIfElse> "else" <UnmatchedIfElse> ;
 
-<other> ::= "other" ;
+<other_statement> ::= <compound_statement> ;
+<other_statement> ::= <declaration_statement> ;
+<other_statement> ::= <expression_statement> ;
+<other_statement> ::= <switch_statement> ;
+<other_statement> ::= <case_label> ;
+<other_statement> ::= <iteration_statement> ;
+<other_statement> ::= <jump_statement> ;
+
+<compound_statement> ::= "compound_statement" ;
+<declaration_statement> ::= "declaration_statement" ;
+<expression_statement> ::= "expression_statement" ;
+<switch_statement> ::= "switch_statement" ;
+<case_label> ::= "case_label" ;
+<iteration_statement> ::= "iteration_statement" ;
+<jump_statement> ::= "jump_statement" ;
+
+
 <expression> ::= "expression" ;
