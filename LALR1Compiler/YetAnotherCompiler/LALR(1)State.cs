@@ -33,7 +33,7 @@ namespace LALR1Compiler
         /// <param name="lr0Item">group标识</param>
         /// <param name="lookAheadNodes">此group下包含的lookAhead结点列表</param>
         /// <returns></returns>
-        public bool TryInsert(LR0Item lr0Item, OrderedCollection<TreeNodeType> lookAheadNodes)
+        public bool TryInsert(LR0Item lr0Item, IEnumerable<TreeNodeType> lookAheadNodes)
         {
             if (this.regulationDotList.TryInsert(lr0Item))
             {
