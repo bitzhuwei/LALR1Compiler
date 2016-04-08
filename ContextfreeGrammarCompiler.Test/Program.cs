@@ -27,6 +27,7 @@ namespace ContextfreeGrammarCompiler.Test
                             select item;
             foreach (var filename in filenames)
             {
+                Console.WriteLine("-------------------------------------------------------------");
                 Console.WriteLine("Testing {0}", filename);
                 using (var fs = new FileStream("ContextfreeGrammarCompiler.Test.log", FileMode.Append, FileAccess.Write))
                 {
