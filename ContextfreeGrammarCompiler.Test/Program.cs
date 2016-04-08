@@ -40,6 +40,8 @@ namespace ContextfreeGrammarCompiler.Test
                 }
                 Console.SetOut(consoleOriginalOut);
             }
+
+            Console.WriteLine("All done!");
         }
 
         private static void DeleteFiles()
