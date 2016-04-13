@@ -10,6 +10,8 @@ namespace LALR1Compiler
     /// </summary>
     public class TokenType : HashCache
     {
+        // TODO: 以后应该会删掉这个东西
+        public static readonly TokenType endOfTokenList = new TokenType("end_of_token_list", "$", "\"$\"");
 
         public TokenType(string type, string content, string nickname)
             : base(GetUniqueString)

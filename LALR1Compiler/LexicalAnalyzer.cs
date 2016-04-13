@@ -12,7 +12,29 @@ namespace LALR1Compiler
     public abstract partial class LexicalAnalyzer
         : ILexicalAnalyzer
     {
+        
+        /// <summary>
+        /// 每次分析都返回一个<see cref="Token"/>。
+        /// </summary>
+        /// <param name="sourceCode"></param>
+        /// <returns></returns>
+        public IEnumerable <Token> AnalyzeStep(string sourceCode)
+        {
+            if (!string.IsNullOrEmpty(sourceCode))
+            {
+                var context = new AnalyzingContext(sourceCode);
+                int count = sourceCode.Length;
 
+                while (context.NextLetterIndex < count)
+                {
+                    Token token = NextToken(context);
+                    if (token != null)
+                    {
+                        yield return token;
+                    }
+                }
+            }
+        }
         /// <summary>
         /// 分析源代码获得Token序列
         /// </summary>
@@ -27,10 +49,10 @@ namespace LALR1Compiler
 
             while (context.NextLetterIndex < count)
             {
-                var tk = NextToken(context);
-                if (tk != null)
+                Token token = NextToken(context);
+                if (token != null)
                 {
-                    tokens.Add(tk);
+                    tokens.Add(token);
                 }
             }
 

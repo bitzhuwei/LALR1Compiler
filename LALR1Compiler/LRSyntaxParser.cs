@@ -21,6 +21,55 @@ namespace LALR1Compiler
         static bool print = false;
 #endif
 
+        bool inParsingStep = false;
+        ParsingStepContext parsingStepContext;
+
+        public void StartParsing()
+        {
+            if (!inParsingStep)
+            {
+                LRParsingMap parsingMap = GetParsingMap();
+                RegulationList grammar = GetGrammar();
+                var tokenTypeConvertor = new TokenType2TreeNodeType();
+                parsingStepContext = new ParsingStepContext(grammar, parsingMap, tokenTypeConvertor);
+                inParsingStep = true;
+            }
+        }
+
+        public SyntaxTree StopParsing()
+        {
+            SyntaxTree result = null;
+            if (inParsingStep)
+            {
+                result = ParseStep(Token.endOfTokenList);
+                parsingStepContext = null;
+                inParsingStep = false;
+            }
+
+            return result;
+        }
+
+        public SyntaxTree ParseStep(Token token)
+        {
+            if (!inParsingStep) { StartParsing(); }
+
+            parsingStepContext.AddToken(token);
+            TreeNodeType nodeType = parsingStepContext.CurrentNodeType();
+            int stateId = parsingStepContext.StateIdStack.Peek();
+            LRParsingAction action = parsingStepContext.ParsingMap.GetAction(stateId, nodeType);
+            int currentTokenIndex = action.Execute(parsingStepContext);
+            parsingStepContext.CurrentTokenIndex = currentTokenIndex;
+
+            if (parsingStepContext.TreeStack.Count > 0)
+            {
+                return parsingStepContext.TreeStack.Peek();
+            }
+            else
+            {
+                return new SyntaxTree();
+            }
+        }
+
         public SyntaxTree Parse(TokenList tokenList)
         {
             LRParsingMap parsingMap = GetParsingMap();
@@ -158,6 +207,23 @@ namespace LALR1Compiler
         }
     }
 
+    public class ParsingStepContext : ParsingContext
+    {
+
+        public void AddToken(Token token)
+        {
+            this.TokenList.Add(token);
+        }
+
+        public ParsingStepContext(
+            RegulationList grammar,
+            LRParsingMap parsingMap,
+            TokenType2TreeNodeType tokenTypeConvertor)
+            : base(new TokenList(), grammar, parsingMap, tokenTypeConvertor)
+        {
+        }
+    }
+
     public class ParsingContext
     {
         public int CurrentTokenIndex { get; set; }
@@ -180,15 +246,13 @@ namespace LALR1Compiler
 
         public TokenType2TreeNodeType TokenTypeConvertor { get; private set; }
 
-        // TODO: 以后应该会删掉这个东西
-        private static readonly TokenType endOfTokenList = new TokenType("end_of_token_list", "$", "\"$\"");
 
         public TreeNodeType CurrentNodeType()
         {
             TokenType tokenType;
             if (this.CurrentTokenIndex >= this.TokenList.Count)
             {
-                tokenType = endOfTokenList;
+                tokenType = TokenType.endOfTokenList;
             }
             else
             {

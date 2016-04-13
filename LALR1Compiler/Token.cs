@@ -11,6 +11,8 @@ namespace LALR1Compiler
     public class Token
     {
 
+        public static readonly Token endOfTokenList = new Token() { TokenType = TokenType.endOfTokenList, };
+
         /// <summary>
         /// 单词类型
         /// </summary>
