@@ -1,0 +1,9 @@
+// 书中的文法3-11
+<prog> ::= <stmlist> ;
+<stm> ::= identifier ":=" identifier ;
+<stm> ::= "while" identifier "do" <stm> ;
+<stm> ::= "begin" <stmlist> "end" ;
+<stm> ::= "if" identifier "then" <stm> ;
+<stm> ::= "if" identifier "then" <stm> "else" <stm> ;
+<stmlist> ::= <stm> ;
+<stmlist> ::= <stmlist> ";" <stm> ;

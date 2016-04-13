@@ -60,6 +60,9 @@
   <ItemGroup>
     <None Include="App.config" />
     <Compile Include="Program.GetLexicalAnalyzer_TryGetToken_States.cs" />
+    <None Include="TestCases\3_11.Grammar\3_11.Grammar">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
     <None Include="TestCases\3_10.Grammar\3_10.Grammar">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
@@ -163,7 +166,9 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <SubType>Designer</SubType>
     </None>
-    <None Include="TestCases\Declaration.Grammar\Original.Grammar" />
+    <None Include="TestCases\Declaration.Grammar\Original.Grammar">
+      <SubType>Designer</SubType>
+    </None>
     <None Include="TestCases\Demo.Grammar\Code1.Code">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
