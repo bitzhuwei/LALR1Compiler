@@ -5,11 +5,11 @@ using System.Runtime.InteropServices;
 // 有关程序集的常规信息通过以下
 // 特性集控制。更改这些特性值可修改
 // 与程序集关联的信息。
-[assembly: AssemblyTitle("TopologyLayout")]
+[assembly: AssemblyTitle("GLSL.Y.Processor")]
 [assembly: AssemblyDescription("")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("")]
-[assembly: AssemblyProduct("TopologyLayout")]
+[assembly: AssemblyProduct("GLSL.Y.Processor")]
 [assembly: AssemblyCopyright("Copyright ©  2016")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
@@ -20,7 +20,7 @@ using System.Runtime.InteropServices;
 [assembly: ComVisible(false)]
 
 // 如果此项目向 COM 公开，则下列 GUID 用于类型库的 ID
-[assembly: Guid("3d0609d2-8a95-438b-8219-542216d3eb6e")]
+[assembly: Guid("b8a0b1ef-70e8-4b99-b600-6572d648a60c")]
 
 // 程序集的版本信息由下面四个值组成: 
 //
