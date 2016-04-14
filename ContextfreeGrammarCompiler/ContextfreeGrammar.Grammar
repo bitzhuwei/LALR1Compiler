@@ -14,6 +14,6 @@
 <V> ::= <Vn> | <Vt> ;
 // 非叶结点是<>括起来的标识符
 <Vn> ::= "<" identifier ">" ;
-// 叶结点是用"引起来的字符串常量或下列内容：null, identifier, number, constString
+// 叶结点是用"引起来的字符串常量或下列内容：null, identifier, number, constString, userDefinedType
 // 这几个标识符就是ContextfreeGrammar的关键字
 <Vt> ::= "null" | "identifier" | "number" | "constString"  | "userDefinedType"| constString ;

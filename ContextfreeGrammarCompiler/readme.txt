@@ -1,9 +1,21 @@
-﻿<Start> ::= <Vn> "::=" <VList> ";" <PList>;
-<PList> ::= <Vn> "::=" <VList> ";" <PList> | null;
-<VList> ::= <V> <VOpt>;
-<V> ::= <Vn> | <Vt>;
-<VOpt> ::= <V> <VOpt> | "|" <V> <VOpt> | null;
-<Vn> ::= "<" identifier ">";
-<Vt> ::= "null" | "identifier" | "number" | "constString" | constString;
+﻿// 文法是1到多个产生式
+<Grammar> ::= <ProductionList> <Production> ;
+// 产生式列表是0到多个产生式
+<ProductionList> ::= <ProductionList> <Production> | null ;
+// 产生式是左部+第一个候选式+若干右部
+<Production> ::= <Vn> "::=" <Canditate> <RightPartList> ";" ;
+// 候选式是1到多个结点
+<Canditate> ::= <VList> <V> ;
+// 结点列表是0到多个结点
+<VList> ::= <VList> <V> | null ;
+// 右部列表是0到多个候选式
+<RightPartList> ::= "|" <Canditate> <RightPartList> | null ;
+// 结点是非叶结点或叶结点
+<V> ::= <Vn> | <Vt> ;
+// 非叶结点是<>括起来的标识符
+<Vn> ::= "<" identifier ">" ;
+// 叶结点是用"引起来的字符串常量或下列内容：null, identifier, number, constString, userDefinedType
+// 这几个标识符就是ContextfreeGrammar的关键字
+<Vt> ::= "null" | "identifier" | "number" | "constString"  | "userDefinedType"| constString ;
 
 这是文法的文法。用于制作LALR(1)编译器的自动生成工具。
