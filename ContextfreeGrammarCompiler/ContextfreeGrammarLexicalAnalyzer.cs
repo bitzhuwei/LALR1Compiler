@@ -170,13 +170,13 @@ namespace ContextfreeGrammarCompiler
                 if (("//" == str))
                 {
                     this.SkipSingleLineNote(context);
+                    return false;
                 }
-                return false;
                 if (("/*" == str))
                 {
                     this.SkipMultilineNote(context);
+                    return false;
                 }
-                return false;
             }
             string current = context.CurrentChar().ToString();
             result.TokenType = new LALR1Compiler.TokenType("__error", current, current);
