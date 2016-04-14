@@ -1,0 +1,2 @@
+struct SomeStruct { }
+SomeStruct x;

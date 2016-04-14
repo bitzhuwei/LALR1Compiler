@@ -41,25 +41,48 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="CodeGetToken.cs" />
-    <Compile Include="CommentCodeGetTokenCollection.cs" />
-    <Compile Include="CodeGetTokenCollection.cs" />
-    <Compile Include="Program.DumpTokenTypeConstCode.cs" />
+    <Compile Include="YetAnotherCompiler\Step2DumpCode\DumpLexicalAnalyzer\CodeGetToken.cs" />
+    <Compile Include="YetAnotherCompiler\Step2DumpCode\DumpLexicalAnalyzer\CommentCodeGetTokenCollection.cs" />
+    <Compile Include="YetAnotherCompiler\Step2DumpCode\DumpLexicalAnalyzer\CodeGetTokenCollection.cs" />
+    <Compile Include="YetAnotherCompiler\Step2DumpCode\DumpConsts\Program.DumpTokenTypeConstCode.cs" />
     <Compile Include="RegulationList.SemanticCheck.cs" />
-    <Compile Include="States.cs" />
+    <Compile Include="YetAnotherCompiler\Step2DumpCode\DumpLexicalAnalyzer\States.cs" />
     <Compile Include="Program.DumpEnum.cs" />
-    <Compile Include="Program.DumpLexicalAnalyzer.cs" />
-    <Compile Include="Program.DumpSyntaxParserCode.cs" />
-    <Compile Include="Program.Utilities.cs" />
+    <Compile Include="YetAnotherCompiler\Step2DumpCode\DumpLexicalAnalyzer\Program.DumpLexicalAnalyzer.cs" />
+    <Compile Include="YetAnotherCompiler\Step2DumpCode\DumpLRSyntaxParser\Program.DumpSyntaxParserCode.cs" />
+    <Compile Include="YetAnotherCompiler\Utilities.cs" />
     <Compile Include="Program.GetGrammar.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="SyntaxParserMapAlgorithm.cs" />
     <Compile Include="TokenList.Check.cs" />
+    <Compile Include="YetAnotherCompiler\Step1GetParsingMapEtc\FIRST.cs" />
+    <Compile Include="YetAnotherCompiler\Step1GetParsingMapEtc\FIRSTCollection.cs" />
+    <Compile Include="YetAnotherCompiler\Step1GetParsingMapEtc\FOLLOW.cs" />
+    <Compile Include="YetAnotherCompiler\Step1GetParsingMapEtc\FOLLOWCollection.cs" />
+    <Compile Include="YetAnotherCompiler\Step1GetParsingMapEtc\LALR%281%29Edge.cs" />
+    <Compile Include="YetAnotherCompiler\Step1GetParsingMapEtc\LALR%281%29EdgeCollection.cs" />
+    <Compile Include="YetAnotherCompiler\Step1GetParsingMapEtc\LALR%281%29State.cs" />
+    <Compile Include="YetAnotherCompiler\Step1GetParsingMapEtc\LALR%281%29StateCollection.cs" />
+    <Compile Include="YetAnotherCompiler\Step1GetParsingMapEtc\LR%280%29Edge.cs" />
+    <Compile Include="YetAnotherCompiler\Step1GetParsingMapEtc\LR%280%29EdgeCollection.cs" />
+    <Compile Include="YetAnotherCompiler\Step1GetParsingMapEtc\LR%280%29Item.cs" />
+    <Compile Include="YetAnotherCompiler\Step1GetParsingMapEtc\LR%280%29State.cs" />
+    <Compile Include="YetAnotherCompiler\Step1GetParsingMapEtc\LR%280%29StateCollection.cs" />
+    <Compile Include="YetAnotherCompiler\Step1GetParsingMapEtc\LR%281%29Edge.cs" />
+    <Compile Include="YetAnotherCompiler\Step1GetParsingMapEtc\LR%281%29EdgeCollection.cs" />
+    <Compile Include="YetAnotherCompiler\Step1GetParsingMapEtc\LR%281%29Item.cs" />
+    <Compile Include="YetAnotherCompiler\Step1GetParsingMapEtc\LR%281%29State.cs" />
+    <Compile Include="YetAnotherCompiler\Step1GetParsingMapEtc\LR%281%29StateCollection.cs" />
+    <Compile Include="YetAnotherCompiler\Step1GetParsingMapEtc\RegulationList.Algorithm.FirstFollow.cs" />
+    <Compile Include="YetAnotherCompiler\Step1GetParsingMapEtc\RegulationList.Algorithm.LALR%281%29.cs" />
+    <Compile Include="YetAnotherCompiler\Step1GetParsingMapEtc\RegulationList.Algorithm.LR%280%29.cs" />
+    <Compile Include="YetAnotherCompiler\Step1GetParsingMapEtc\RegulationList.Algorithm.LR%281%29.cs" />
+    <Compile Include="YetAnotherCompiler\Step1GetParsingMapEtc\RegulationList.Algorithm.SLR.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
-    <Compile Include="Program.GetLexicalAnalyzer_TryGetToken_States.cs" />
+    <Compile Include="YetAnotherCompiler\Step2DumpCode\DumpLexicalAnalyzer\Program.GetLexicalAnalyzer_TryGetToken_States.cs" />
     <None Include="TestCases\3_11.Grammar\3_11.Grammar">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
@@ -264,6 +287,13 @@
     <None Include="TestCases\Statement.Grammar\Statement.Grammar">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
+    <None Include="TestCases\struct.Grammar\Cod1.Code">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="TestCases\struct.Grammar\struct.Grammar">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="YetAnotherCompiler\Step1GetParsingMapEtc\LR%281%29State.cd" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\ContextfreeGrammarCompiler\ContextfreeGrammarCompiler.csproj">
@@ -276,7 +306,7 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Program.DumpTreeNodeTypeConstCode.cs" />
+    <Compile Include="YetAnotherCompiler\Step2DumpCode\DumpConsts\Program.DumpTreeNodeTypeConstCode.cs" />
     <Content Include="readme.txt" />
     <Content Include="TestCases\Statement.Grammar\readme.txt" />
   </ItemGroup>
