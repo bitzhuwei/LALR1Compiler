@@ -58,9 +58,9 @@ namespace LALR1Compiler
         /// <summary>
         /// 获取归约动作对应的语义动作。
         /// </summary>
-        /// <param name="action"></param>
+        /// <param name="parsingAction"></param>
         /// <returns></returns>
-        protected virtual Action<ParsingStepContext> GetSemanticAction(LR1ReducitonAction action)
+        protected virtual Action<ParsingStepContext> GetSemanticAction(LRParsingAction parsingAction)
         {
             return null;
         }
@@ -71,22 +71,16 @@ namespace LALR1Compiler
 
             parsingStepContext.AddToken(token);
 
-            // 语法分析
-            LRParsingAction action = null;
             while (parsingStepContext.CurrentTokenIndex < parsingStepContext.TokenList.Count)
             {
+                // 语法分析
                 TreeNodeType nodeType = parsingStepContext.CurrentNodeType();
                 int stateId = parsingStepContext.StateIdStack.Peek();
-                action = parsingStepContext.ParsingMap.GetAction(stateId, nodeType);
+                LRParsingAction action = parsingStepContext.ParsingMap.GetAction(stateId, nodeType);
                 int currentTokenIndex = action.Execute(parsingStepContext);
                 parsingStepContext.CurrentTokenIndex = currentTokenIndex;
-            }
-
-            // 语义分析
-            var reduction = action as LR1ReducitonAction;
-            if (reduction != null)
-            {
-                Action<ParsingStepContext> semanticAction = GetSemanticAction(reduction);
+                // 语义分析
+                Action<ParsingStepContext> semanticAction = GetSemanticAction(action);
                 if (semanticAction != null)
                 {
                     semanticAction(parsingStepContext);

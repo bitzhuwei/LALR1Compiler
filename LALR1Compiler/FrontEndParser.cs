@@ -64,9 +64,15 @@ namespace LALR1Compiler
 
     public class UserDefinedType : HashCache
     {
-        public UserDefinedType()
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="name"></param>
+        public UserDefinedType(string name)
             : base(GetUniqueString)
-        { }
+        {
+            this.TypeName = name;
+        }
 
         private static string GetUniqueString(HashCache cache)
         {

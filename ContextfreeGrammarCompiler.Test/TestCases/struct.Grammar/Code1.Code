@@ -1,2 +1,3 @@
 struct SomeStruct { }
 SomeStruct x;
+SomeStruct y;

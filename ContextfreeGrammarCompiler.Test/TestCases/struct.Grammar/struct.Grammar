@@ -2,5 +2,5 @@
 // 单词 -> 语法树 -> userDefinedType -> 单词
 <Snippet> ::= <Snippet> <StructDefinition> | <StructDefinition>;
 <Snippet> ::= <Snippet> <StructVariable> | <StructVariable> ;
-<StructDefinition> ::= "struct" userDefinedType "{" "}" ;
+<StructDefinition> ::= "struct" identifier "{" "}" ;
 <StructVariable> ::= userDefinedType identifier ";" ;

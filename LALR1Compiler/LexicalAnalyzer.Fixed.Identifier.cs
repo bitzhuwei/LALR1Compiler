@@ -58,19 +58,19 @@ namespace LALR1Compiler
                 UserDefinedTypeCollection userDefinedTypeTable = this.userDefinedTypeTable;
                 if (userDefinedTypeTable != null)
                 {
-                    UserDefinedType t = new UserDefinedType() { TypeName = content };
+                    UserDefinedType t = new UserDefinedType(content);
                     int index = userDefinedTypeTable.IndexOf(t);
                     if (index >= 0)
                     {
                         result.TokenType = new TokenType(
-                            "userDefinedType", content, content);
+                            "__userDefinedType", content, content);
                         return true;
                     }
                 }
             }
             {
                 result.TokenType = new TokenType(
-                    "identifier", content, "identifier");
+                    "identifier", content, content);
             }
 
             return true;

@@ -8,8 +8,16 @@ namespace LALR1Compiler
     /// <summary>
     /// LR1分析动作的基类
     /// </summary>
-    public abstract class LRParsingAction
+    public abstract class LRParsingAction : HashCache
     {
+        public LRParsingAction()
+            : base(GetUniqueString)
+        { }
+
+        static string GetUniqueString(HashCache cache)
+        {
+            return cache.Dump();
+        }
         /// <summary>
         /// 执行分析动作。
         /// </summary>
@@ -54,6 +62,11 @@ namespace LALR1Compiler
             context.StateIdStack.Push(this.NextStateId);
 
             return context.CurrentTokenIndex + 1;
+        }
+
+        public override void Dump(System.IO.TextWriter stream)
+        {
+            stream.Write("Shift in: next state id: [{0}]", NextStateId);
         }
 
         public override string ToString()
@@ -111,6 +124,11 @@ namespace LALR1Compiler
             return context.CurrentTokenIndex;
         }
 
+        public override void Dump(System.IO.TextWriter stream)
+        {
+            stream.Write("Reduction regulation Id: {0}", RegulationId);
+        }
+
         public override string ToString()
         {
             return string.Format("Reduction regulation Id: {0}", RegulationId);
@@ -141,6 +159,11 @@ namespace LALR1Compiler
             return context.CurrentTokenIndex;
         }
 
+        public override void Dump(System.IO.TextWriter stream)
+        {
+            stream.Write("Goto state id: [{0}]", GoToStateId);
+        }
+
         public override string ToString()
         {
             return string.Format("Goto state id: [{0}]", GoToStateId);
@@ -160,6 +183,11 @@ namespace LALR1Compiler
         public override int Execute(ParsingContext context)
         {
             return context.CurrentTokenIndex + 1;
+        }
+
+        public override void Dump(System.IO.TextWriter stream)
+        {
+            stream.Write("Accept");
         }
 
         public override string ToString()
@@ -183,6 +211,11 @@ namespace LALR1Compiler
         public override int Execute(ParsingContext context)
         {
             throw new NotImplementedException();
+        }
+
+        public override void Dump(System.IO.TextWriter stream)
+        {
+            stream.Write("Error");
         }
 
         public override string ToString()

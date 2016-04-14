@@ -57,7 +57,10 @@ namespace ContextfreeGrammarCompiler.Test
                 string[] files = Directory.GetFiles(".", "*.cs", SearchOption.AllDirectories);
                 foreach (var item in files)
                 {
-                    File.Delete(item);
+                    if (!item.ToLower().EndsWith("semantics.cs"))
+                    {
+                        File.Delete(item);
+                    }
                 }
             }
         }
@@ -146,6 +149,7 @@ namespace ContextfreeGrammarCompiler.Test
                     Utilities.GetNamespace(grammarId) + "." + Utilities.GetLexicalAnalyzerName(grammarId)) as LexicalAnalyzer;
                 LRSyntaxParser parser = asm.CreateInstance(
                     Utilities.GetNamespace(grammarId) + "." + Utilities.GetParserName(grammarId, syntaxParserMapAlgorithm)) as LRSyntaxParser;
+                FrontEndParser frontEndParser = new FrontEndParser(lexi, parser);
                 string[] sourceCodeFullnames = Directory.GetFiles(
                     directory, "*.Code", SearchOption.TopDirectoryOnly);
                 foreach (var fullname in sourceCodeFullnames)
@@ -154,9 +158,9 @@ namespace ContextfreeGrammarCompiler.Test
                     {
                         FileInfo fileInfo = new FileInfo(fullname);
                         string sourceCode = File.ReadAllText(fullname);
-                        TokenList tokenList = lexi.Analyze(sourceCode);
+                        TokenList tokenList;
+                        SyntaxTree tree = frontEndParser.Parse(sourceCode, out tokenList);
                         tokenList.Dump(Path.Combine(compilerDir, fileInfo.Name + ".TokenList.log"));
-                        SyntaxTree tree = parser.Parse(tokenList);
                         tree.Dump(Path.Combine(compilerDir, fileInfo.Name + ".Tree.log"));
                     }
                     catch (Exception e)
@@ -185,6 +189,8 @@ namespace ContextfreeGrammarCompiler.Test
                 typeof(LALR1Compiler.LRSyntaxParser).Assembly.Location);
             objCompilerParameters.ReferencedAssemblies.Add(
                 typeof(List<>).Assembly.Location);
+            objCompilerParameters.ReferencedAssemblies.Add(
+                typeof(Stack<>).Assembly.Location);
             objCompilerParameters.ReferencedAssemblies.Add(
                             typeof(Object).Assembly.Location);
             objCompilerParameters.GenerateExecutable = false;
