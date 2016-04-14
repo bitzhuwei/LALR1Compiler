@@ -45,17 +45,30 @@ namespace LALR1Compiler
             }
             string content = builder.ToString();
             // specify if this string is a keyword
-            bool isKeyword = false;
             foreach (var item in this.GetKeywords())
             {
                 if (item.NickName == content)
                 {
                     result.TokenType = new TokenType(item.TokenType, content, content);
-                    isKeyword = true;
-                    break;
+                    return true;
                 }
             }
-            if (!isKeyword)
+            {
+                // 只对C语言这种需要提前声明的语言有用。
+                // C#、Java这种语言不会需要这个东西。（是吗？）
+                UserDefinedTypeCollection userDefinedTypeTable = this.userDefinedTypeTable;
+                if (userDefinedTypeTable != null)
+                {
+                    UserDefinedType t = new UserDefinedType() { TypeName = content };
+                    int index = userDefinedTypeTable.IndexOf(t);
+                    if (index >= 0)
+                    {
+                        result.TokenType = new TokenType(
+                            "userDefinedType", content, content);
+                        return true;
+                    }
+                }
+            }
             {
                 result.TokenType = new TokenType(
                     "identifier", content, "identifier");

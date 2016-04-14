@@ -12,14 +12,36 @@ namespace LALR1Compiler
     public abstract partial class LexicalAnalyzer
         : ILexicalAnalyzer
     {
-        
+        protected UserDefinedTypeCollection userDefinedTypeTable;
+        private bool inAnalyzingStep = false;
+
+        internal void StartAnalyzing(UserDefinedTypeCollection userDefinedTypeTable)
+        {
+            if (!inAnalyzingStep)
+            {
+                this.userDefinedTypeTable = userDefinedTypeTable;
+                inAnalyzingStep = true;
+            }
+        }
+
+        internal void StopAnalyzing()
+        {
+            if (inAnalyzingStep)
+            {
+                this.userDefinedTypeTable = null;
+                inAnalyzingStep = false;
+            }
+        }
+
         /// <summary>
         /// 每次分析都返回一个<see cref="Token"/>。
         /// </summary>
         /// <param name="sourceCode"></param>
         /// <returns></returns>
-        public IEnumerable <Token> AnalyzeStep(string sourceCode)
+        internal IEnumerable<Token> AnalyzeStep(string sourceCode)
         {
+            if (!inAnalyzingStep) { throw new Exception("Must invoke this.StartAnalyzing() first!"); }
+
             if (!string.IsNullOrEmpty(sourceCode))
             {
                 var context = new AnalyzingContext(sourceCode);
@@ -34,6 +56,8 @@ namespace LALR1Compiler
                     }
                 }
             }
+
+            this.StopAnalyzing();
         }
         /// <summary>
         /// 分析源代码获得Token序列
@@ -64,6 +88,7 @@ namespace LALR1Compiler
         /// </summary>
         /// <returns></returns>
         protected abstract bool TryGetToken(AnalyzingContext context, Token result, SourceCodeCharType charType);
+
     }
 
 }

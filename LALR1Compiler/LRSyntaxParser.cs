@@ -24,7 +24,7 @@ namespace LALR1Compiler
         bool inParsingStep = false;
         ParsingStepContext parsingStepContext;
 
-        public void StartParsing(UserDefinedTypeCollection userDefinedTypeTable)
+        internal void StartParsing(UserDefinedTypeCollection userDefinedTypeTable)
         {
             if (!inParsingStep)
             {
@@ -37,7 +37,7 @@ namespace LALR1Compiler
             }
         }
 
-        public SyntaxTree StopParsing()
+        internal SyntaxTree StopParsing()
         {
             SyntaxTree result = null;
             if (inParsingStep)
@@ -65,7 +65,7 @@ namespace LALR1Compiler
             return null;
         }
 
-        public SyntaxTree ParseStep(Token token)
+        internal SyntaxTree ParseStep(Token token)
         {
             if (!inParsingStep) { throw new Exception("Must invoke this.StartParsing() first!"); }
 
