@@ -10,7 +10,7 @@ namespace LALR1Compiler
     /// <summary>
     /// LL1语法分析器基类
     /// </summary>
-    public abstract partial class LRSyntaxParser : ISyntaxParser
+    public abstract partial class LRSyntaxParser
     {
 
         protected abstract LRParsingMap GetParsingMap();

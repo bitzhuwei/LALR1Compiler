@@ -10,7 +10,6 @@ namespace LALR1Compiler
     /// 词法分析器的抽象基类。对一个字符串进行词法分析
     /// </summary>
     public abstract partial class LexicalAnalyzer
-        : ILexicalAnalyzer
     {
         
         protected virtual bool GetNumber(Token result, AnalyzingContext context)

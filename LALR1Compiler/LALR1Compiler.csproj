@@ -52,34 +52,11 @@
     <Compile Include="Utilities\ConstString2IdentifierHelper.cs" />
     <Compile Include="Utilities\HachCacheHelper.cs" />
     <Compile Include="Utilities\SourceCodeCharTypeHelper.cs" />
-    <Compile Include="YetAnotherCompiler\FOLLOWCollection.cs" />
-    <Compile Include="YetAnotherCompiler\FIRSTCollection.cs" />
-    <Compile Include="YetAnotherCompiler\LALR%281%29State.cs" />
-    <Compile Include="YetAnotherCompiler\LALR%281%29StateCollection.cs" />
-    <Compile Include="YetAnotherCompiler\LALR%281%29Edge.cs" />
-    <Compile Include="YetAnotherCompiler\LALR%281%29EdgeCollection.cs" />
-    <Compile Include="YetAnotherCompiler\RegulationList.Algorithm.LALR%281%29.cs" />
-    <Compile Include="YetAnotherCompiler\LR%281%29EdgeCollection.cs" />
-    <Compile Include="YetAnotherCompiler\LR%281%29Edge.cs" />
-    <Compile Include="YetAnotherCompiler\LR%281%29StateCollection.cs" />
-    <Compile Include="YetAnotherCompiler\LR%281%29State.cs" />
-    <Compile Include="YetAnotherCompiler\LR%281%29Item.cs" />
-    <Compile Include="YetAnotherCompiler\RegulationList.Algorithm.LR%281%29.cs" />
-    <Compile Include="YetAnotherCompiler\LR%280%29EdgeCollection.cs" />
-    <Compile Include="YetAnotherCompiler\LR%280%29Edge.cs" />
-    <Compile Include="YetAnotherCompiler\LR%280%29StateCollection.cs" />
-    <Compile Include="YetAnotherCompiler\LR%280%29State.cs" />
-    <Compile Include="YetAnotherCompiler\LR%280%29Item.cs" />
-    <Compile Include="YetAnotherCompiler\FOLLOW.cs" />
-    <Compile Include="YetAnotherCompiler\FIRST.cs" />
     <Compile Include="IDump2Stream.cs" />
-    <Compile Include="ILexicalAnalyzer.cs" />
-    <Compile Include="ISyntaxParser.cs" />
     <Compile Include="LexicalAnalyzer.cs" />
     <Compile Include="LRParsingAction.cs" />
     <Compile Include="LRParsingMap.cs" />
     <Compile Include="LRSyntaxParser.cs" />
-    <Compile Include="YetAnotherCompiler\RegulationList.Algorithm.FirstFollow.cs" />
     <Compile Include="SyntaxTree.cs" />
     <Compile Include="SyntaxTreeList.cs" />
     <Compile Include="Token.cs" />
@@ -96,15 +73,6 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="readme.txt" />
-  </ItemGroup>
-  <ItemGroup>
-    <Compile Include="YetAnotherCompiler\RegulationList.Algorithm.LR%280%29.cs" />
-  </ItemGroup>
-  <ItemGroup>
-    <Compile Include="YetAnotherCompiler\RegulationList.Algorithm.SLR.cs" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="YetAnotherCompiler\LR%281%29State.cd" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
