@@ -16,8 +16,8 @@
 <type_specifier> ::= <type_specifier_nonarray> ;
 
 <type_specifier_nonarray> ::= "float" ;
-<type_specifier_nonarray> ::= <TYPE_NAME> ;
-<TYPE_NAME> ::= identifier ;
+<type_specifier_nonarray> ::= userDefinedType ;
+
 
 
 
