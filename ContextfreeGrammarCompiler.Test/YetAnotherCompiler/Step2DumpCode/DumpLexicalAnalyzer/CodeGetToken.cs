@@ -59,8 +59,8 @@ namespace ContextfreeGrammarCompiler.Test
                             "TokenType"),
                         new CodeObjectCreateExpression(typeof(TokenType),
                             new CodeFieldReferenceExpression(
-                                new CodeTypeReferenceExpression(Program.GetTokenConstTypeName(grammarId, algorithm)),
-                                Program.GetNodeNameInParser(this.Value)),
+                                new CodeTypeReferenceExpression(Utilities.GetTokenConstTypeName(grammarId, algorithm)),
+                                Utilities.GetNodeNameInParser(this.Value)),
                             new CodePrimitiveExpression(this.Value.Content),
                             new CodePrimitiveExpression(this.Value.Nickname)));
                     ifStatement.TrueStatements.Add(newTokenType);

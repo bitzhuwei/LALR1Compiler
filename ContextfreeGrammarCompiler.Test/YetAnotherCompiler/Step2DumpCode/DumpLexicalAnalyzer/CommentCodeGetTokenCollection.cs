@@ -100,42 +100,47 @@ namespace ContextfreeGrammarCompiler.Test
 
         private static void MultiLine(CodeConditionStatement ifStatement)
         {
-            // if ("xxx" == str)
+            // if ("/*" == str)
             var multiLine = new CodeConditionStatement(
                 new CodeBinaryOperatorExpression(
                     new CodePrimitiveExpression("/*"),
                     CodeBinaryOperatorType.IdentityEquality,
                     new CodeVariableReferenceExpression("str")));
-            // this.SkipMultilineNote(context);
-            multiLine.TrueStatements.Add(
-                new CodeMethodInvokeExpression(
-                    new CodeThisReferenceExpression(),
-                    "SkipMultilineNote",
-                    new CodeVariableReferenceExpression("context")));
+            {
+                // this.SkipMultilineNote(context);
+                multiLine.TrueStatements.Add(
+                    new CodeMethodInvokeExpression(
+                        new CodeThisReferenceExpression(),
+                        "SkipMultilineNote",
+                        new CodeVariableReferenceExpression("context")));
+                // return false;
+                var returnFalse = new CodeMethodReturnStatement(new CodePrimitiveExpression(false));
+                multiLine.TrueStatements.Add(returnFalse);
+            }
             ifStatement.TrueStatements.Add(multiLine);
-            // return false;
-            var returnFalse = new CodeMethodReturnStatement(new CodePrimitiveExpression(false));
-            ifStatement.TrueStatements.Add(returnFalse);
         }
 
         private static void SingleLine(CodeConditionStatement ifStatement)
         {
-            // if ("xxx" == str)
+            // if ("//" == str)
             var singleLine = new CodeConditionStatement(
                 new CodeBinaryOperatorExpression(
                     new CodePrimitiveExpression("//"),
                     CodeBinaryOperatorType.IdentityEquality,
                     new CodeVariableReferenceExpression("str")));
-            // this.SkipSingleLineNote(context);
-            singleLine.TrueStatements.Add(
-                new CodeMethodInvokeExpression(
-                    new CodeThisReferenceExpression(),
-                    "SkipSingleLineNote",
-                    new CodeVariableReferenceExpression("context")));
+            {
+                // this.SkipSingleLineNote(context);
+                singleLine.TrueStatements.Add(
+                    new CodeMethodInvokeExpression(
+                        new CodeThisReferenceExpression(),
+                        "SkipSingleLineNote",
+                        new CodeVariableReferenceExpression("context")));
+                // return false;
+                var returnFalse = new CodeMethodReturnStatement(new CodePrimitiveExpression(false));
+                singleLine.TrueStatements.Add(returnFalse);
+            }
+
             ifStatement.TrueStatements.Add(singleLine);
-            // return false;
-            var returnFalse = new CodeMethodReturnStatement(new CodePrimitiveExpression(false));
-            ifStatement.TrueStatements.Add(returnFalse);
         }
     }
 }

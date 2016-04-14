@@ -11,9 +11,9 @@ using Microsoft.CSharp;
 
 namespace ContextfreeGrammarCompiler.Test
 {
-    partial class Program
+    static class Utilities 
     {
-        private static bool IsIdentifier(this TreeNodeType node)
+        public static bool IsIdentifier(this TreeNodeType node)
         {
             if (!node.IsLeave) { throw new ArgumentException(); }
 
@@ -45,7 +45,7 @@ namespace ContextfreeGrammarCompiler.Test
             return true;
         }
 
-        private static string GetLexicalAnalyzerName(string grammarId)
+        public static string GetLexicalAnalyzerName(string grammarId)
         {
             SourceCodeCharType charType = grammarId[0].GetCharType();
             if (charType == SourceCodeCharType.Letter || charType == SourceCodeCharType.UnderLine)
@@ -82,7 +82,7 @@ namespace ContextfreeGrammarCompiler.Test
             }
         }
 
-        private static string GetTreeNodeConstTypeName(string grammarId, SyntaxParserMapAlgorithm algorithm)
+        public static string GetTreeNodeConstTypeName(string grammarId, SyntaxParserMapAlgorithm algorithm)
         {
             SourceCodeCharType charType = grammarId[0].GetCharType();
             if (charType == SourceCodeCharType.Letter || charType == SourceCodeCharType.UnderLine)
@@ -99,7 +99,7 @@ namespace ContextfreeGrammarCompiler.Test
             }
         }
 
-        private static string GetParserName(string grammarId, SyntaxParserMapAlgorithm algorithm)
+        public static string GetParserName(string grammarId, SyntaxParserMapAlgorithm algorithm)
         {
             SourceCodeCharType charType = grammarId[0].GetCharType();
             if (charType == SourceCodeCharType.Letter || charType == SourceCodeCharType.UnderLine)
@@ -116,7 +116,7 @@ namespace ContextfreeGrammarCompiler.Test
             }
         }
 
-        private static string GetNamespace(string grammarId)
+        public static string GetNamespace(string grammarId)
         {
             SourceCodeCharType charType = grammarId[0].GetCharType();
             if (charType == SourceCodeCharType.Letter || charType == SourceCodeCharType.UnderLine)

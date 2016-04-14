@@ -18,21 +18,21 @@ namespace ContextfreeGrammarCompiler.Test
             RegulationList grammar, LRParsingMap map, string grammarId, string LR0Directory,
             SyntaxParserMapAlgorithm algorithm)
         {
-            var parserType = new CodeTypeDeclaration(GetParserName(grammarId, algorithm));
+            var parserType = new CodeTypeDeclaration(Utilities.GetParserName(grammarId, algorithm));
             parserType.IsClass = true;
             parserType.BaseTypes.Add(typeof(LRSyntaxParser));
             DumpSyntaxParserFields(grammar, parserType, grammarId, algorithm);
             DumpSyntaxParserMethod_GetGrammar(grammar, parserType);
             DumpSyntaxParserMethod_GetParsingMap(grammar, map, parserType);
 
-            var parserNamespace = new CodeNamespace(GetNamespace(grammarId));
+            var parserNamespace = new CodeNamespace(Utilities.GetNamespace(grammarId));
             parserNamespace.Imports.Add(new CodeNamespaceImport(typeof(System.Object).Namespace));
             parserNamespace.Imports.Add(new CodeNamespaceImport(typeof(System.Collections.Generic.List<int>).Namespace));
             parserNamespace.Imports.Add(new CodeNamespaceImport(typeof(LALR1Compiler.HashCache).Namespace));
             parserNamespace.Types.Add(parserType);
 
             //生成代码  
-            string parserCodeFullname = Path.Combine(LR0Directory, GetParserName(grammarId, algorithm) + ".cs");
+            string parserCodeFullname = Path.Combine(LR0Directory, Utilities.GetParserName(grammarId, algorithm) + ".cs");
             using (var stream = new StreamWriter(parserCodeFullname, false))
             {
                 CSharpCodeProvider codeProvider = new CSharpCodeProvider();
@@ -69,7 +69,7 @@ namespace ContextfreeGrammarCompiler.Test
                 string[] parts = action.Key.Split('+');
                 var stateId = new CodePrimitiveExpression(int.Parse(parts[0]));
                 var nodeType = new CodeVariableReferenceExpression(
-                    GetNodeNameInParser(new TreeNodeType(parts[1], parts[1], parts[1])));
+                    Utilities.GetNodeNameInParser(new TreeNodeType(parts[1], parts[1], parts[1])));
                 if (action.Value.Count > 1)
                 {
                     // action.Value超过1项，就说明有冲突。列出这些冲突应该是有价值的。
@@ -78,7 +78,7 @@ namespace ContextfreeGrammarCompiler.Test
                     foreach (var value in action.Value)
                     {
                         string str = string.Format("map.SetAction({0}, {1}, new {2}({3}));",
-                            parts[0], GetNodeNameInParser(new TreeNodeType(parts[1], parts[1], parts[1])),
+                            parts[0], Utilities.GetNodeNameInParser(new TreeNodeType(parts[1], parts[1], parts[1])),
                             value.GetType().Name, value.ActionParam());
                         method.Comments.Add(new CodeCommentStatement(str, false));
                     }
@@ -189,10 +189,10 @@ namespace ContextfreeGrammarCompiler.Test
                     string.Format("{0}: {1}", id++, str), false));
                 method.Statements.Add(commentStatement);
                 var parametes = new List<CodeExpression>();
-                parametes.Add(new CodeVariableReferenceExpression(GetNodeNameInParser(regulation.Left)));
+                parametes.Add(new CodeVariableReferenceExpression(Utilities.GetNodeNameInParser(regulation.Left)));
                 parametes.AddRange(
                     from item in regulation.RightPart
-                    select new CodeVariableReferenceExpression(GetNodeNameInParser(item)));
+                    select new CodeVariableReferenceExpression(Utilities.GetNodeNameInParser(item)));
                 var ctor = new CodeObjectCreateExpression(typeof(Regulation), parametes.ToArray());
                 var AddMethod = new CodeMethodReferenceExpression(
                     new CodeVariableReferenceExpression(varName), "Add");
@@ -239,13 +239,13 @@ namespace ContextfreeGrammarCompiler.Test
                 //    node.Type, node.Content, node.Nickname));
                 //parserType.Members.Add(field);
                 // private static TreeNodeType NODE__Grammar = new TreeNodeType(ContextfreeGrammarSLRTreeNodeType.NODE__Grammar, "Grammar", "<Grammar>");
-                CodeMemberField field = new CodeMemberField(typeof(TreeNodeType), GetNodeNameInParser(node));
+                CodeMemberField field = new CodeMemberField(typeof(TreeNodeType), Utilities.GetNodeNameInParser(node));
                 // field.Attributes 不支持readonly，遗憾了。
                 field.Attributes = MemberAttributes.Private | MemberAttributes.Static;
                 var ctor = new CodeObjectCreateExpression(typeof(TreeNodeType),
                     new CodeFieldReferenceExpression(
-                        new CodeTypeReferenceExpression(GetTreeNodeConstTypeName(grammarId, algorithm)),
-                        GetNodeNameInParser(node)),
+                        new CodeTypeReferenceExpression(Utilities.GetTreeNodeConstTypeName(grammarId, algorithm)),
+                         Utilities.GetNodeNameInParser(node)),
                     new CodePrimitiveExpression(node.Content),
                     new CodePrimitiveExpression(node.Nickname));
                 field.InitExpression = ctor;
@@ -254,7 +254,7 @@ namespace ContextfreeGrammarCompiler.Test
             {
                 // private static readonly TreeNodeType end_of_token_listLeave__ = TreeNodeType.endOfTokenListNode;
                 var node = TreeNodeType.endOfTokenListNode;
-                CodeMemberField field = new CodeMemberField(typeof(TreeNodeType), GetNodeNameInParser(node));
+                CodeMemberField field = new CodeMemberField(typeof(TreeNodeType), Utilities.GetNodeNameInParser(node));
                 field.Attributes = MemberAttributes.Private | MemberAttributes.Static;
                 field.InitExpression=new CodeFieldReferenceExpression(
                     new CodeTypeReferenceExpression(typeof(TreeNodeType)),

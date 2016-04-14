@@ -18,16 +18,16 @@ namespace ContextfreeGrammarCompiler.Test
             RegulationList grammar, LRParsingMap map, string grammarId, string LR0Directory,
             SyntaxParserMapAlgorithm algorithm)
         {
-            var treeNodeConstType = new CodeTypeDeclaration(GetTreeNodeConstTypeName(grammarId, algorithm));
+            var treeNodeConstType = new CodeTypeDeclaration(Utilities.GetTreeNodeConstTypeName(grammarId, algorithm));
             treeNodeConstType.IsClass = true;
             DumpTreeNodeConstFields(grammar, treeNodeConstType);
 
-            var parserNamespace = new CodeNamespace(GetNamespace(grammarId));
+            var parserNamespace = new CodeNamespace(Utilities.GetNamespace(grammarId));
             parserNamespace.Imports.Add(new CodeNamespaceImport(typeof(System.Object).Namespace));
             parserNamespace.Types.Add(treeNodeConstType);
 
             //生成代码  
-            string fullname = Path.Combine(LR0Directory, GetTreeNodeConstTypeName(grammarId, algorithm) + ".cs");
+            string fullname = Path.Combine(LR0Directory, Utilities.GetTreeNodeConstTypeName(grammarId, algorithm) + ".cs");
             using (var stream = new StreamWriter(fullname, false))
             {
                 CSharpCodeProvider codeProvider = new CSharpCodeProvider();
@@ -48,7 +48,7 @@ namespace ContextfreeGrammarCompiler.Test
             // public const string __colon_colon_equalLeave__ = "__colon_colon_equalLeave__";
             foreach (var node in grammar.GetAllTreeNodeTypes())
             {
-                var field = new CodeMemberField(typeof(string), GetNodeNameInParser(node));
+                var field = new CodeMemberField(typeof(string), Utilities.GetNodeNameInParser(node));
                 field.Attributes = MemberAttributes.Public | MemberAttributes.Const;
                 field.InitExpression = new CodePrimitiveExpression(node.Type);
                 treeNodeConstType.Members.Add(field);

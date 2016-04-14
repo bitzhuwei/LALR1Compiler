@@ -18,16 +18,16 @@ namespace ContextfreeGrammarCompiler.Test
         private static void DumpTokenTypeConstCode(RegulationList grammar, LRParsingMap parsingMap,
             string grammarId, string directory, SyntaxParserMapAlgorithm algorithm)
         {
-            var tokenTypeConstType = new CodeTypeDeclaration(GetTokenConstTypeName(grammarId, algorithm));
+            var tokenTypeConstType = new CodeTypeDeclaration(Utilities.GetTokenConstTypeName(grammarId, algorithm));
             tokenTypeConstType.IsClass = true;
             DumpTokenTypeConstFields(grammar, tokenTypeConstType);
 
-            var parserNamespace = new CodeNamespace(GetNamespace(grammarId));
+            var parserNamespace = new CodeNamespace(Utilities.GetNamespace(grammarId));
             parserNamespace.Imports.Add(new CodeNamespaceImport(typeof(System.Object).Namespace));
             parserNamespace.Types.Add(tokenTypeConstType);
 
             //生成代码  
-            string fullname = Path.Combine(directory, GetTokenConstTypeName(grammarId, algorithm) + ".cs");
+            string fullname = Path.Combine(directory, Utilities.GetTokenConstTypeName(grammarId, algorithm) + ".cs");
             using (var stream = new StreamWriter(fullname, false))
             {
                 CSharpCodeProvider codeProvider = new CSharpCodeProvider();
@@ -48,7 +48,7 @@ namespace ContextfreeGrammarCompiler.Test
             var convertor = new TreeNodeType2TokenType();
             foreach (var node in grammar.GetAllTreeNodeLeaveTypes())
             {
-                var field = new CodeMemberField(typeof(string), GetNodeNameInParser(node));
+                var field = new CodeMemberField(typeof(string), Utilities.GetNodeNameInParser(node));
                 field.Attributes = MemberAttributes.Public | MemberAttributes.Const;
                 TokenType tokenType = convertor.GetTokenType(node);
                 field.InitExpression = new CodePrimitiveExpression(tokenType.Type);

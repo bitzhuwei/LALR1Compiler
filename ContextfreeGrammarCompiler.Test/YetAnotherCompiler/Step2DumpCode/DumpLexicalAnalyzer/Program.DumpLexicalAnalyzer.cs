@@ -16,7 +16,7 @@ namespace ContextfreeGrammarCompiler.Test
         private static void DumpLexicalAnalyzerCode(RegulationList grammar,
             string grammarId, SyntaxParserMapAlgorithm algorithm, string directory)
         {
-            var lexiType = new CodeTypeDeclaration(GetLexicalAnalyzerName(grammarId));
+            var lexiType = new CodeTypeDeclaration(Utilities.GetLexicalAnalyzerName(grammarId));
             lexiType.IsClass = true;
             lexiType.IsPartial = true;
             lexiType.BaseTypes.Add(typeof(LexicalAnalyzer));
@@ -24,14 +24,14 @@ namespace ContextfreeGrammarCompiler.Test
             DumpLexicalAnalyzer_GetSymbol(grammar, lexiType,grammarId, algorithm);
             DumpLexicalAnalyzer_GetKeywordList(grammar, grammarId, lexiType);
 
-            var lexiNamespace = new CodeNamespace(GetNamespace(grammarId));
+            var lexiNamespace = new CodeNamespace(Utilities.GetNamespace(grammarId));
             lexiNamespace.Imports.Add(new CodeNamespaceImport(typeof(System.Object).Namespace));
             lexiNamespace.Imports.Add(new CodeNamespaceImport(typeof(System.Collections.Generic.List<int>).Namespace));
             lexiNamespace.Imports.Add(new CodeNamespaceImport(typeof(LALR1Compiler.HashCache).Namespace));
             lexiNamespace.Types.Add(lexiType);
 
             //生成代码  
-            string parserCodeFullname = Path.Combine(directory, GetLexicalAnalyzerName(grammarId) + ".cs");
+            string parserCodeFullname = Path.Combine(directory, Utilities.GetLexicalAnalyzerName(grammarId) + ".cs");
             using (var stream = new StreamWriter(parserCodeFullname, false))
             {
                 CSharpCodeProvider codeProvider = new CSharpCodeProvider();
@@ -101,7 +101,7 @@ namespace ContextfreeGrammarCompiler.Test
             {
                 // static DemoLexicalAnalyzer()
                 var method = new CodeTypeConstructor();
-                method.Name = GetLexicalAnalyzerName(grammarId);
+                method.Name = Utilities.GetLexicalAnalyzerName(grammarId);
                 method.Attributes = MemberAttributes.Static;
                 //{
                 //    // List<Keyword> keyword = new List<Keyword>();
