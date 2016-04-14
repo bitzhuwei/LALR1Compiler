@@ -27,16 +27,17 @@ namespace ContextfreeGrammarCompiler.Test
             grammar = null;
             errorInfo = string.Empty;
             Console.WriteLine("    Get grammar from source code...");
-            var lexi = new ContextfreeGrammarLexicalAnalyzer();
-            TokenList tokenList = lexi.Analyze(sourceCode);
+            var lexicalAnalyzer = new ContextfreeGrammarLexicalAnalyzer();
+            var syntaxParser = new ContextfreeGrammarSLRSyntaxParser();
+            FrontEndParser parser = new FrontEndParser(lexicalAnalyzer, syntaxParser);
+            TokenList tokenList;
+            SyntaxTree tree = parser.Parse(sourceCode, out tokenList);
             if (!tokenList.Check(out errorInfo))
             {
                 return false;
             }
             Console.WriteLine("        Dump {0}", grammarId + ".TokenList.log");
             tokenList.Dump(Path.Combine(directory, grammarId + ".TokenList.log"));
-            var parser = new ContextfreeGrammarSyntaxParser();
-            SyntaxTree tree = parser.Parse(tokenList);
             Console.WriteLine("        Dump {0}", grammarId + ".Tree.log");
             tree.Dump(Path.Combine(directory, grammarId + ".Tree.log"));
             grammar = tree.DumpGrammar();
