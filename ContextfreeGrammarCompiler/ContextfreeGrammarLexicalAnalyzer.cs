@@ -1,248 +1,204 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using LALR1Compiler;
-using System.Text.RegularExpressions;
-
 namespace ContextfreeGrammarCompiler
 {
-    public partial class ContextfreeGrammarLexicalAnalyzer : LexicalAnalyzer
+    using System;
+    using System.Collections.Generic;
+    using LALR1Compiler;
+    
+    
+    public partial class ContextfreeGrammarLexicalAnalyzer : LALR1Compiler.LexicalAnalyzer
     {
-
-        protected override bool TryGetToken(
-            AnalyzingContext context, Token result, SourceCodeCharType charType)
+        
+        protected override bool TryGetToken(AnalyzingContext context, LALR1Compiler.Token result, SourceCodeCharType charType)
         {
             bool gotToken = false;
-            switch (charType)
+            if ((charType == SourceCodeCharType.Colon))
             {
-                case SourceCodeCharType.Letter:
-                    gotToken = GetLetter(result, context);
-                    break;
-                case SourceCodeCharType.UnderLine:
-                    gotToken = Getunderline(result, context);
-                    break;
-                case SourceCodeCharType.Or:
-                    gotToken = GetOr(result, context);
-                    break;
-                case SourceCodeCharType.LessThan:
-                    gotToken = GetLessThan(result, context);
-                    break;
-                case SourceCodeCharType.GreaterThan:
-                    gotToken = GetGreaterThan(result, context);
-                    break;
-                case SourceCodeCharType.DoubleQuotation:
-                    gotToken = GetDoubleQuotation(result, context);
-                    break;
-                case SourceCodeCharType.Semicolon:
-                    gotToken = GetSemicolon(result, context);
-                    break;
-                case SourceCodeCharType.Colon:
-                    gotToken = GetColon(result, context);
-                    break;
-                case SourceCodeCharType.Divide:
-                    gotToken = GetDivide(result, context);
-                    break;
-                case SourceCodeCharType.Space:
-                    gotToken = GetSpace(result, context);
-                    break;
-                default:
-                    gotToken = GetUnknown(result, context);
-                    break;
+                gotToken = this.GetColon(result, context);
+                return gotToken;
             }
-
+            if ((charType == SourceCodeCharType.Semicolon))
+            {
+                gotToken = this.GetSemicolon(result, context);
+                return gotToken;
+            }
+            if ((charType == SourceCodeCharType.Or))
+            {
+                gotToken = this.GetOr(result, context);
+                return gotToken;
+            }
+            if ((charType == SourceCodeCharType.LessThan))
+            {
+                gotToken = this.GetLessThan(result, context);
+                return gotToken;
+            }
+            if (((charType == SourceCodeCharType.Letter) 
+                        || (charType == SourceCodeCharType.UnderLine)))
+            {
+                gotToken = this.GetIdentifier(result, context);
+                return gotToken;
+            }
+            if ((charType == SourceCodeCharType.GreaterThan))
+            {
+                gotToken = this.GetGreaterThan(result, context);
+                return gotToken;
+            }
+            if ((charType == SourceCodeCharType.DoubleQuotation))
+            {
+                gotToken = this.GetDoubleQuotation(result, context);
+                return gotToken;
+            }
+            if ((charType == SourceCodeCharType.Divide))
+            {
+                gotToken = this.Getslash(result, context);
+                return gotToken;
+            }
+            if ((charType == SourceCodeCharType.Space))
+            {
+                gotToken = this.GetSpace(result, context);
+                return gotToken;
+            }
+            gotToken = this.GetUnknown(result, context);
             return gotToken;
         }
-
-        protected virtual bool GetDivide(Token result, AnalyzingContext context)
+        
+        protected virtual bool GetColon(LALR1Compiler.Token result, AnalyzingContext context)
         {
-            var count = context.SourceCode.Length;
-            //item.CharType: Colon
-            //Mapped nodes:
-            //    "//" "/*"
-            if (context.NextLetterIndex + 2 <= count)
-            {
-                var str = context.SourceCode.Substring(context.NextLetterIndex, 2);
-                if ("//" == str)
-                {
-                    SkipSingleLineNote(context);
-                    return false;
-                }
-                else if ("/*" == str)
-                {
-                    SkipMultilineNote(context);
-                    return false;
-                }
-            }
-
-            result.TokenType = new TokenType(
-                "__error", context.CurrentChar().ToString(), context.CurrentChar().ToString());
-            result.LexicalError = true;
-            context.NextLetterIndex++;
-            return true;
-        }
-
-        /// <summary>
-        /// ::=
-        /// </summary>
-        /// <param name="result"></param>
-        /// <returns></returns>
-        protected virtual bool GetColon(Token result, AnalyzingContext context)
-        {
-            var count = context.SourceCode.Length;
-            //item.CharType: Colon
-            //Mapped nodes:
-            //    "::="
+            int count = context.SourceCode.Length;
             if (context.NextLetterIndex + 3 <= count)
             {
-                var str = context.SourceCode.Substring(context.NextLetterIndex, 3);
-                if ("::=" == str)
+                string str = context.SourceCode.Substring(context.NextLetterIndex, 3);;
+                if (("::=" == str))
                 {
-                    result.TokenType = new TokenType(
-                        ContextfreeGrammarTokenType.__colon_colon_equal, str, "\"" + str + "\"");
-                    context.NextLetterIndex += 3;
+                    result.TokenType = new LALR1Compiler.TokenType(ContextfreeGrammarSLRTokenType.NODE__coloncolonequalLeave__, "::=", "\"::=\"");
+                    context.NextLetterIndex = (context.NextLetterIndex + 3);
                     return true;
                 }
             }
-
-            result.TokenType = new TokenType(
-                "__error", context.CurrentChar().ToString(), context.CurrentChar().ToString());
+            string current = context.CurrentChar().ToString();
+            result.TokenType = new LALR1Compiler.TokenType("__error", current, current);
             result.LexicalError = true;
-            context.NextLetterIndex++;
-            return true;
+            context.NextLetterIndex = (context.NextLetterIndex + 1);
+            return false;
         }
-        /// <summary>
-        /// |
-        /// </summary>
-        /// <param name="result"></param>
-        /// <returns></returns>
-        protected virtual bool GetOr(Token result, AnalyzingContext context)
+        
+        protected virtual bool GetSemicolon(LALR1Compiler.Token result, AnalyzingContext context)
         {
-            var count = context.SourceCode.Length;
-            //item.CharType: Or
-            //Mapped nodes:
-            //    "|"
+            int count = context.SourceCode.Length;
             if (context.NextLetterIndex + 1 <= count)
             {
-                var str = context.SourceCode.Substring(context.NextLetterIndex, 1);
-                if ("|" == str)
+                string str = context.SourceCode.Substring(context.NextLetterIndex, 1);;
+                if ((";" == str))
                 {
-                    result.TokenType = new TokenType(
-                        ContextfreeGrammarTokenType.__vertical_bar, str, "\"" + str + "\"");
-                    context.NextLetterIndex += 1;
+                    result.TokenType = new LALR1Compiler.TokenType(ContextfreeGrammarSLRTokenType.NODE__semicolonLeave__, ";", "\";\"");
+                    context.NextLetterIndex = (context.NextLetterIndex + 1);
                     return true;
                 }
             }
-
-            result.TokenType = new TokenType(
-                "__error", context.CurrentChar().ToString(), context.CurrentChar().ToString());
+            string current = context.CurrentChar().ToString();
+            result.TokenType = new LALR1Compiler.TokenType("__error", current, current);
             result.LexicalError = true;
-            context.NextLetterIndex++;
-            return true;
+            context.NextLetterIndex = (context.NextLetterIndex + 1);
+            return false;
         }
-        /// <summary>
-        /// &lt;
-        /// </summary>
-        /// <param name="result"></param>
-        /// <returns></returns>
-        protected virtual bool GetLessThan(Token result, AnalyzingContext context)
+        
+        protected virtual bool GetOr(LALR1Compiler.Token result, AnalyzingContext context)
         {
-            var count = context.SourceCode.Length;
-            //item.CharType: lessThan
-            //Mapped nodes:
-            //    "<"
+            int count = context.SourceCode.Length;
             if (context.NextLetterIndex + 1 <= count)
             {
-                var str = context.SourceCode.Substring(context.NextLetterIndex, 1);
-                if ("<" == str)
+                string str = context.SourceCode.Substring(context.NextLetterIndex, 1);;
+                if (("|" == str))
                 {
-                    result.TokenType = new TokenType(
-                        ContextfreeGrammarTokenType.__left_angle, str, "\"" + str + "\"");
-                    context.NextLetterIndex += 1;
+                    result.TokenType = new LALR1Compiler.TokenType(ContextfreeGrammarSLRTokenType.NODE__vertical_barLeave__, "|", "\"|\"");
+                    context.NextLetterIndex = (context.NextLetterIndex + 1);
                     return true;
                 }
             }
-
-            result.TokenType = new TokenType(
-                "__error", context.CurrentChar().ToString(), context.CurrentChar().ToString());
+            string current = context.CurrentChar().ToString();
+            result.TokenType = new LALR1Compiler.TokenType("__error", current, current);
             result.LexicalError = true;
-            context.NextLetterIndex++;
-            return true;
+            context.NextLetterIndex = (context.NextLetterIndex + 1);
+            return false;
         }
-        /// <summary>
-        /// &gt;
-        /// </summary>
-        /// <param name="result"></param>
-        /// <returns></returns>
-        protected virtual bool GetGreaterThan(Token result, AnalyzingContext context)
+        
+        protected virtual bool GetLessThan(LALR1Compiler.Token result, AnalyzingContext context)
         {
-            var count = context.SourceCode.Length;
-            //item.CharType: greaterThan
-            //Mapped nodes:
-            //    ">"
+            int count = context.SourceCode.Length;
             if (context.NextLetterIndex + 1 <= count)
             {
-                var str = context.SourceCode.Substring(context.NextLetterIndex, 1);
-                if (">" == str)
+                string str = context.SourceCode.Substring(context.NextLetterIndex, 1);;
+                if (("<" == str))
                 {
-                    result.TokenType = new TokenType(
-                        ContextfreeGrammarTokenType.__right_angle, str, "\"" + str + "\"");
-                    context.NextLetterIndex += 1;
+                    result.TokenType = new LALR1Compiler.TokenType(ContextfreeGrammarSLRTokenType.NODE__left_angleLeave__, "<", "\"<\"");
+                    context.NextLetterIndex = (context.NextLetterIndex + 1);
                     return true;
                 }
             }
-
-            result.TokenType = new TokenType(
-                "__error", context.CurrentChar().ToString(), context.CurrentChar().ToString());
+            string current = context.CurrentChar().ToString();
+            result.TokenType = new LALR1Compiler.TokenType("__error", current, current);
             result.LexicalError = true;
-            context.NextLetterIndex++;
-            return true;
+            context.NextLetterIndex = (context.NextLetterIndex + 1);
+            return false;
         }
-        /// <summary>
-        /// ;
-        /// </summary>
-        /// <param name="result"></param>
-        /// <returns></returns>
-        protected virtual bool GetSemicolon(Token result, AnalyzingContext context)
+        
+        protected virtual bool GetGreaterThan(LALR1Compiler.Token result, AnalyzingContext context)
         {
-            var count = context.SourceCode.Length;
-            //item.CharType: greaterThan
-            //Mapped nodes:
-            //    ""
+            int count = context.SourceCode.Length;
             if (context.NextLetterIndex + 1 <= count)
             {
-                var str = context.SourceCode.Substring(context.NextLetterIndex, 1);
-                if (";" == str)
+                string str = context.SourceCode.Substring(context.NextLetterIndex, 1);;
+                if ((">" == str))
                 {
-                    result.TokenType = new TokenType(
-                        ContextfreeGrammarTokenType.__semicolon, str, "\"" + str + "\"");
-                    context.NextLetterIndex += 1;
+                    result.TokenType = new LALR1Compiler.TokenType(ContextfreeGrammarSLRTokenType.NODE__right_angleLeave__, ">", "\">\"");
+                    context.NextLetterIndex = (context.NextLetterIndex + 1);
                     return true;
                 }
             }
-
-            result.TokenType = new TokenType(
-                "__error", context.CurrentChar().ToString(), context.CurrentChar().ToString());
+            string current = context.CurrentChar().ToString();
+            result.TokenType = new LALR1Compiler.TokenType("__error", current, current);
             result.LexicalError = true;
-            context.NextLetterIndex++;
-            return true;
+            context.NextLetterIndex = (context.NextLetterIndex + 1);
+            return false;
         }
-
-        protected static readonly List<Keyword> keywords = new List<Keyword>();
-
-        public override IEnumerable<Keyword> GetKeywords()
+        
+        protected virtual bool Getslash(LALR1Compiler.Token result, AnalyzingContext context)
+        {
+            int count = context.SourceCode.Length;
+            if (context.NextLetterIndex + 2 <= count)
+            {
+                string str = context.SourceCode.Substring(context.NextLetterIndex, 2);;
+                if (("//" == str))
+                {
+                    this.SkipSingleLineNote(context);
+                }
+                return false;
+                if (("/*" == str))
+                {
+                    this.SkipMultilineNote(context);
+                }
+                return false;
+            }
+            string current = context.CurrentChar().ToString();
+            result.TokenType = new LALR1Compiler.TokenType("__error", current, current);
+            result.LexicalError = true;
+            context.NextLetterIndex = (context.NextLetterIndex + 1);
+            return false;
+        }
+        
+        private static System.Collections.Generic.List<LALR1Compiler.Keyword> keywords = new System.Collections.Generic.List<LALR1Compiler.Keyword>();
+        
+        public override System.Collections.Generic.IEnumerable<LALR1Compiler.Keyword> GetKeywords()
         {
             return keywords;
         }
-
+        
         static ContextfreeGrammarLexicalAnalyzer()
         {
-            keywords.Add(new Keyword(ContextfreeGrammarTokenType.__identifier, ContextfreeGrammarTokenType.__identifier.Substring(2)));
-            keywords.Add(new Keyword(ContextfreeGrammarTokenType.__null, ContextfreeGrammarTokenType.__null.Substring(2)));
-            keywords.Add(new Keyword(ContextfreeGrammarTokenType.__constString, ContextfreeGrammarTokenType.__constString.Substring(2)));
-            keywords.Add(new Keyword(ContextfreeGrammarTokenType.__number, ContextfreeGrammarTokenType.__number.Substring(2)));
+            keywords.Add(new LALR1Compiler.Keyword("__null", "null"));
+            keywords.Add(new LALR1Compiler.Keyword("__identifier", "identifier"));
+            keywords.Add(new LALR1Compiler.Keyword("__number", "number"));
+            keywords.Add(new LALR1Compiler.Keyword("__constString", "constString"));
+            keywords.Add(new LALR1Compiler.Keyword("__userDefinedType", "userDefinedType"));
         }
-
     }
 }

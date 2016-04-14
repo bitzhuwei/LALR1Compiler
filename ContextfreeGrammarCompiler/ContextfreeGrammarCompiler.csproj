@@ -40,14 +40,13 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="ContextfreeGrammarLexicalAnalyzer.cs" />
-    <Compile Include="ContextfreeGrammarSyntaxParser.cs" />
+    <Compile Include="ContextfreeGrammarSLRSyntaxParser.cs" />
+    <Compile Include="ContextfreeGrammarSLRTokenType.cs" />
+    <Compile Include="ContextfreeGrammarSLRTreeNodeType.cs" />
     <Compile Include="ContextfreeGrammarSyntaxTree.DumpGrammar.cs" />
-    <Compile Include="ContextfreeGrammarTokenType.cs" />
-    <Compile Include="ContextfreeGrammarTreeNodeType.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="ContextfreeGrammar.Grammar.txt" />
     <Content Include="readme.txt" />
   </ItemGroup>
   <ItemGroup>
@@ -55,6 +54,11 @@
       <Project>{afc8738e-0a2d-4124-9045-4f935e3da0cf}</Project>
       <Name>LALR1Compiler</Name>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="ContextfreeGrammar.Edge.log" />
+    <None Include="ContextfreeGrammar.Grammar" />
+    <None Include="ContextfreeGrammar.State.log" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

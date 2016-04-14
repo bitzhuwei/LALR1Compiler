@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace ContextfreeGrammarCompiler
 {
-    public static class ContextfreeGrammarSyntaxTreeHelper
+    public static class ContextfreeGrammarSLRSyntaxTreeHelper
     {
         /// <summary>
         /// 遍历语法树，导出其中描述的文法。
@@ -17,39 +17,41 @@ namespace ContextfreeGrammarCompiler
         {
             RegulationList grammar = new RegulationList();
 
-            // <Grammar> ::= <Production> <ProductionList> ;
-            if (syntaxTree.NodeType.Type == ContextfreeGrammarTreeNodeType.__Grammar)
+            // <Grammar> ::= <ProductionList> <Production> ;
+            if (syntaxTree.NodeType.Type != ContextfreeGrammarSLRTreeNodeType.NODE__Grammar)
+            { throw new ArgumentException(); }
+
             {
-                List<Regulation> production = GetProduction(syntaxTree.Children[0]);
-                grammar.AddRange(production);
-                RegulationList regulationList = GetProductionList(syntaxTree.Children[1]);
+                List<Regulation> regulationList = GetProductionList(syntaxTree.Children[0]);
                 grammar.AddRange(regulationList);
+                List<Regulation> production = GetProduction(syntaxTree.Children[1]);
+                grammar.AddRange(production);
             }
 
             return grammar;
         }
 
-        private static RegulationList GetProductionList(SyntaxTree syntaxTree)
+        private static List<Regulation> GetProductionList(SyntaxTree syntaxTree)
         {
-            RegulationList result = null;
+            List<Regulation> result = null;
 
-            // <ProductionList> ::= <Production> <RegulationList> | null ;
-            if (syntaxTree.NodeType.Type == ContextfreeGrammarTreeNodeType.__ProductionList)
+            // <ProductionList> ::= <ProductionList> <Production> | null ;
+            if (syntaxTree.NodeType.Type != ContextfreeGrammarSLRTreeNodeType.NODE__ProductionList)
+            { throw new ArgumentException(); }
+
+            if (syntaxTree.Children.Count == 2)
             {
-                if (syntaxTree.Children.Count == 2)
-                {
-                    // <ProductionList> ::= <Production> <RegulationList> ;
-                    List<Regulation> production = GetProduction(syntaxTree.Children[0]);
-                    RegulationList regulationList = GetProductionList(syntaxTree.Children[1]);
-                    result = new RegulationList();
-                    result.AddRange(production);
-                    result.AddRange(regulationList);
-                }
-                else if (syntaxTree.Children.Count == 0)
-                {
-                    // <ProductionList> ::= null ;
-                    result = new RegulationList();
-                }
+                // <ProductionList> ::= <ProductionList> <Production> ;
+                List<Regulation> regulationList = GetProductionList(syntaxTree.Children[0]);
+                List<Regulation> production = GetProduction(syntaxTree.Children[1]);
+                result = new List<Regulation>();
+                result.AddRange(regulationList);
+                result.AddRange(production);
+            }
+            else if (syntaxTree.Children.Count == 0)
+            {
+                // <ProductionList> ::= null ;
+                result = new List<Regulation>();
             }
 
             return result;
@@ -57,10 +59,12 @@ namespace ContextfreeGrammarCompiler
 
         private static List<Regulation> GetProduction(SyntaxTree syntaxTree)
         {
-            // <Production> ::= <Vn> "::=" <Canditate> <RightPartList> ;
+            // <Production> ::= <Vn> "::=" <Canditate> <RightPartList> ";" ;
             List<Regulation> result = new List<Regulation>();
 
-            if (syntaxTree.NodeType.Type == ContextfreeGrammarTreeNodeType.__Production)
+            if (syntaxTree.NodeType.Type != ContextfreeGrammarSLRTreeNodeType.NODE__Production)
+            { throw new ArgumentException(); }
+
             {
                 Vn left = GetVn(syntaxTree.Children[0]);
                 TreeNodeType leftNode = left.GetTreeNodeType();
@@ -89,22 +93,22 @@ namespace ContextfreeGrammarCompiler
             RightPartList result = null;
 
             // <RightPartList> ::= "|" <Canditate> <RightPartList> | null ;
-            if (syntaxTree.NodeType.Type == ContextfreeGrammarTreeNodeType.__RightPartList)
+            if (syntaxTree.NodeType.Type != ContextfreeGrammarSLRTreeNodeType.NODE__RightPartList)
+            { throw new ArgumentException(); }
+
+            if (syntaxTree.Children.Count == 3)
             {
-                if (syntaxTree.Children.Count == 3)
-                {
-                    // <RightPartList> ::= "|" <Canditate> <RightPartList> ;
-                    Candidate candidate = GetCandidate(syntaxTree.Children[1]);
-                    result = new RightPartList();
-                    result.Add(candidate);
-                    RightPartList list = GetRightPartList(syntaxTree.Children[2]);
-                    result.AddRange(list);
-                }
-                else if (syntaxTree.Children.Count == 0)
-                {
-                    // <RightPartList> ::= null ;
-                    result = new RightPartList();
-                }
+                // <RightPartList> ::= "|" <Canditate> <RightPartList> ;
+                Candidate candidate = GetCandidate(syntaxTree.Children[1]);
+                result = new RightPartList();
+                result.Add(candidate);
+                RightPartList list = GetRightPartList(syntaxTree.Children[2]);
+                result.AddRange(list);
+            }
+            else if (syntaxTree.Children.Count == 0)
+            {
+                // <RightPartList> ::= null ;
+                result = new RightPartList();
             }
 
             return result;
@@ -116,13 +120,15 @@ namespace ContextfreeGrammarCompiler
 
         private static Candidate GetCandidate(SyntaxTree syntaxTree)
         {
-            // <Canditate> ::= <V> <VList> ;
+            // <Canditate> ::= <VList> <V> ;
             Candidate candidate = null;
-            if (syntaxTree.NodeType.Type == ContextfreeGrammarTreeNodeType.__Canditate)
+            if (syntaxTree.NodeType.Type != ContextfreeGrammarSLRTreeNodeType.NODE__Canditate)
+            { throw new ArgumentException(); }
+
             {
-                V v = GetV(syntaxTree.Children[0]);
-                VList vlist = GetVList(syntaxTree.Children[1]);
-                candidate = new Candidate(v, vlist);
+                VList vlist = GetVList(syntaxTree.Children[0]);
+                V v = GetV(syntaxTree.Children[1]);
+                candidate = new Candidate(vlist, v);
             }
 
             return candidate;
@@ -132,21 +138,21 @@ namespace ContextfreeGrammarCompiler
         {
             VList result = null;
 
-            // <VList> ::= <V> <VList> | null ;
-            if (syntaxTree.NodeType.Type == ContextfreeGrammarTreeNodeType.__VList)
+            // <VList> ::= <VList> <V> | null ;
+            if (syntaxTree.NodeType.Type != ContextfreeGrammarSLRTreeNodeType.NODE__VList)
+            { throw new ArgumentException(); }
+
+            if (syntaxTree.Children.Count == 2)
             {
-                // <VList> ::= <V> <VList> ;
-                if (syntaxTree.Children.Count == 2)
-                {
-                    V v = GetV(syntaxTree.Children[0]);
-                    VList vlist = GetVList(syntaxTree.Children[1]);
-                    result = new VList(v, vlist);
-                }
-                else if (syntaxTree.Children.Count == 0)
-                {
-                    // <VList> ::= null ;
-                    result = new VList();
-                }
+                // <VList> ::= <VList> <V> ;
+                VList vlist = GetVList(syntaxTree.Children[0]);
+                V v = GetV(syntaxTree.Children[1]);
+                result = new VList(vlist, v);
+            }
+            else if (syntaxTree.Children.Count == 0)
+            {
+                // <VList> ::= null ;
+                result = new VList();
             }
 
             return result;
@@ -156,14 +162,14 @@ namespace ContextfreeGrammarCompiler
         {
             V v = null;
             // <V> ::= <Vn> | <Vt> ;
-            if (syntaxTree.NodeType.Type == ContextfreeGrammarTreeNodeType.__V)
+            if (syntaxTree.NodeType.Type == ContextfreeGrammarSLRTreeNodeType.NODE__V)
             {
-                if (syntaxTree.Children[0].NodeType.Type == ContextfreeGrammarTreeNodeType.__Vn)
+                if (syntaxTree.Children[0].NodeType.Type == ContextfreeGrammarSLRTreeNodeType.NODE__Vn)
                 {
                     // <V> ::= <Vn> ;
                     v = GetVn(syntaxTree.Children[0]);
                 }
-                else if (syntaxTree.Children[0].NodeType.Type == ContextfreeGrammarTreeNodeType.__Vt)
+                else if (syntaxTree.Children[0].NodeType.Type == ContextfreeGrammarSLRTreeNodeType.NODE__Vt)
                 {
                     // <V> ::= <Vt> ;
                     v = GetVt(syntaxTree.Children[0]);
@@ -175,35 +181,45 @@ namespace ContextfreeGrammarCompiler
 
         private static Vt GetVt(SyntaxTree syntaxTree)
         {
-            // <Vt> ::= "null" | "identifier" | "number" | "constString" | constString ;
+            // <Vt> ::= "null" | "identifier" | "number" | "constString"  | "userDefinedType"| constString ;
             Vt vt = null;
-            if (syntaxTree.NodeType.Type == ContextfreeGrammarTreeNodeType.__Vt)
+            if (syntaxTree.NodeType.Type != ContextfreeGrammarSLRTreeNodeType.NODE__Vt)
+            { throw new ArgumentException(); }
+
+            if (syntaxTree.Children[0].NodeType.Type == ContextfreeGrammarSLRTreeNodeType.NODE__nullLeave__)
             {
-                if (syntaxTree.Children[0].NodeType.Type == ContextfreeGrammarTreeNodeType.__nullLeave__)
-                {
-                    //vt = new KeywordNull();
-                    vt = null;
-                }
-                else if (syntaxTree.Children[0].NodeType.Type == ContextfreeGrammarTreeNodeType.__identifierLeave__)
-                {
-                    vt = new KeywordIdentifier();
-                }
-                else if (syntaxTree.Children[0].NodeType.Type == ContextfreeGrammarTreeNodeType.__numberLeave__)
-                {
-                    vt = new KeywordNumber();
-                }
-                else if (syntaxTree.Children[0].NodeType.Type == ContextfreeGrammarTreeNodeType.__constStringLeave__)
-                {
-                    vt = new KeywordConstString();
-                }
-                else if (syntaxTree.Children[0].NodeType.Type == ContextfreeGrammarTreeNodeType.constStringLeave__)
-                {
-                    vt = GetConstString(syntaxTree.Children[0]);
-                }
-                else
-                {
-                    throw new NotImplementedException();
-                }
+                // <Vt> ::= "null" ;
+                //vt = new KeywordNull();
+                vt = null;
+            }
+            else if (syntaxTree.Children[0].NodeType.Type == ContextfreeGrammarSLRTreeNodeType.NODE__identifierLeave__)
+            {
+                // <Vt> ::= "identifier" ;
+                vt = new KeywordIdentifier();
+            }
+            else if (syntaxTree.Children[0].NodeType.Type == ContextfreeGrammarSLRTreeNodeType.NODE__numberLeave__)
+            {
+                // <Vt> ::= "number" ;
+                vt = new KeywordNumber();
+            }
+            else if (syntaxTree.Children[0].NodeType.Type == ContextfreeGrammarSLRTreeNodeType.NODE__constStringLeave__)
+            {
+                // <Vt> ::= "constString" ;
+                vt = new KeywordConstString();
+            }
+            else if (syntaxTree.Children[0].NodeType.Type == ContextfreeGrammarSLRTreeNodeType.NODE__userDefinedTypeLeave__)
+            {
+                // <Vt> ::= "userDefinedType" ;
+                vt = new KeywordUserDefinedType();
+            }
+            else if (syntaxTree.Children[0].NodeType.Type == ContextfreeGrammarSLRTreeNodeType.NODEconstStringLeave__)
+            {
+                // <Vt> ::= constString ;
+                vt = GetConstString(syntaxTree.Children[0]);
+            }
+            else
+            {
+                throw new NotImplementedException();
             }
 
             return vt;
@@ -213,7 +229,7 @@ namespace ContextfreeGrammarCompiler
         {
             ConstString result = null;
 
-            if (syntaxTree.NodeType.Type == ContextfreeGrammarTreeNodeType.constStringLeave__)
+            if (syntaxTree.NodeType.Type == ContextfreeGrammarSLRTreeNodeType.NODEconstStringLeave__)
             {
                 string originalName = syntaxTree.NodeType.Content;
                 originalName = originalName.Substring(1, originalName.Length - 2);
@@ -224,6 +240,18 @@ namespace ContextfreeGrammarCompiler
             return result;
         }
 
+        class KeywordUserDefinedType : Vt
+        {
+            public override string ToString()
+            {
+                return GetTreeNodeType().ToString();
+            }
+            public override TreeNodeType GetTreeNodeType()
+            {
+                return new TreeNodeType(ContextfreeGrammarSLRTreeNodeType.NODE__userDefinedTypeLeave__, "{userDefinedType}", "userDefinedType");
+            }
+        }
+
         class KeywordConstString : Vt
         {
             public override string ToString()
@@ -232,7 +260,7 @@ namespace ContextfreeGrammarCompiler
             }
             public override TreeNodeType GetTreeNodeType()
             {
-                return new TreeNodeType(ContextfreeGrammarTreeNodeType.constStringLeave__, "{constString}", "constString");
+                return new TreeNodeType(ContextfreeGrammarSLRTreeNodeType.NODEconstStringLeave__, "{constString}", "constString");
             }
         }
 
@@ -244,7 +272,7 @@ namespace ContextfreeGrammarCompiler
             }
             public override TreeNodeType GetTreeNodeType()
             {
-                return new TreeNodeType(ContextfreeGrammarTreeNodeType.numberLeave__, "{number}", "number");
+                return new TreeNodeType(ContextfreeGrammarSLRTreeNodeType.NODE__numberLeave__, "{number}", "number");
             }
         }
 
@@ -256,7 +284,7 @@ namespace ContextfreeGrammarCompiler
             }
             public override TreeNodeType GetTreeNodeType()
             {
-                return new TreeNodeType(ContextfreeGrammarTreeNodeType.identifierLeave__, "{identifier}", "identifier");
+                return new TreeNodeType(ContextfreeGrammarSLRTreeNodeType.NODEidentifierLeave__, "{identifier}", "identifier");
             }
         }
 
@@ -268,7 +296,7 @@ namespace ContextfreeGrammarCompiler
             }
             public override TreeNodeType GetTreeNodeType()
             {
-                return new TreeNodeType(ContextfreeGrammarTreeNodeType.__nullLeave__, "null", "null");
+                return new TreeNodeType(ContextfreeGrammarSLRTreeNodeType.NODE__nullLeave__, "null", "null");
             }
         }
 
@@ -289,7 +317,7 @@ namespace ContextfreeGrammarCompiler
                 return new TreeNodeType(
                     "__" + IdentifieredName + "Leave__",
                     OriginalContent, "\"" + OriginalContent + "\"");
-                //return new TreeNodeType(ContextfreeGrammarTreeNodeType.constStringLeave__, Content, Content);
+                //return new TreeNodeType(ContextfreeGrammarSLRTreeNodeType.NODEconstStringLeave__, Content, Content);
             }
             public override string ToString()
             {
@@ -302,7 +330,9 @@ namespace ContextfreeGrammarCompiler
         {
             // <Vn> ::= "<" identifier ">" ;
             Vn vn = null;
-            if (syntaxTree.NodeType.Type == ContextfreeGrammarTreeNodeType.__Vn)
+            if (syntaxTree.NodeType.Type != ContextfreeGrammarSLRTreeNodeType.NODE__Vn)
+            { throw new ArgumentException(); }
+
             {
                 string identifierContent = syntaxTree.Children[1].NodeType.Content;
                 vn = new Vn(identifierContent);
@@ -346,13 +376,14 @@ namespace ContextfreeGrammarCompiler
         {
             List<V> array = new List<V>();
 
-            public Candidate(V v, VList vlist)
+            public Candidate(VList vlist, V v)
             {
+                this.array.AddRange(vlist);
+
                 if (v != null)
                 {
                     this.array.Add(v);
                 }
-                this.array.AddRange(vlist);
             }
 
             public IEnumerator<V> GetEnumerator()
@@ -378,13 +409,14 @@ namespace ContextfreeGrammarCompiler
         {
             List<V> array = new List<V>();
 
-            public VList(V v, VList vlist)
+            public VList(VList vlist, V v)
             {
+                array.AddRange(vlist);
+
                 if (v != null)
                 {
                     array.Add(v);
                 }
-                array.AddRange(vlist);
             }
 
             public VList(params V[] array)
