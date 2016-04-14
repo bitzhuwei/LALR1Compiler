@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 namespace LALR1Compiler
 {
     /// <summary>
+    /// 前端分析器。
     /// 词法分析、语法分析、语义动作同步进行。
     /// </summary>
     public class FrontEndParser
@@ -15,6 +16,7 @@ namespace LALR1Compiler
         private LRSyntaxParser syntaxParser;
 
         /// <summary>
+        /// 前端分析器。
         /// 词法分析、语法分析、语义动作同步进行。
         /// </summary>
         /// <param name="lexicalAnalyzer"></param>
