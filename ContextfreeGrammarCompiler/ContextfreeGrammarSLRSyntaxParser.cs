@@ -5,7 +5,7 @@ namespace ContextfreeGrammarCompiler
     using LALR1Compiler;
     
     
-    public class ContextfreeGrammarSLRSyntaxParser : LALR1Compiler.LRSyntaxParser
+    public partial class ContextfreeGrammarSLRSyntaxParser : LALR1Compiler.LRSyntaxParser
     {
         
         private static LALR1Compiler.LRParsingMap parsingMap;
