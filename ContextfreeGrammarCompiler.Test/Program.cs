@@ -143,9 +143,9 @@ namespace ContextfreeGrammarCompiler.Test
             try
             {
                 LexicalAnalyzer lexi = asm.CreateInstance(
-                    GetNamespace(grammarId) + "." + GetLexicalAnalyzerName(grammarId)) as LexicalAnalyzer;
+                    Utilities.GetNamespace(grammarId) + "." + Utilities.GetLexicalAnalyzerName(grammarId)) as LexicalAnalyzer;
                 LRSyntaxParser parser = asm.CreateInstance(
-                    GetNamespace(grammarId) + "." + GetParserName(grammarId, syntaxParserMapAlgorithm)) as LRSyntaxParser;
+                    Utilities.GetNamespace(grammarId) + "." + Utilities.GetParserName(grammarId, syntaxParserMapAlgorithm)) as LRSyntaxParser;
                 string[] sourceCodeFullnames = Directory.GetFiles(
                     directory, "*.Code", SearchOption.TopDirectoryOnly);
                 foreach (var fullname in sourceCodeFullnames)
