@@ -82,7 +82,11 @@ namespace LALR1Compiler
             string str = getUniqueString(this);
             int hashCode = str.GetHashCode();
             this.hashCode = hashCode;
+#if DEBUG
+            this.uniqueString = str;
+#else
             this.uniqueString = string.Format("[{0}]", hashCode);
+#endif
         }
 
         // TODO: 功能稳定后应精简此字段的内容。
