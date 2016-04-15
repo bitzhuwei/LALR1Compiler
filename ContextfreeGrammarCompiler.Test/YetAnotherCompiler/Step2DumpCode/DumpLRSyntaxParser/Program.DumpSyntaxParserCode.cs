@@ -22,9 +22,12 @@ namespace ContextfreeGrammarCompiler.Test
             parserType.IsClass = true;
             parserType.IsPartial = true;
             parserType.BaseTypes.Add(typeof(LRSyntaxParser));
+            parserType.Comments.Add(new CodeCommentStatement("<summary>", true));
+            parserType.Comments.Add(new CodeCommentStatement(string.Format("{0} Symtax Parser", algorithm), true));
+            parserType.Comments.Add(new CodeCommentStatement("</summary>", true));
             DumpSyntaxParserFields(grammar, parserType, grammarId, algorithm);
-            DumpSyntaxParserMethod_GetGrammar(grammar, parserType);
-            DumpSyntaxParserMethod_GetParsingMap(grammar, map, parserType);
+            DumpSyntaxParserMethod_GetGrammar(grammar, parserType, algorithm);
+            DumpSyntaxParserMethod_GetParsingMap(grammar, map, parserType, algorithm);
 
             var parserNamespace = new CodeNamespace(Utilities.GetNamespace(grammarId));
             parserNamespace.Imports.Add(new CodeNamespaceImport(typeof(System.Object).Namespace));
@@ -51,13 +54,16 @@ namespace ContextfreeGrammarCompiler.Test
         private static void DumpSyntaxParserMethod_GetParsingMap(
             RegulationList grammar,
             LRParsingMap map,
-            CodeTypeDeclaration parserType)
+            CodeTypeDeclaration parserType,
+            SyntaxParserMapAlgorithm algorithm)
         {
             var method = new CodeMemberMethod();
             method.Name = "GetParsingMap";
             method.Attributes = MemberAttributes.Override | MemberAttributes.Family;
             method.ReturnType = new CodeTypeReference(typeof(LRParsingMap));
-            // if (parsingMap != null) { return parsingMap; }
+            method.Comments.Add(new CodeCommentStatement("<summary>", true));
+            method.Comments.Add(new CodeCommentStatement(string.Format("{0} Symtax Parser", algorithm), true));
+            method.Comments.Add(new CodeCommentStatement("</summary>", true));
             DumpSyntaxParserMethod_GetParsingMap_1(method);
             string varName = "map";
             // LALR1Compiler.LRParsingMap map = new LALR1Compiler.LRParsingMap();
@@ -156,7 +162,9 @@ namespace ContextfreeGrammarCompiler.Test
             method.Statements.Add(ifStatement);
         }
 
-        private static void DumpSyntaxParserMethod_GetGrammar(RegulationList grammar, CodeTypeDeclaration parserType)
+        private static void DumpSyntaxParserMethod_GetGrammar(
+            RegulationList grammar, CodeTypeDeclaration parserType,
+            SyntaxParserMapAlgorithm algorithm)
         {
             var method = new CodeMemberMethod();
             method.Name = "GetGrammar";
@@ -257,7 +265,7 @@ namespace ContextfreeGrammarCompiler.Test
                 var node = TreeNodeType.endOfTokenListNode;
                 CodeMemberField field = new CodeMemberField(typeof(TreeNodeType), Utilities.GetNodeNameInParser(node));
                 field.Attributes = MemberAttributes.Private | MemberAttributes.Static;
-                field.InitExpression=new CodeFieldReferenceExpression(
+                field.InitExpression = new CodeFieldReferenceExpression(
                     new CodeTypeReferenceExpression(typeof(TreeNodeType)),
                     "endOfTokenListNode");
                 parserType.Members.Add(field);
