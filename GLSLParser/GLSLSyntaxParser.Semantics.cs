@@ -10,7 +10,7 @@ namespace GLSLParser
     /// </summary>
     public partial class GLSLSyntaxParser
     {
-       static Dictionary<LRParsingAction, Action<ParsingStepContext>> dict =
+       static readonly Dictionary<LRParsingAction, Action<ParsingStepContext>> dict =
             new Dictionary<LRParsingAction, Action<ParsingStepContext>>();
 
         protected override Action<ParsingStepContext> GetSemanticAction(LRParsingAction parsingAction)
@@ -28,6 +28,7 @@ namespace GLSLParser
 
         static GLSLSyntaxParser()
         {
+            // 将语义动作绑定的到state上。
             dict.Add(new LR1ShiftInAction(172), state172_struct_specifier);
         }
 
