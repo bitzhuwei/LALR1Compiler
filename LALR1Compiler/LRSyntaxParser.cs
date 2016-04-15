@@ -93,36 +93,6 @@ namespace LALR1Compiler
             }
         }
 
-        public SyntaxTree Parse(TokenList tokenList)
-        {
-            LRParsingMap parsingMap = GetParsingMap();
-            RegulationList grammar = GetGrammar();
-
-            //TODO:这个convertor以后是可以配置的。
-            var tokenTypeConvertor = new TokenType2TreeNodeType();
-            var context = new ParsingContext(tokenList, grammar, parsingMap, tokenTypeConvertor);
-            while (context.CurrentTokenIndex < context.TokenList.Count + 1)
-            {
-                PrintParsingProgress(context);
-                TreeNodeType nodeType = context.CurrentNodeType();
-                int stateId = context.StateIdStack.Peek();
-                LRParsingAction action = parsingMap.GetAction(stateId, nodeType);
-                int currentTokenIndex = action.Execute(context);
-                context.CurrentTokenIndex = currentTokenIndex;
-            }
-
-            PrintLastState(context);
-
-            if (context.TreeStack.Count > 0)
-            {
-                return context.TreeStack.Peek();
-            }
-            else
-            {
-                return new SyntaxTree();
-            }
-        }
-
         private void PrintLastState(ParsingContext context)
         {
 #if DEBUG

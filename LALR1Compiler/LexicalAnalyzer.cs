@@ -58,29 +58,6 @@ namespace LALR1Compiler
 
             this.StopAnalyzing();
         }
-        /// <summary>
-        /// 分析源代码获得Token序列
-        /// </summary>
-        /// <returns></returns>
-        public TokenList Analyze(string sourceCode)
-        {
-            var tokens = new TokenList();
-            if (string.IsNullOrEmpty(sourceCode)) { return tokens; }
-
-            int count = sourceCode.Length;
-            var context = new AnalyzingContext(sourceCode);
-
-            while (context.NextLetterIndex < count)
-            {
-                Token token = NextToken(context);
-                if (token != null)
-                {
-                    tokens.Add(token);
-                }
-            }
-
-            return tokens;
-        }
 
         /// <summary>
         /// 从ptNextLetter开始获取下一个Token
