@@ -134,6 +134,7 @@ namespace LALR1Compiler
         {
             if (other == null) { return 1; }
 
+            // 如果用this.HashCode - other.HashCode < 0，就会发生溢出，这个bug让我折腾了近8个小时。
             if (this.HashCode < other.HashCode)
             { return -1; }
             else if (this.HashCode == other.HashCode)
