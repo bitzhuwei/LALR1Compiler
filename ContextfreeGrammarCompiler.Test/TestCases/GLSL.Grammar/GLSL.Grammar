@@ -291,6 +291,7 @@
 <precision_qualifier> ::= "high_precision" ;
 <precision_qualifier> ::= "medium_precision" ;
 <precision_qualifier> ::= "low_precision" ;
+// semantic parsing needed
 <struct_specifier> ::= "struct" identifier "{" <struct_declaration_list> "}" ;
 <struct_specifier> ::= "struct" "{" <struct_declaration_list> "}" ;
 <struct_declaration_list> ::= <struct_declaration> ;
