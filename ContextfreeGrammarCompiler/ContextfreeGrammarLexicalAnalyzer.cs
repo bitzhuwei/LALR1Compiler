@@ -184,21 +184,21 @@ namespace ContextfreeGrammarCompiler
             context.NextLetterIndex = (context.NextLetterIndex + 1);
             return false;
         }
+
+        private static OrderedCollection<LALR1Compiler.Keyword> keywords = new OrderedCollection<LALR1Compiler.Keyword>(", ");
         
-        private static System.Collections.Generic.List<LALR1Compiler.Keyword> keywords = new System.Collections.Generic.List<LALR1Compiler.Keyword>();
-        
-        public override System.Collections.Generic.IEnumerable<LALR1Compiler.Keyword> GetKeywords()
+        public override OrderedCollection<LALR1Compiler.Keyword> GetKeywords()
         {
             return keywords;
         }
         
         static ContextfreeGrammarLexicalAnalyzer()
         {
-            keywords.Add(new LALR1Compiler.Keyword("__null", "null"));
-            keywords.Add(new LALR1Compiler.Keyword("__identifier", "identifier"));
-            keywords.Add(new LALR1Compiler.Keyword("__number", "number"));
-            keywords.Add(new LALR1Compiler.Keyword("__constString", "constString"));
-            keywords.Add(new LALR1Compiler.Keyword("__userDefinedType", "userDefinedType"));
+            keywords.TryInsert(new LALR1Compiler.Keyword("__null", "null"));
+            keywords.TryInsert(new LALR1Compiler.Keyword("__identifier", "identifier"));
+            keywords.TryInsert(new LALR1Compiler.Keyword("__number", "number"));
+            keywords.TryInsert(new LALR1Compiler.Keyword("__constString", "constString"));
+            keywords.TryInsert(new LALR1Compiler.Keyword("__userDefinedType", "userDefinedType"));
         }
     }
 }

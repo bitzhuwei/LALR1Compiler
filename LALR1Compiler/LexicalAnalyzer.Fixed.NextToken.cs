@@ -39,28 +39,39 @@ namespace LALR1Compiler
             }
         }
 
-       
-        public abstract IEnumerable<Keyword> GetKeywords();
+
+        public abstract OrderedCollection<Keyword> GetKeywords();
     }
 
     /// <summary>
     /// 文法中指出的关键字（用""引起来的字符串）
     /// </summary>
-    public class Keyword
+    public class Keyword : HashCache
     {
         public string TokenType { get; set; }
         public string NickName { get; set; }
 
         public Keyword(string tokenType, string nickName)
+            : base(GetUniqueString)
         {
             // TODO: Complete member initialization
             this.TokenType = tokenType;
             this.NickName = nickName;
         }
 
+        static string GetUniqueString(HashCache cache)
+        {
+            return cache.Dump();
+        }
+
         public override string ToString()
         {
             return string.Format("{0}, {1}", TokenType, NickName);
+        }
+
+        public override void Dump(System.IO.TextWriter stream)
+        {
+            stream.Write("{0}, {1}", TokenType, NickName);
         }
     }
 

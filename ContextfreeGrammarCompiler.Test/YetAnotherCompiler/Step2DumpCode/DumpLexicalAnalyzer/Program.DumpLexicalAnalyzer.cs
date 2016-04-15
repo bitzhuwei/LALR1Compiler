@@ -81,18 +81,19 @@ namespace ContextfreeGrammarCompiler.Test
             RegulationList grammar, string grammarId, CodeTypeDeclaration lexiType)
         {
             {
-                // private static readonly List<Keyword> keywords = new List<Keyword>();
-                var field = new CodeMemberField(typeof(List<Keyword>), "keywords");
+                // private static readonly OrderedCollection<Keyword> keywords = new OrderedCollection<Keyword>(", ");
+                var field = new CodeMemberField(typeof(OrderedCollection<Keyword>), "keywords");
                 field.Attributes = MemberAttributes.Private | MemberAttributes.Static;
-                field.InitExpression = new CodeObjectCreateExpression(typeof(List<Keyword>));
+                field.InitExpression = new CodeObjectCreateExpression(typeof(OrderedCollection<Keyword>),
+                    new CodePrimitiveExpression(", "));
                 lexiType.Members.Add(field);
             }
             {
-                // protected override IEnumerable<Keyword> GetKeywords()
+                // protected override OrderedCollection<Keyword> GetKeywords()
                 var method = new CodeMemberMethod();
                 method.Name = "GetKeywords";
                 method.Attributes = MemberAttributes.Public | MemberAttributes.Override;
-                method.ReturnType = new CodeTypeReference(typeof(IEnumerable<Keyword>));
+                method.ReturnType = new CodeTypeReference(typeof(OrderedCollection<Keyword>));
                 var returnKeywords = new CodeMethodReturnStatement(
                     new CodeVariableReferenceExpression("keywords"));
                 method.Statements.Add(returnKeywords);
@@ -104,15 +105,15 @@ namespace ContextfreeGrammarCompiler.Test
                 method.Name = Utilities.GetLexicalAnalyzerName(grammarId);
                 method.Attributes = MemberAttributes.Static;
                 //{
-                //    // List<Keyword> keyword = new List<Keyword>();
-                //    var keyword = new CodeVariableDeclarationStatement("List<Keyword>", "keyword");
-                //    keyword.InitExpression = new CodeObjectCreateExpression("List<Keyword>");
+                //    // OrderedCollection<Keyword> keyword = new OrderedCollection<Keyword>();
+                //    var keyword = new CodeVariableDeclarationStatement("OrderedCollection<Keyword>", "keyword");
+                //    keyword.InitExpression = new CodeObjectCreateExpression("OrderedCollection<Keyword>");
                 //    method.Statements.Add(keyword);
                 //}
                 var convertor = new TreeNodeType2TokenType();
                 foreach (var node in grammar.GetAllTreeNodeLeaveTypes())
                 {
-                    // keywords.Add(new Keyword("__x", "x"));
+                    // keywords.TryInsert(new Keyword("__x", "x"));
                     if (node.IsIdentifier())
                     {
                         TokenType tokenType = convertor.GetTokenType(node);
@@ -121,7 +122,7 @@ namespace ContextfreeGrammarCompiler.Test
                             new CodePrimitiveExpression(tokenType.Content));
                         var add = new CodeMethodInvokeExpression(
                             new CodeVariableReferenceExpression("keywords"),
-                            "Add",
+                            "TryInsert",
                             ctor);
                         method.Statements.Add(add);
                     }
