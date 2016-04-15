@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace ContextfreeGrammarCompiler.Test
 {
-    partial class Program
+    static partial class Utilities
     {
         /// <summary>
         /// 根据Enum的类型获取其Code。

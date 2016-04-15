@@ -41,13 +41,16 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="TestCases\struct.Grammar\structSyntaxParser.Semantics.cs">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
     <Compile Include="YetAnotherCompiler\Step2DumpCode\DumpLexicalAnalyzer\CodeGetToken.cs" />
     <Compile Include="YetAnotherCompiler\Step2DumpCode\DumpLexicalAnalyzer\CommentCodeGetTokenCollection.cs" />
     <Compile Include="YetAnotherCompiler\Step2DumpCode\DumpLexicalAnalyzer\CodeGetTokenCollection.cs" />
     <Compile Include="YetAnotherCompiler\Step2DumpCode\DumpConsts\Program.DumpTokenTypeConstCode.cs" />
     <Compile Include="RegulationList.SemanticCheck.cs" />
     <Compile Include="YetAnotherCompiler\Step2DumpCode\DumpLexicalAnalyzer\States.cs" />
-    <Compile Include="Program.DumpEnum.cs" />
+    <Compile Include="YetAnotherCompiler\Utilities.DumpEnum.cs" />
     <Compile Include="YetAnotherCompiler\Step2DumpCode\DumpLexicalAnalyzer\Program.DumpLexicalAnalyzer.cs" />
     <Compile Include="YetAnotherCompiler\Step2DumpCode\DumpLRSyntaxParser\Program.DumpSyntaxParserCode.cs" />
     <Compile Include="YetAnotherCompiler\Utilities.cs" />

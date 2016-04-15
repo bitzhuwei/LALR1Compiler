@@ -101,28 +101,28 @@ namespace ContextfreeGrammarCompiler.Test
             {
                 Console.WriteLine("    Compiling {0} of LR(0) version", grammarId);
                 string LR0Directory = Path.Combine(directory, "LR(0)");
-                Assembly asm = CompileCode(LR0Directory, grammarId, SyntaxParserMapAlgorithm.LR0);
+                Assembly asm = CompileCode(directory, LR0Directory, grammarId, SyntaxParserMapAlgorithm.LR0);
                 Console.WriteLine("    Test Code {0} of LR(0) version", grammarId);
                 TestCode(asm, directory, LR0Directory, grammarId, SyntaxParserMapAlgorithm.LR0);
             }
             {
                 Console.WriteLine("    Compiling {0} of SLR version", grammarId);
                 string SLRDirectory = Path.Combine(directory, "SLR");
-                Assembly asm = CompileCode(SLRDirectory, grammarId, SyntaxParserMapAlgorithm.SLR);
+                Assembly asm = CompileCode(directory, SLRDirectory, grammarId, SyntaxParserMapAlgorithm.SLR);
                 Console.WriteLine("    Test Code {0} of SLR version", grammarId);
                 TestCode(asm, directory, SLRDirectory, grammarId, SyntaxParserMapAlgorithm.SLR);
             }
             {
                 Console.WriteLine("    Compiling {0} of LALR(1) version", grammarId);
                 string LALR1Directory = Path.Combine(directory, "LALR(1)");
-                Assembly asm = CompileCode(LALR1Directory, grammarId, SyntaxParserMapAlgorithm.LALR1);
+                Assembly asm = CompileCode(directory, LALR1Directory, grammarId, SyntaxParserMapAlgorithm.LALR1);
                 Console.WriteLine("    Test Code {0} of LALR(1) version", grammarId);
                 TestCode(asm, directory, LALR1Directory, grammarId, SyntaxParserMapAlgorithm.LALR1);
             }
             {
                 Console.WriteLine("    Compiling {0} of LR(1) version", grammarId);
                 string LR1Directory = Path.Combine(directory, "LR(1)");
-                Assembly asm = CompileCode(LR1Directory, grammarId, SyntaxParserMapAlgorithm.LR1);
+                Assembly asm = CompileCode(directory, LR1Directory, grammarId, SyntaxParserMapAlgorithm.LR1);
                 Console.WriteLine("    Test Code {0} of LR(1) version", grammarId);
                 TestCode(asm, directory, LR1Directory, grammarId, SyntaxParserMapAlgorithm.LR1);
             }
@@ -179,10 +179,12 @@ namespace ContextfreeGrammarCompiler.Test
             }
         }
 
-        private static Assembly CompileCode(string directory, string grammarId, SyntaxParserMapAlgorithm syntaxParserMapAlgorithm)
+        private static Assembly CompileCode(string directory, string subDirectory, string grammarId, SyntaxParserMapAlgorithm syntaxParserMapAlgorithm)
         {
+            string[] subFiles = Directory.GetFiles(subDirectory, "*.cs", SearchOption.TopDirectoryOnly);
             string[] files = Directory.GetFiles(directory, "*.cs", SearchOption.TopDirectoryOnly);
             CSharpCodeProvider objCSharpCodePrivoder = new CSharpCodeProvider();
+            string[] allFiles = files.Concat(subFiles).ToArray();
 
             CompilerParameters objCompilerParameters = new CompilerParameters();
             objCompilerParameters.ReferencedAssemblies.Add(
@@ -197,7 +199,7 @@ namespace ContextfreeGrammarCompiler.Test
             objCompilerParameters.GenerateInMemory = true;
             objCompilerParameters.IncludeDebugInformation = true;
             CompilerResults cr = objCSharpCodePrivoder.CompileAssemblyFromFile(
-                objCompilerParameters, files);
+                objCompilerParameters, allFiles);
             if (cr.Errors.HasErrors)
             {
                 Console.WriteLine("Compiling Errors:");

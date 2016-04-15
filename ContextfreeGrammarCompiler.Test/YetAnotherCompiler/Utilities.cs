@@ -11,7 +11,7 @@ using Microsoft.CSharp;
 
 namespace ContextfreeGrammarCompiler.Test
 {
-    static class Utilities 
+    static partial class Utilities 
     {
         public static bool IsIdentifier(this TreeNodeType node)
         {
