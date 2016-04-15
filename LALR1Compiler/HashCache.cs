@@ -89,7 +89,6 @@ namespace LALR1Compiler
 #endif
         }
 
-        // TODO: 功能稳定后应精简此字段的内容。
         /// <summary>
         /// 功能稳定后应精简此字段的内容。
         /// </summary>
