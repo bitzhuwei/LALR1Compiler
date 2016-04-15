@@ -53,6 +53,10 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="Conflicts.log" />
+    <None Include="GLSL.FormatedGrammar.log" />
+    <None Include="GLSL.Grammar">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
     <None Include="GLSL.State.log" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
