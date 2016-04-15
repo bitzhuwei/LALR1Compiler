@@ -163,8 +163,8 @@
 <storage_qualifier> ::= "writeonly" ;
 <storage_qualifier> ::= "subroutine" ;
 <storage_qualifier> ::= "subroutine" "(" <type_name_list> ")" ;
-<type_name_list> ::= <TYPE_NAME> ;
-<type_name_list> ::= <type_name_list> "," <TYPE_NAME> ;
+<type_name_list> ::= userDefinedType ;
+<type_name_list> ::= <type_name_list> "," userDefinedType ;
 <type_specifier> ::= <type_specifier_nonarray> ;
 <type_specifier> ::= <type_specifier_nonarray> <array_specifier> ;
 <array_specifier> ::= "[" "]" ;
@@ -291,8 +291,7 @@
 <type_specifier_nonarray> ::= "iimage2DMSArray" ;
 <type_specifier_nonarray> ::= "uimage2DMSArray" ;
 <type_specifier_nonarray> ::= <struct_specifier> ;
-<type_specifier_nonarray> ::= <TYPE_NAME> ;
-<TYPE_NAME> ::= identifier ;
+<type_specifier_nonarray> ::= userDefinedType ;
 <precision_qualifier> ::= "high_precision" ;
 <precision_qualifier> ::= "medium_precision" ;
 <precision_qualifier> ::= "low_precision" ;
