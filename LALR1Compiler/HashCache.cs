@@ -49,7 +49,7 @@ namespace LALR1Compiler
             return this.HashCode;
         }
 
-        private Func<HashCache, string> getUniqueString;
+        private Func<HashCache, string> GetUniqueString;
 
         private bool dirty = true;
 
@@ -79,7 +79,7 @@ namespace LALR1Compiler
 
         private void Update()
         {
-            string str = getUniqueString(this);
+            string str = GetUniqueString(this);
             int hashCode = str.GetHashCode();
             this.hashCode = hashCode;
 #if DEBUG
@@ -117,12 +117,12 @@ namespace LALR1Compiler
         /// <summary>
         /// 缓存一个对象的hash code。提高比较（==、!=、Equals、GetHashCode、Compare）的效率。
         /// </summary>
-        /// <param name="getUniqueString">获取一个可唯一标识此对象的字符串。</param>
-        public HashCache(Func<HashCache, string> getUniqueString)
+        /// <param name="GetUniqueString">获取一个可唯一标识此对象的字符串。</param>
+        public HashCache(Func<HashCache, string> GetUniqueString)
         {
-            if (getUniqueString == null) { throw new ArgumentNullException(); }
+            if (GetUniqueString == null) { throw new ArgumentNullException(); }
 
-            this.getUniqueString = getUniqueString;
+            this.GetUniqueString = GetUniqueString;
         }
 
         public override string ToString()
