@@ -37,7 +37,7 @@ namespace LALR1Compiler
         /// </summary>
         /// <param name="sourceCode"></param>
         /// <returns></returns>
-        internal IEnumerable<Token> AnalyzeStep(string sourceCode)
+        internal IEnumerable<Token> Analyze(string sourceCode)
         {
             if (!inAnalyzingStep) { throw new Exception("Must invoke this.StartAnalyzing() first!"); }
 
