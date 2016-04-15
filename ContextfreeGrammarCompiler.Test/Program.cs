@@ -181,7 +181,9 @@ namespace ContextfreeGrammarCompiler.Test
 
         private static Assembly CompileCode(string directory, string subDirectory, string grammarId, SyntaxParserMapAlgorithm syntaxParserMapAlgorithm)
         {
+            // 自动生成的代码（词法分析+语法分析）
             string[] subFiles = Directory.GetFiles(subDirectory, "*.cs", SearchOption.TopDirectoryOnly);
+            // 手工编写的代码（语义分析）
             string[] files = Directory.GetFiles(directory, "*.cs", SearchOption.TopDirectoryOnly);
             CSharpCodeProvider objCSharpCodePrivoder = new CSharpCodeProvider();
             string[] allFiles = files.Concat(subFiles).ToArray();
