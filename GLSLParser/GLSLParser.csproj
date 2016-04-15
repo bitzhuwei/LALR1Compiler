@@ -39,6 +39,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="GLSLParserSyntaxTree.DumpShaderDeclarations.cs" />
     <Compile Include="GLSLLexicalAnalyzer.cs" />
     <Compile Include="GLSLSyntaxParser.cs" />
     <Compile Include="GLSLTokenType.cs" />
