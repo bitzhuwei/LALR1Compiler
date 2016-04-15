@@ -6,10 +6,7 @@
 <variable_identifier> ::= identifier ;
 <primary_expression> ::= <variable_identifier> ;
 <primary_expression> ::= number ;
-<primary_expression> ::= number ;
-<primary_expression> ::= number ;
 <primary_expression> ::= <BOOLCONSTANT> ;
-<primary_expression> ::= number ;
 <primary_expression> ::= "(" <expression> ")" ;
 <BOOLCONSTANT> ::= "true" ;
 <BOOLCONSTANT> ::= "false" ;
