@@ -51,10 +51,6 @@ namespace LALR1Compiler
             return result;
         }
 
-        // 在子类里实现
-        //protected static Dictionary<LRParsingAction, Action<ParsingStepContext>> semanticsDict =
-        //    new Dictionary<LRParsingAction, Action<ParsingStepContext>>();
-
         /// <summary>
         /// 获取归约动作对应的语义动作。
         /// </summary>
