@@ -52,6 +52,7 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="GLSLSyntaxParser.Semantics.cs" />
     <None Include="Conflicts.log" />
     <None Include="GLSL.FormatedGrammar.log" />
     <None Include="GLSL.Grammar">
