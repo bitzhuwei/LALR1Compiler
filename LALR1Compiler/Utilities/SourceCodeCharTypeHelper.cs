@@ -42,7 +42,7 @@ namespace LALR1Compiler
             if (c == '}') return SourceCodeCharType.RightBrace;
             if (c == '!') return SourceCodeCharType.Not;
             if (c == '#') return SourceCodeCharType.Pound;
-            if (c == '\\') return SourceCodeCharType.Slash;
+            if (c == '\\') return SourceCodeCharType.BackSlash;
             if (c == '?') return SourceCodeCharType.Question;
             if (c == '\'') return SourceCodeCharType.Quotation;
             if (c == '"') return SourceCodeCharType.DoubleQuotation;

@@ -120,7 +120,7 @@ namespace LALR1Compiler
         /// <summary>
         /// \
         /// </summary>
-        Slash,
+        BackSlash,
         /// <summary>
         /// ?
         /// </summary>
