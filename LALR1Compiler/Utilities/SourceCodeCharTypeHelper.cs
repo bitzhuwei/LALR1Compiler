@@ -25,7 +25,7 @@ namespace LALR1Compiler
             if (c == '+') return SourceCodeCharType.Plus;
             if (c == '-') return SourceCodeCharType.Minus;
             if (c == '*') return SourceCodeCharType.Multiply;
-            if (c == '/') return SourceCodeCharType.Divide;
+            if (c == '/') return SourceCodeCharType.Slash;
             if (c == '%') return SourceCodeCharType.Percent;
             if (c == '^') return SourceCodeCharType.Xor;
             if (c == '&') return SourceCodeCharType.And;

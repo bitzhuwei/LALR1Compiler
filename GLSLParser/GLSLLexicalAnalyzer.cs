@@ -132,7 +132,7 @@ namespace GLSLParser
                 gotToken = this.GetRightBrace(result, context);
                 return gotToken;
             }
-            if ((charType == SourceCodeCharType.Divide))
+            if ((charType == SourceCodeCharType.Slash))
             {
                 gotToken = this.Getslash(result, context);
                 return gotToken;

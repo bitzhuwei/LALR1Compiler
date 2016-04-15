@@ -52,7 +52,7 @@ namespace LALR1Compiler
         /// <summary>
         /// /
         /// </summary>
-        Divide,
+        Slash,
         /// <summary>
         /// %
         /// </summary>

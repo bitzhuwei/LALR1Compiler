@@ -54,7 +54,7 @@ namespace ContextfreeGrammarCompiler.Test
             DivideState commentState = null;// 为了处理注释，"/"符号要特殊对待。
             foreach (var state in lexiStateList)
             {
-                if (state.CharTypeList.Contains(SourceCodeCharType.Divide))
+                if (state.CharTypeList.Contains(SourceCodeCharType.Slash))
                 {
                     commentState = new DivideState(state);
                     continue;
@@ -160,7 +160,7 @@ namespace ContextfreeGrammarCompiler.Test
                 DivideState commentState = null;// 为了处理注释，"/"符号要特殊对待。
                 foreach (var state in lexiStateList)
                 {
-                    if (state.CharTypeList.Contains(SourceCodeCharType.Divide))
+                    if (state.CharTypeList.Contains(SourceCodeCharType.Slash))
                     {
                         commentState = new DivideState(state);
                         continue;

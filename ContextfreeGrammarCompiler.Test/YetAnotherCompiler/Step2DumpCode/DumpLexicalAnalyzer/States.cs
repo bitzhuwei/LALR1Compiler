@@ -21,7 +21,7 @@ namespace ContextfreeGrammarCompiler.Test
         public static DivideState GetCommentState()
         {
             var slash = new LexiState();
-            slash.charTypeList.Add(SourceCodeCharType.Divide);
+            slash.charTypeList.Add(SourceCodeCharType.Slash);
             return new DivideState(slash);
         }
 
