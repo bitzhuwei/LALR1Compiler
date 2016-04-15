@@ -32,19 +32,7 @@ namespace LALR1Compiler
 
         private static string GetUniqueString(HashCache cache)
         {
-            OrderedCollection<T> obj = cache as OrderedCollection<T>;
-            return obj.Dump();
-            //StringBuilder builder = new StringBuilder();
-            //for (int i = 0; i < obj.list.Count; i++)
-            //{
-            //    builder.Append(obj.list[i]);
-            //    if (i + 1 < obj.list.Count)
-            //    {
-            //        builder.Append(obj.seperator);
-            //    }
-            //}
-
-            //return builder.ToString();
+            return cache.Dump();
         }
 
         public virtual bool TryInsert(T item)
