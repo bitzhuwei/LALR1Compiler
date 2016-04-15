@@ -246,21 +246,23 @@ namespace ContextfreeGrammarCompiler.Test
 
         private static string Getduplication(RegulationList grammar, out bool error)
         {
+            error = false;
+
+            var groups = from item in grammar
+                         group item by item.ToString() into g
+                         where g.Count() > 1
+                         select g;
             StringBuilder builder = new StringBuilder();
-            var duplications = (from a in grammar
-                                join b in grammar on a equals b
-                                where grammar.IndexOf(a) != grammar.IndexOf(b)
-                                select new { a, b }).ToList();
 
             builder.AppendLine("====================================================================");
-            builder.AppendLine(string.Format("[{0}] duplicated regulation couples:", duplications.Count));
-            foreach (var item in duplications)
+            builder.AppendLine(string.Format("[{0}] duplicated regulation couples:", groups.Count()));
+            foreach (var group in groups)
             {
-                builder.AppendLine(string.Format("{0}: duplicated at index {1} and {2}",
-                    item.a, grammar.IndexOf(item.a), grammar.IndexOf(item.b)));
+                builder.AppendLine(string.Format(
+                    "The regulation [{0}] duplicated [{1}] times!", group.Key,group.Count()));
             }
 
-            error = duplications.Count > 0;
+            error = groups.Count() > 0;
 
             return builder.ToString();
         }

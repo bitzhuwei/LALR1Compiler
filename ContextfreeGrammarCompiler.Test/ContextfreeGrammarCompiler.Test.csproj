@@ -41,12 +41,6 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="TestCases\ContextfreeGrammar.Grammar\GLSL.Code">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Include="TestCases\struct.Grammar\structSyntaxParser.Semantics.cs">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
     <Compile Include="YetAnotherCompiler\Step2DumpCode\DumpLexicalAnalyzer\CodeGetToken.cs" />
     <Compile Include="YetAnotherCompiler\Step2DumpCode\DumpLexicalAnalyzer\CommentCodeGetTokenCollection.cs" />
     <Compile Include="YetAnotherCompiler\Step2DumpCode\DumpLexicalAnalyzer\CodeGetTokenCollection.cs" />
@@ -89,213 +83,10 @@
   <ItemGroup>
     <None Include="App.config" />
     <Compile Include="YetAnotherCompiler\Step2DumpCode\DumpLexicalAnalyzer\Program.GetLexicalAnalyzer_TryGetToken_States.cs" />
-    <None Include="TestCases\3_11.Grammar\3_11.Grammar">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Include="TestCases\3_10.Grammar\3_10.Grammar">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Include="TestCases\3_10.Grammar\Code1.Code">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Include="TestCases\3_10.Grammar\Code2.Code">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Include="TestCases\3_10.Grammar\Code3.Code">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Include="TestCases\3_10.Grammar\Code4.Code">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Include="TestCases\3_10.Grammar\Code5.Code">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Include="TestCases\3_10.Grammar\Code6.Code">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Include="TestCases\3_8.Grammar\3_8.Grammar">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Include="TestCases\3_8.Grammar\Code1.Code">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Include="TestCases\3_8.Grammar\Code2.Code">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Include="TestCases\3_8.Grammar\Code3.Code">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Include="TestCases\3_8.Grammar\Code4.Code">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Include="TestCases\3_8.Grammar\Code5.Code">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Include="TestCases\3_9.Grammar\3_9.Grammar">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Include="TestCases\3_9.Grammar\Code1.Code">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Include="TestCases\3_9.Grammar\Code2.Code">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Include="TestCases\ConstString.Grammar\Code1.Code">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Include="TestCases\ConstString.Grammar\Code2.Code">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Include="TestCases\ConstString.Grammar\ConstString.Grammar">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Include="TestCases\ContextfreeGrammar.Grammar\3_10.Code">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Include="TestCases\ContextfreeGrammar.Grammar\3_8.Code">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Include="TestCases\ContextfreeGrammar.Grammar\3_9.Code">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Include="TestCases\ContextfreeGrammar.Grammar\ConstString.Code">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Include="TestCases\ContextfreeGrammar.Grammar\ContextfreeGrammar.Code">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Include="TestCases\ContextfreeGrammar.Grammar\ContextfreeGrammar.Grammar">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Include="TestCases\ContextfreeGrammar.Grammar\Demo.Code">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Include="TestCases\ContextfreeGrammar.Grammar\exercise3.13.Code">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Include="TestCases\ContextfreeGrammar.Grammar\exercise3.14.Code">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Include="TestCases\ContextfreeGrammar.Grammar\Identifier.Code">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Include="TestCases\ContextfreeGrammar.Grammar\List.Code">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Include="TestCases\ContextfreeGrammar.Grammar\Null.Code">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Include="TestCases\ContextfreeGrammar.Grammar\Single.Code">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Include="TestCases\Declaration.Grammar\Declaration.Grammar">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      <SubType>Designer</SubType>
-    </None>
-    <None Include="TestCases\Declaration.Grammar\Original.Grammar">
-      <SubType>Designer</SubType>
-    </None>
-    <None Include="TestCases\Demo.Grammar\Code1.Code">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Include="TestCases\Demo.Grammar\Demo.Grammar">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Include="TestCases\exercise3.13.Grammar\Code1.Code">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Include="TestCases\exercise3.13.Grammar\Code2.Code">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Include="TestCases\exercise3.13.Grammar\Code3.Code">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Include="TestCases\exercise3.13.Grammar\Code4.Code">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Include="TestCases\exercise3.13.Grammar\exercise3.13.Grammar">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Include="TestCases\exercise3.14.Grammar\Code1.Code">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Include="TestCases\exercise3.14.Grammar\Code2.Code">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Include="TestCases\exercise3.14.Grammar\Code3.Code">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Include="TestCases\exercise3.14.Grammar\Code4.Code">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Include="TestCases\exercise3.14.Grammar\exercise3.14.Grammar">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Include="TestCases\Expression.Grammar\Expression.Grammar">
-      <SubType>Designer</SubType>
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Include="TestCases\FunctionDefinition.Grammar\FunctionDefinition.Grammar">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
     <None Include="TestCases\GLSL.Grammar\GLSL.Grammar">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Include="TestCases\GLSL.Grammar\glslang.y" />
-    <None Include="TestCases\IfElse.Grammar\Code1.Code">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Include="TestCases\IfElse.Grammar\Code2.Code">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Include="TestCases\IfElse.Grammar\Code3.Code">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Include="TestCases\IfElse.Grammar\Code4.Code">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Include="TestCases\IfElse.Grammar\IfElse.Grammar">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Include="TestCases\RewriteIfElse.Grammar\Code1.Code">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Include="TestCases\RewriteIfElse.Grammar\Code2.Code">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Include="TestCases\RewriteIfElse.Grammar\Code3.Code">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Include="TestCases\RewriteIfElse.Grammar\Code4.Code">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Include="TestCases\RewriteIfElse.Grammar\RewriteIfElse.Grammar">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Include="TestCases\rewriteIfElseStatement.Grammar\rewriteIfElseStatement.Grammar">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Include="TestCases\Statement.Grammar\Code1.Code">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Include="TestCases\Statement.Grammar\Code2.Code">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Include="TestCases\Statement.Grammar\Code3.Code">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Include="TestCases\Statement.Grammar\Code4.Code">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Include="TestCases\Statement.Grammar\Statement.Grammar">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Include="TestCases\struct.Grammar\Code1.Code">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Include="TestCases\struct.Grammar\struct.Grammar">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
     <None Include="YetAnotherCompiler\Step1GetParsingMapEtc\LR%281%29State.cd" />
   </ItemGroup>
   <ItemGroup>
@@ -311,7 +102,6 @@
   <ItemGroup>
     <Compile Include="YetAnotherCompiler\Step2DumpCode\DumpConsts\Program.DumpTreeNodeTypeConstCode.cs" />
     <Content Include="readme.txt" />
-    <Content Include="TestCases\Statement.Grammar\readme.txt" />
   </ItemGroup>
   <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
