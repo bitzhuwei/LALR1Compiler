@@ -83,9 +83,9 @@ namespace LALR1Compiler
             int hashCode = str.GetHashCode();
             this.hashCode = hashCode;
 #if DEBUG
-            this.uniqueString = str;
+            this.uniqueString = str;// debug时可以看到可读的信息
 #else
-            this.uniqueString = string.Format("[{0}]", hashCode);
+            this.uniqueString = string.Format("[{0}]", hashCode);// release后用最少的内存区分此对象
 #endif
         }
 
