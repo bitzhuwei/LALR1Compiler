@@ -1,2 +1,1 @@
 此项目的代码（GLSLLexicalAnalyzer、GLSLSyntaxParser、GLSLTokenType、GLSLTreeNodeType）由ContextfreeGrammarCompiler.Test根据GLSL.Grammar生成。
-GLSLSyntaxParser.Semantics.cs是手动编写的。
