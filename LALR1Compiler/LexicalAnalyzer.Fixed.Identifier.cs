@@ -43,12 +43,14 @@ namespace LALR1Compiler
                 { break; }
             }
             string content = builder.ToString();
-            // specify if this string is a keyword
-            foreach (var item in this.GetKeywords())
             {
-                if (item.NickName == content)
+                // specify if this string is a keyword
+                OrderedCollection<Keyword> keywords = this.GetKeywords();
+                int index = keywords.IndexOf(new Keyword("__" + content, content));
+                if (0 <= index)
                 {
-                    result.TokenType = new TokenType(item.TokenType, content, content);
+                    Keyword keyword = keywords[index];
+                    result.TokenType = new TokenType(keyword.TokenType, content, content);
                     return true;
                 }
             }
