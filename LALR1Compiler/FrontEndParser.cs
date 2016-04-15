@@ -38,10 +38,9 @@ namespace LALR1Compiler
             tokenList = new TokenList();
             UserDefinedTypeCollection userDefinedTypeTable = new UserDefinedTypeCollection();
             this.lexicalAnalyzer.StartAnalyzing(userDefinedTypeTable);
-            this.syntaxParser.StartParsing(userDefinedTypeTable);
+            this.syntaxParser.StartParsing(tokenList, userDefinedTypeTable);
             foreach (var token in this.lexicalAnalyzer.Analyze(sourceCode))
             {
-                tokenList.Add(token);
                 this.syntaxParser.ParseStep(token);
             }
 

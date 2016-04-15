@@ -10,12 +10,12 @@ namespace GLSLParser
     /// </summary>
     public partial class GLSLSyntaxParser
     {
-       static readonly Dictionary<LRParsingAction, Action<ParsingStepContext>> dict =
-            new Dictionary<LRParsingAction, Action<ParsingStepContext>>();
+       static readonly Dictionary<LRParsingAction, Action<ParsingContext>> dict =
+            new Dictionary<LRParsingAction, Action<ParsingContext>>();
 
-        protected override Action<ParsingStepContext> GetSemanticAction(LRParsingAction parsingAction)
+        protected override Action<ParsingContext> GetSemanticAction(LRParsingAction parsingAction)
         {
-            Action<ParsingStepContext> semanticAction = null;
+            Action<ParsingContext> semanticAction = null;
             if (dict.TryGetValue(parsingAction, out semanticAction))
             {
                 return semanticAction;
@@ -38,7 +38,7 @@ namespace GLSLParser
         /// State [172]
 		/// </summary>
 		/// <param name="context"></param>
-        static void state172_struct_specifier(ParsingStepContext context)
+        static void state172_struct_specifier(ParsingContext context)
         {
             SyntaxTree tree = context.TreeStack.Peek();
             string name = tree.NodeType.Content;

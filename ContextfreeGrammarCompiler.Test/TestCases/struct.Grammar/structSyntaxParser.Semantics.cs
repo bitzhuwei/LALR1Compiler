@@ -7,12 +7,12 @@ namespace structCompiler
 
     public partial class structSyntaxParser
     {
-        static Dictionary<LRParsingAction, Action<ParsingStepContext>> dict =
-            new Dictionary<LRParsingAction, Action<ParsingStepContext>>();
+        static Dictionary<LRParsingAction, Action<ParsingContext>> dict =
+            new Dictionary<LRParsingAction, Action<ParsingContext>>();
 
-        protected override Action<ParsingStepContext> GetSemanticAction(LRParsingAction parsingAction)
+        protected override Action<ParsingContext> GetSemanticAction(LRParsingAction parsingAction)
         {
-            Action<ParsingStepContext> semanticAction = null;
+            Action<ParsingContext> semanticAction = null;
             if (dict.TryGetValue(parsingAction, out semanticAction))
             {
                 return semanticAction;
@@ -28,7 +28,7 @@ namespace structCompiler
             dict.Add(new LR1ShiftInAction(9), StructDefinition);
         }
 
-        static void StructDefinition(ParsingStepContext context)
+        static void StructDefinition(ParsingContext context)
         {
             SyntaxTree tree = context.TreeStack.Peek();
             string name = tree.NodeType.Content;

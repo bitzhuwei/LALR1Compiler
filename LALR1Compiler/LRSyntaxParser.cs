@@ -22,17 +22,17 @@ namespace LALR1Compiler
 #endif
 
         bool inParsingStep = false;
-        ParsingStepContext parsingStepContext;
+        ParsingContext parsingContext;
 
-        internal void StartParsing(UserDefinedTypeCollection userDefinedTypeTable)
+        internal void StartParsing(TokenList tokenList, UserDefinedTypeCollection userDefinedTypeTable)
         {
             if (!inParsingStep)
             {
                 LRParsingMap parsingMap = GetParsingMap();
                 RegulationList grammar = GetGrammar();
                 var tokenTypeConvertor = new TokenType2TreeNodeType();
-                parsingStepContext = new ParsingStepContext(
-                    grammar, parsingMap, tokenTypeConvertor, userDefinedTypeTable);
+                parsingContext = new ParsingContext(
+                    tokenList, grammar, parsingMap, tokenTypeConvertor, userDefinedTypeTable);
                 inParsingStep = true;
             }
         }
@@ -43,8 +43,8 @@ namespace LALR1Compiler
             if (inParsingStep)
             {
                 result = ParseStep(Token.endOfTokenList);
-                parsingStepContext.TokenList.RemoveAt(parsingStepContext.TokenList.Count - 1);
-                parsingStepContext = null;
+                parsingContext.TokenList.RemoveAt(parsingContext.TokenList.Count - 1);
+                parsingContext = null;
                 inParsingStep = false;
             }
 
@@ -56,7 +56,7 @@ namespace LALR1Compiler
         /// </summary>
         /// <param name="parsingAction"></param>
         /// <returns></returns>
-        protected virtual Action<ParsingStepContext> GetSemanticAction(LRParsingAction parsingAction)
+        protected virtual Action<ParsingContext> GetSemanticAction(LRParsingAction parsingAction)
         {
             return null;
         }
@@ -65,27 +65,27 @@ namespace LALR1Compiler
         {
             if (!inParsingStep) { throw new Exception("Must invoke this.StartParsing() first!"); }
 
-            parsingStepContext.AddToken(token);
+            parsingContext.AddToken(token);
 
-            while (parsingStepContext.CurrentTokenIndex < parsingStepContext.TokenList.Count)
+            while (parsingContext.CurrentTokenIndex < parsingContext.TokenList.Count)
             {
                 // 语法分析
-                TreeNodeType nodeType = parsingStepContext.CurrentNodeType();
-                int stateId = parsingStepContext.StateIdStack.Peek();
-                LRParsingAction action = parsingStepContext.ParsingMap.GetAction(stateId, nodeType);
-                int currentTokenIndex = action.Execute(parsingStepContext);
-                parsingStepContext.CurrentTokenIndex = currentTokenIndex;
+                TreeNodeType nodeType = parsingContext.CurrentNodeType();
+                int stateId = parsingContext.StateIdStack.Peek();
+                LRParsingAction action = parsingContext.ParsingMap.GetAction(stateId, nodeType);
+                int currentTokenIndex = action.Execute(parsingContext);
+                parsingContext.CurrentTokenIndex = currentTokenIndex;
                 // 语义分析
-                Action<ParsingStepContext> semanticAction = GetSemanticAction(action);
+                Action<ParsingContext> semanticAction = GetSemanticAction(action);
                 if (semanticAction != null)
                 {
-                    semanticAction(parsingStepContext);
+                    semanticAction(parsingContext);
                 }
             }
 
-            if (parsingStepContext.TreeStack.Count > 0)
+            if (parsingContext.TreeStack.Count > 0)
             {
-                return parsingStepContext.TreeStack.Peek();
+                return parsingContext.TreeStack.Peek();
             }
             else
             {
@@ -201,27 +201,6 @@ namespace LALR1Compiler
 
     }
 
-    public class ParsingStepContext : ParsingContext
-    {
-        public UserDefinedTypeCollection UserDefinedTypeTable { get; private set; }
-
-        public void AddToken(Token token)
-        {
-            this.TokenList.Add(token);
-        }
-
-        public ParsingStepContext(
-            RegulationList grammar,
-            LRParsingMap parsingMap,
-            TokenType2TreeNodeType tokenTypeConvertor,
-            UserDefinedTypeCollection userDefinedTypeTable)
-            : base(new TokenList(), grammar, parsingMap, tokenTypeConvertor)
-        {
-            this.UserDefinedTypeTable = userDefinedTypeTable;
-        }
-
-    }
-
     public class ParsingContext
     {
         public int CurrentTokenIndex { get; set; }
@@ -244,6 +223,12 @@ namespace LALR1Compiler
 
         public TokenType2TreeNodeType TokenTypeConvertor { get; private set; }
 
+        public UserDefinedTypeCollection UserDefinedTypeTable { get; private set; }
+
+        public void AddToken(Token token)
+        {
+            this.TokenList.Add(token);
+        }
 
         public TreeNodeType CurrentNodeType()
         {
@@ -263,7 +248,8 @@ namespace LALR1Compiler
         public ParsingContext(TokenList tokenList,
             RegulationList grammar,
             LRParsingMap parsingMap,
-            TokenType2TreeNodeType tokenTypeConvertor)
+            TokenType2TreeNodeType tokenTypeConvertor,
+            UserDefinedTypeCollection userDefinedTypeTable)
         {
             this.StateIdStack = new Stack<int>();
             this.StateIdStack.Push(1);
@@ -273,6 +259,7 @@ namespace LALR1Compiler
             this.Grammar = grammar;
             this.ParsingMap = parsingMap;
             this.TokenTypeConvertor = tokenTypeConvertor;
+            this.UserDefinedTypeTable = userDefinedTypeTable;
         }
 
     }
