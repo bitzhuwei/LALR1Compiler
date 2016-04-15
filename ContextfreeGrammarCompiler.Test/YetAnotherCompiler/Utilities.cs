@@ -72,13 +72,15 @@ namespace ContextfreeGrammarCompiler.Test
             {
                 return string.Format("{0}{1}TokenType",
                     ConstString2IdentifierHelper.ConstString2Identifier(grammarId),
-                    algorithm);
+                    "");//algorithm);
+                    //algorithm);
             }
             else
             {
                 return string.Format("_{0}{1}TokenType",
                     ConstString2IdentifierHelper.ConstString2Identifier(grammarId),
-                    algorithm);
+                    "");//algorithm);
+                    //algorithm);
             }
         }
 
@@ -89,13 +91,15 @@ namespace ContextfreeGrammarCompiler.Test
             {
                 return string.Format("{0}{1}TreeNodeType",
                     ConstString2IdentifierHelper.ConstString2Identifier(grammarId),
-                    algorithm);
+                    "");//algorithm);
+                    //algorithm);
             }
             else
             {
                 return string.Format("_{0}{1}TreeNodeType",
                     ConstString2IdentifierHelper.ConstString2Identifier(grammarId),
-                    algorithm);
+                    "");//algorithm);
+                    //algorithm);
             }
         }
 
@@ -106,13 +110,13 @@ namespace ContextfreeGrammarCompiler.Test
             {
                 return string.Format("{0}{1}SyntaxParser",
                     ConstString2IdentifierHelper.ConstString2Identifier(grammarId),
-                    algorithm);
+                    "");//algorithm);
             }
             else
             {
                 return string.Format("_{0}{1}SyntaxParser",
                     ConstString2IdentifierHelper.ConstString2Identifier(grammarId), 
-                    algorithm);
+                    "");//algorithm);
             }
         }
 
