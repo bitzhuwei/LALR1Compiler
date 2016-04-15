@@ -53,6 +53,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="GLSLSyntaxParser.Semantics.cs" />
+    <Content Include="readme.txt" />
     <None Include="Conflicts.log" />
     <None Include="GLSL.FormatedGrammar.log" />
     <None Include="GLSL.Grammar">
