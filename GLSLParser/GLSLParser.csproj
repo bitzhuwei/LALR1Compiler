@@ -45,7 +45,9 @@
     <Compile Include="GLSLSyntaxParser.cs" />
     <Compile Include="GLSLTokenType.cs" />
     <Compile Include="GLSLTreeNodeType.cs" />
+    <Compile Include="PrecisionDeclaration.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="TypeQualifier.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\LALR1Compiler\LALR1Compiler.csproj">
