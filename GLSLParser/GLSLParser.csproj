@@ -41,6 +41,7 @@
   <ItemGroup>
     <Compile Include="GLSLParserSyntaxTree.DumpShaderDeclarations.cs" />
     <Compile Include="GLSLLexicalAnalyzer.cs" />
+    <Compile Include="GLSLPreprocessor.cs" />
     <Compile Include="GLSLSyntaxParser.cs" />
     <Compile Include="GLSLTokenType.cs" />
     <Compile Include="GLSLTreeNodeType.cs" />
