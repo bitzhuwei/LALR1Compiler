@@ -13,16 +13,8 @@ namespace LALR1Compiler
         public static readonly TokenType endOfTokenList = new TokenType("end_of_token_list", "$", "\"$\"");
 
         public TokenType(string type, string content, string nickname)
-            : base(GetUniqueString)
         {
             this.Type = type; this.Content = content; this.Nickname = nickname;
-        }
-
-        private static string GetUniqueString(HashCache cache)
-        {
-            TokenType obj = cache as TokenType;
-            return obj.Dump();
-            //return string.Format("({0})[{1}][{2}]", obj.Type, obj.Content, obj.Nickname);
         }
 
         /// <summary>

@@ -25,14 +25,8 @@ namespace LALR1Compiler
         /// </summary>
         /// <param name="separator">在Dump到流时用什么分隔符分隔各个元素？</param>
         public OrderedCollection(string separator)
-            : base(GetUniqueString)
         {
             this.seperator = separator;
-        }
-
-        private static string GetUniqueString(HashCache cache)
-        {
-            return cache.Dump();
         }
 
         public virtual bool TryInsert(T item)

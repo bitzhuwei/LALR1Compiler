@@ -13,26 +13,12 @@ namespace LALR1Compiler
     public class Regulation : HashCache
     {
         public Regulation(TreeNodeType left, params TreeNodeType[] rights)
-            : base(getUniqueString)
         {
             if (left == null)
             { throw new ArgumentNullException(); }
 
             this.Left = left;
             this.rightPart.AddRange(rights);
-        }
-
-        private static string getUniqueString(HashCache cache)
-        {
-            Regulation obj = cache as Regulation;
-            return obj.Dump();
-            //StringBuilder builder = new StringBuilder();
-            //builder.Append(obj.Left.Nickname);
-            //builder.Append(" ::= ");
-            //builder.Append(obj.RightPart);
-            //builder.Append(" ;");
-
-            //return builder.ToString();
         }
 
         public TreeNodeType Left { get; private set; }

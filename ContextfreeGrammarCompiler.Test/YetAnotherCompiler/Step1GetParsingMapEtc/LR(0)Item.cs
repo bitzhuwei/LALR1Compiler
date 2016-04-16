@@ -28,7 +28,6 @@ namespace LALR1Compiler
         /// <param name="regulation"></param>
         /// <param name="dotPosition"></param>
         public LR0Item(Regulation regulation, int dotPosition)
-            : base(GetUniqueString)
         {
             if (regulation == null) { throw new ArgumentNullException(); }
             if (dotPosition < 0 || regulation.RightPart.Count() < dotPosition)
@@ -53,34 +52,6 @@ namespace LALR1Compiler
                 return null;
             }
         }
-
-        private static string GetUniqueString(HashCache cache)
-        {
-            LR0Item obj = cache as LR0Item;
-            return obj.Dump();
-            //StringBuilder builder = new StringBuilder();
-            //builder.Append(obj.Regulation.Left.Nickname);
-            //builder.Append(" ::= ");
-
-            //int count = obj.Regulation.RightPart.Count();
-            //for (int i = 0; i < count; i++)
-            //{
-            //    if (i == obj.DotPosition)
-            //    { builder.Append('.'); builder.Append(' '); }
-
-            //    var item = obj.Regulation.RightNode(i);
-            //    builder.Append(item.Nickname);
-            //    builder.Append(' ');
-            //}
-
-            //if (obj.DotPosition == count)
-            //{ builder.Append('.'); builder.Append(' '); }
-
-            //builder.Append(';');
-
-            //return builder.ToString();
-        }
-
 
         public override void Dump(System.IO.TextWriter stream)
         {

@@ -18,7 +18,6 @@ namespace LALR1Compiler
         /// <param name="target"></param>
         /// <param name="values"></param>
         public FOLLOW(TreeNodeType target, params TreeNodeType[] values)
-            : base(GetUniqueString)
         {
             this.Target = target;
             if (values != null)
@@ -28,25 +27,6 @@ namespace LALR1Compiler
                     this.values.TryInsert(item);
                 }
             }
-        }
-
-        private static string GetUniqueString(HashCache cache)
-        {
-            FOLLOW obj = cache as FOLLOW;
-            return obj.Dump();
-            //StringBuilder builder = new StringBuilder();
-            //builder.Append("FOLLOW(");
-            //builder.Append(obj.Target.Nickname);
-            //builder.Append(") = 【 ");
-            //int count = obj.values.Count;
-            //for (int i = 0; i < count; i++)
-            //{
-            //    builder.Append(obj.values[i].Nickname);
-            //    builder.Append(" ");
-            //}
-            //builder.Append("】");
-
-            //return builder.ToString();
         }
 
         public TreeNodeType Target { get; private set; }

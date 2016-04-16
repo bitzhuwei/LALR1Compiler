@@ -19,25 +19,10 @@ namespace LALR1Compiler
         /// <param name="x"></param>
         /// <param name="to"></param>
         public LR0Edge(LR0State from, TreeNodeType x, LR0State to)
-            : base(GetUniqueString)
         {
             this.From = from;
             this.X = x;
             this.To = to;
-        }
-
-        private static string GetUniqueString(HashCache cache)
-        {
-            LR0Edge obj = cache as LR0Edge;
-            return obj.Dump();
-            //StringBuilder builder = new StringBuilder();
-            //builder.Append(obj.From);
-            //builder.AppendLine();
-            //builder.Append("    └──("); builder.Append(obj.X); builder.Append(")──┒");
-            //builder.AppendLine();
-            //builder.Append(obj.To);
-
-            //return builder.ToString();
         }
 
         public LR0State From { get; set; }

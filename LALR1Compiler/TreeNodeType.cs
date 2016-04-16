@@ -32,7 +32,6 @@ namespace LALR1Compiler
         /// <param name="nickName">例如：“&lt;E&gt;”or “number”
         /// <para>对于identifier和number，此值用于保存"identifier"和"number"这样的字符串。</para></param>
         public TreeNodeType(string type, string content, string nickName)
-            : base(GetUniqueString)
         {
             if (string.IsNullOrEmpty(type)) { throw new ArgumentNullException(); }
 
@@ -41,13 +40,6 @@ namespace LALR1Compiler
             this.Nickname = nickName;
 
             this.IsLeave = this.Type.EndsWith("Leave__");
-        }
-
-        private static string GetUniqueString(HashCache cache)
-        {
-            TreeNodeType obj = cache as TreeNodeType;
-            return obj.Dump();
-            //return string.Format("({0})[{1}][{2}]", obj.Type, obj.Content, obj.Nickname);
         }
 
         // “__E”or “numberLeave__”

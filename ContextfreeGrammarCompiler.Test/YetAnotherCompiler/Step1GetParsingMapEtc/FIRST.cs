@@ -18,7 +18,6 @@ namespace LALR1Compiler
         /// <param name="target"></param>
         /// <param name="values"></param>
         public FIRST(TreeNodeType target, params TreeNodeType[] values)
-            : base(GetUniqueString)
         {
             this.target.Add(target);
             if (values != null)
@@ -31,7 +30,6 @@ namespace LALR1Compiler
         }
 
         public FIRST(IEnumerable<TreeNodeType> target, params TreeNodeType[] values)
-            : base(GetUniqueString)
         {
             this.target.AddRange(target);
             if (values != null)
@@ -44,43 +42,8 @@ namespace LALR1Compiler
         }
 
         public FIRST(IEnumerable<TreeNodeType> target)
-            : base(GetUniqueString)
         {
             this.target.AddRange(target);
-        }
-
-        private static string GetUniqueString(HashCache cache)
-        {
-            FIRST obj = cache as FIRST;
-            return obj.Dump();
-            //StringBuilder builder = new StringBuilder();
-            //{
-            //    builder.Append("FIRST( ");
-
-            //    int count = obj.target.Count;
-            //    for (int i = 0; i < count; i++)
-            //    {
-            //        builder.Append(obj.target[i].Nickname);
-            //        if (i + 1 < count)
-            //        { builder.Append(" "); }
-            //    }
-            //    if (count == 0)
-            //    { builder.Append("ε "); }
-
-            //    builder.Append(" ) = ");
-            //}
-            //{
-            //    builder.Append("【 ");
-            //    int count = obj.values.Count;
-            //    for (int i = 0; i < count; i++)
-            //    {
-            //        builder.Append(obj.values[i].Nickname);
-            //        if (i + 1 < count)
-            //        { builder.Append(" "); }
-            //    }
-            //    builder.Append(" 】");
-            //}
-            //return builder.ToString();
         }
 
         private List<TreeNodeType> target = new List<TreeNodeType>();

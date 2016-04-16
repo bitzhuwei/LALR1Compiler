@@ -113,15 +113,25 @@ namespace LALR1Compiler
             }
         }
 
+        private static string getUniqueString(HashCache cache)
+        {
+            return cache.Dump();
+        }
+
         /// <summary>
         /// 缓存一个对象的hash code。提高比较（==、!=、Equals、GetHashCode、Compare）的效率。
         /// </summary>
         /// <param name="GetUniqueString">获取一个可唯一标识此对象的字符串。</param>
-        public HashCache(Func<HashCache, string> GetUniqueString)
+        public HashCache(Func<HashCache, string> GetUniqueString = null)
         {
-            if (GetUniqueString == null) { throw new ArgumentNullException(); }
-
-            this.GetUniqueString = GetUniqueString;
+            if (GetUniqueString == null)
+            {
+                this.GetUniqueString = getUniqueString;
+            }
+            else
+            {
+                this.GetUniqueString = GetUniqueString;
+            }
         }
 
         public override string ToString()

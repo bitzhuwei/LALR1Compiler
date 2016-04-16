@@ -34,7 +34,6 @@ namespace LALR1Compiler
         /// <param name="dotPosition">圆点的位置</param>
         /// <param name="lookAheadNodeType">x代表的类型</param>
         public LR1Item(Regulation regulation, int dotPosition, TreeNodeType lookAheadNodeType)
-            : base(GetUniqueString)
         {
             if (regulation == null || lookAheadNodeType == null) { throw new ArgumentNullException(); }
             if (dotPosition < 0 || regulation.RightPart.Count() < dotPosition)
@@ -74,37 +73,6 @@ namespace LALR1Compiler
 
             return result;
         }
-
-        private static string GetUniqueString(HashCache cache)
-        {
-            LR1Item obj = cache as LR1Item;
-            return obj.Dump();
-            //StringBuilder builder = new StringBuilder();
-            //builder.Append(obj.Regulation.Left.Nickname);
-            //builder.Append(" ::= ");
-            //int count = obj.Regulation.RightPart.Count();
-            //for (int i = 0; i < count; i++)
-            //{
-            //    if (i == obj.DotPosition)
-            //    { builder.Append('.'); builder.Append(' '); }
-
-            //    TreeNodeType item = obj.Regulation.RightNode(i);
-            //    //TODO:这是我定义的规则
-            //    builder.Append(item.Nickname);
-                
-            //    builder.Append(' ');
-            //}
-
-            //if (obj.DotPosition == count)
-            //{ builder.Append('.'); builder.Append(' '); }
-
-            //builder.Append(';');
-            //builder.Append(", ");
-            //builder.Append(obj.LookAheadNodeType.Nickname);
-
-            //return builder.ToString();
-        }
-
 
         public override void Dump(System.IO.TextWriter stream)
         {

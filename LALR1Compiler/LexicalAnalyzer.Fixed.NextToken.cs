@@ -52,16 +52,9 @@ namespace LALR1Compiler
         public string NickName { get; set; }
 
         public Keyword(string tokenType, string nickName)
-            : base(GetUniqueString)
         {
-            // TODO: Complete member initialization
             this.TokenType = tokenType;
             this.NickName = nickName;
-        }
-
-        static string GetUniqueString(HashCache cache)
-        {
-            return cache.Dump();
         }
 
         public override string ToString()

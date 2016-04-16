@@ -10,14 +10,8 @@ namespace LALR1Compiler
     /// </summary>
     public abstract class LRParsingAction : HashCache
     {
-        public LRParsingAction()
-            : base(GetUniqueString)
-        { }
+        public LRParsingAction() { }
 
-        static string GetUniqueString(HashCache cache)
-        {
-            return cache.Dump();
-        }
         /// <summary>
         /// 执行分析动作。
         /// </summary>

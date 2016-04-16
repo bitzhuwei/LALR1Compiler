@@ -113,29 +113,11 @@ namespace LALR1Compiler
         /// </summary>
         /// <param name="separator">在Dump到流时用什么分隔符分隔各个元素？</param>
         public SmallerLR1State(params LR1Item[] items)
-            : base(GetUniqueString)
         {
             foreach (var item in items)
             {
                 this.TryInsert(item);
             }
-        }
-
-        private static string GetUniqueString(HashCache cache)
-        {
-            SmallerLR1State obj = cache as SmallerLR1State;
-            return obj.Dump();
-            //StringBuilder builder = new StringBuilder();
-            //for (int i = 0; i < obj.list.Count; i++)
-            //{
-            //    builder.Append(obj.list[i]);
-            //    if (i + 1 < obj.list.Count)
-            //    {
-            //        builder.Append(obj.seperator);
-            //    }
-            //}
-
-            //return builder.ToString();
         }
 
         public bool TryInsert(LR1Item item)

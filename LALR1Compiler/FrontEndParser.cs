@@ -68,14 +68,8 @@ namespace LALR1Compiler
         /// </summary>
         /// <param name="name"></param>
         public UserDefinedType(string name)
-            : base(GetUniqueString)
         {
             this.TypeName = name;
-        }
-
-        private static string GetUniqueString(HashCache cache)
-        {
-            return cache.Dump();
         }
 
         public string TypeName { get; set; }
