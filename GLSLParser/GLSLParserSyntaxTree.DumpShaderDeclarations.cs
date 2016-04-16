@@ -192,10 +192,6 @@ namespace GLSLParser
         }
     }
 
-    public abstract class Declaration
-    {
-        public string Name { get; set; }
-    }
 
 
 }
