@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -10,6 +11,7 @@ namespace LALR1Compiler
     /// <summary>
     /// 缓存一个对象的hash code。提高比较（==、!=、Equals、GetHashCode、Compare）的效率。
     /// </summary>
+    [DebuggerDisplay("{this.Dump()}")]
     public abstract class HashCache : IComparable<HashCache>, IDump2Stream
     {
         public static bool operator ==(HashCache left, HashCache right)
@@ -82,11 +84,9 @@ namespace LALR1Compiler
             string str = GetUniqueString(this);
             int hashCode = str.GetHashCode();
             this.hashCode = hashCode;
-#if DEBUG
-            this.uniqueString = str;// debug时可以看到可读的信息
-#else
             this.uniqueString = string.Format("[{0}]", hashCode);// release后用最少的内存区分此对象
-#endif
+            // 有DebuggerDisplay，不需要这个了。
+            //this.uniqueString = str;// debug时可以看到可读的信息
         }
 
         /// <summary>
