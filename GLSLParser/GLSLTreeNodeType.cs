@@ -526,6 +526,8 @@ namespace GLSLParser
         
         public const string NODE__structLeave__ = "__structLeave__";
         
+        public const string NODE__type_name = "__type_name";
+        
         public const string NODE__struct_declaration = "__struct_declaration";
         
         public const string NODE__struct_declarator_list = "__struct_declarator_list";

@@ -10,10 +10,10 @@ namespace GLSLParser
     /// </summary>
     public partial class GLSLSyntaxParser
     {
-       static readonly Dictionary<LRParsingAction, Action<ParsingContext>> dict =
-            new Dictionary<LRParsingAction, Action<ParsingContext>>();
+        static readonly Dictionary<LR1ReducitonAction, Action<ParsingContext>> dict =
+            new Dictionary<LR1ReducitonAction, Action<ParsingContext>>();
 
-        protected override Action<ParsingContext> GetSemanticAction(LRParsingAction parsingAction)
+        protected override Action<ParsingContext> GetSemanticAction(LR1ReducitonAction parsingAction)
         {
             Action<ParsingContext> semanticAction = null;
             if (dict.TryGetValue(parsingAction, out semanticAction))
@@ -29,19 +29,19 @@ namespace GLSLParser
         static GLSLSyntaxParser()
         {
             // 将语义动作绑定的到state上。
-            dict.Add(new LR1ShiftInAction(172), state172_struct_specifier);
+            dict.Add(new LR1ReducitonAction(292), state174_type_name_identifier_DOT);
         }
 
-		// State [172]:
-		// <struct_specifier> ::= "struct" identifier . "{" <struct_declaration_list> "}" ;, identifier "," ")" "(" ";" "["
-		/// <summary>
-        /// State [172]
-		/// </summary>
-		/// <param name="context"></param>
-        static void state172_struct_specifier(ParsingContext context)
+        // State [174]:
+        // <type_name> ::= identifier . ;, "{
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="context"></param>
+        static void state174_type_name_identifier_DOT(ParsingContext context)
         {
             SyntaxTree tree = context.TreeStack.Peek();
-            string name = tree.NodeType.Content;
+            string name = tree.Children[0].NodeType.Content;
             context.UserDefinedTypeTable.TryInsert(new UserDefinedType(name));
         }
     }

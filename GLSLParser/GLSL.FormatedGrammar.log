@@ -6,10 +6,7 @@
 <variable_identifier> ::= identifier ;
 <primary_expression> ::= <variable_identifier> ;
 <primary_expression> ::= number ;
-<primary_expression> ::= number ;
-<primary_expression> ::= number ;
 <primary_expression> ::= <BOOLCONSTANT> ;
-<primary_expression> ::= number ;
 <primary_expression> ::= "(" <expression> ")" ;
 <BOOLCONSTANT> ::= "true" ;
 <BOOLCONSTANT> ::= "false" ;
@@ -291,7 +288,8 @@
 <precision_qualifier> ::= "high_precision" ;
 <precision_qualifier> ::= "medium_precision" ;
 <precision_qualifier> ::= "low_precision" ;
-<struct_specifier> ::= "struct" identifier "{" <struct_declaration_list> "}" ;
+<struct_specifier> ::= "struct" <type_name> "{" <struct_declaration_list> "}" ;
+<type_name> ::= identifier ;
 <struct_specifier> ::= "struct" "{" <struct_declaration_list> "}" ;
 <struct_declaration_list> ::= <struct_declaration> ;
 <struct_declaration_list> ::= <struct_declaration_list> <struct_declaration> ;

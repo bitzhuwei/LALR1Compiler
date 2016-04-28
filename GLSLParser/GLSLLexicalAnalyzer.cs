@@ -827,10 +827,10 @@ namespace GLSLParser
             context.NextLetterIndex = (context.NextLetterIndex + 1);
             return false;
         }
-
-        private static OrderedCollection<LALR1Compiler.Keyword> keywords = new OrderedCollection<LALR1Compiler.Keyword>(", ");
         
-        public override OrderedCollection<LALR1Compiler.Keyword> GetKeywords()
+        private static LALR1Compiler.OrderedCollection<LALR1Compiler.Keyword> keywords = new LALR1Compiler.OrderedCollection<LALR1Compiler.Keyword>(", ");
+        
+        public override LALR1Compiler.OrderedCollection<LALR1Compiler.Keyword> GetKeywords()
         {
             return keywords;
         }

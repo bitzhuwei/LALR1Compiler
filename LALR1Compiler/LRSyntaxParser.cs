@@ -56,7 +56,7 @@ namespace LALR1Compiler
         /// </summary>
         /// <param name="parsingAction"></param>
         /// <returns></returns>
-        protected virtual Action<ParsingContext> GetSemanticAction(LRParsingAction parsingAction)
+        protected virtual Action<ParsingContext> GetSemanticAction(LR1ReducitonAction parsingAction)
         {
             return null;
         }
@@ -76,10 +76,14 @@ namespace LALR1Compiler
                 int currentTokenIndex = action.Execute(parsingContext);
                 parsingContext.CurrentTokenIndex = currentTokenIndex;
                 // 语义分析
-                Action<ParsingContext> semanticAction = GetSemanticAction(action);
-                if (semanticAction != null)
+                var reductionAction = action as LR1ReducitonAction;
+                if (reductionAction != null)
                 {
-                    semanticAction(parsingContext);
+                    Action<ParsingContext> semanticAction = GetSemanticAction(reductionAction);
+                    if (semanticAction != null)
+                    {
+                        semanticAction(parsingContext);
+                    }
                 }
             }
 
