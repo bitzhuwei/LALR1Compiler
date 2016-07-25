@@ -1,0 +1,1725 @@
+<!DOCTYPE html>
+<html lang="en-us">
+  <head>
+    <meta charset="UTF-8">
+    <title>LALR1Compiler by bitzhuwei</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" type="text/css" href="stylesheets/normalize.css" media="screen">
+    <link href='https://fonts.googleapis.com/css?family=Open+Sans:400,700' rel='stylesheet' type='text/css'>
+    <link rel="stylesheet" type="text/css" href="stylesheets/stylesheet.css" media="screen">
+    <link rel="stylesheet" type="text/css" href="stylesheets/github-light.css" media="screen">
+  </head>
+  <body>
+    <section class="page-header">
+      <h1 class="project-name">LALR1Compiler</h1>
+      <h2 class="project-tagline">generate LR(0), SLR, LALR(1) and LR(1) compiler code(C#) for given grammar.</h2>
+      <a href="https://github.com/bitzhuwei/LALR1Compiler" class="btn">View on GitHub</a>
+      <a href="https://github.com/bitzhuwei/LALR1Compiler/zipball/master" class="btn">Download .zip</a>
+      <a href="https://github.com/bitzhuwei/LALR1Compiler/tarball/master" class="btn">Download .tar.gz</a>
+    </section>
+
+    <section class="main-content">
+      <p><strong>基于虎书实现LALR(1)分析并生成GLSL编译器前端代码(C#) </strong></p>
+
+<p>为了完美解析GLSL源码，获取其中的信息（都有哪些in/out/uniform等），我决定做个GLSL编译器的前端（以后简称编译器或FrontEndParser）。</p>
+
+<p>以前我做过一个CGCompiler，可以自动生成LL(1)文法的编译器代码(C#语言的)。于是我从《The OpenGL ® Shading Language》（以下简称"PDF"）找到一个GLSL的文法，就开始试图将他改写为LL(1)文法。等到我重写了7次后发现，这是不可能的。GLSL的文法超出了LL(1)的范围，必须用更强的分析算法。于是有了现在的<a href="https://github.com/bitzhuwei/LALR1Compiler/">LALR(1)Compiler</a>。</p>
+
+<h1>
+<a id="理论来源" class="anchor" href="#%E7%90%86%E8%AE%BA%E6%9D%A5%E6%BA%90" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>理论来源</h1>
+
+<p>《现代编译原理-c语言描述》（即"虎书"）中提供了详尽的资料。我就以虎书为理论依据。</p>
+
+<p>虎书中的下图表明了各种类型的文法的范围。一般正常的程序语言都是符合LALR(1)文法的。</p>
+
+<p>由于LR(0)是SLR的基础，SLR是LR(1)的基础；又由于LR(1)是LALR(1)的基础（这看上去有点奇怪），所以我必须从LR(0)文法开始一步一步实现LALR(1)算法。</p>
+
+<p><img src="http://images2015.cnblogs.com/blog/383191/201604/383191-20160415230927473-1393272012.png" alt=""></p>
+
+<h1>
+<a id="输入" class="anchor" href="#%E8%BE%93%E5%85%A5" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>输入</h1>
+
+<p>给定文法，这个文法所描述的语言的全部信息就都包含进去了。文法里包含了这个语言的关键字、推导结构等所有信息。这也是我觉得YACC那些东西不好的地方：明明有了文法，还得自己整理出各种关键字。</p>
+
+<p>下面是一个文法的例子：</p>
+
+<div>
+<pre>1 // 虎书中的文法3-10
+2 &lt;S&gt; ::= &lt;V&gt; "=" &lt;E&gt; ;
+3 &lt;S&gt; ::= &lt;E&gt; ;
+4 &lt;E&gt; ::= &lt;V&gt; ;
+5 &lt;V&gt; ::= "x" ;
+6 &lt;V&gt; ::= "*" &lt;E&gt; ;</pre>
+</div>
+
+<div> </div>
+
+<p>下面是6个符合此文法的代码：</p>
+
+<div>
+<pre>1 x
+2 *x
+3 x = x
+4 x = * x
+5 *x = x
+6 **x = **x</pre>
+</div>
+
+<h1>
+<a id="输出" class="anchor" href="#%E8%BE%93%E5%87%BA" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>输出</h1>
+
+<p>输出结果是此文法的编译器代码(C#)。这主要是词法分析器LexicalAnalyzer和语法分析器SyntaxParser两个类。</p>
+
+<p>之后利用C#的CSharpCodeProvider和反射技术来加载、编译、运行生成的代码，用一些例子（例如上面的*x = x）测试是否能正常运行。只要能正常生成语法树，就证明了我的LALR(1)Compiler的实现是正确的。</p>
+
+<p>例如对上述文法的6个示例代码，LALR(1)Compiler可以分别dump出如下的语法树：</p>
+
+<div>
+<img id="code_img_closed_c5402fb6-08b5-4e7b-b6b3-c498206883b8" src="http://images.cnblogs.com/OutliningIndicators/ContractedBlock.gif" alt=""><img id="code_img_opened_c5402fb6-08b5-4e7b-b6b3-c498206883b8" src="http://images.cnblogs.com/OutliningIndicators/ExpandedBlockStart.gif" alt="">
+<div id="cnblogs_code_open_c5402fb6-08b5-4e7b-b6b3-c498206883b8">
+<pre>1 (__S)[S][&lt;S&gt;]
+2  └─(__E)[E][&lt;E&gt;]
+3      └─(__V)[V][&lt;V&gt;]
+4          └─(__xLeave__)[x][x]</pre>
+</div>
+
+<p>x</p>
+</div>
+
+<div>
+<img id="code_img_closed_7df7ed1d-be82-4760-9422-032a65b748d9" src="http://images.cnblogs.com/OutliningIndicators/ContractedBlock.gif" alt=""><img id="code_img_opened_7df7ed1d-be82-4760-9422-032a65b748d9" src="http://images.cnblogs.com/OutliningIndicators/ExpandedBlockStart.gif" alt="">
+<div id="cnblogs_code_open_7df7ed1d-be82-4760-9422-032a65b748d9">
+<pre>1 (__S)[S][&lt;S&gt;]
+2  └─(__E)[E][&lt;E&gt;]
+3      └─(__V)[V][&lt;V&gt;]
+4          ├─(__starLeave__)[*]["*"]
+5          └─(__E)[E][&lt;E&gt;]
+6              └─(__V)[V][&lt;V&gt;]
+7                  └─(__xLeave__)[x][x]</pre>
+</div>
+
+<p>*x</p>
+</div>
+
+<div>
+<img id="code_img_closed_568cec47-0a49-42f7-9843-1404bf02ddca" src="http://images.cnblogs.com/OutliningIndicators/ContractedBlock.gif" alt=""><img id="code_img_opened_568cec47-0a49-42f7-9843-1404bf02ddca" src="http://images.cnblogs.com/OutliningIndicators/ExpandedBlockStart.gif" alt="">
+<div id="cnblogs_code_open_568cec47-0a49-42f7-9843-1404bf02ddca">
+<pre>1 (__S)[S][&lt;S&gt;]
+2  ├─(__V)[V][&lt;V&gt;]
+3  │  └─(__xLeave__)[x][x]
+4  ├─(__equalLeave__)[=]["="]
+5  └─(__E)[E][&lt;E&gt;]
+6      └─(__V)[V][&lt;V&gt;]
+7          └─(__xLeave__)[x][x]</pre>
+</div>
+
+<p>x = x</p>
+</div>
+
+<div>
+<img id="code_img_closed_58dff601-0f6b-4040-b9b2-aa5418048514" src="http://images.cnblogs.com/OutliningIndicators/ContractedBlock.gif" alt=""><img id="code_img_opened_58dff601-0f6b-4040-b9b2-aa5418048514" src="http://images.cnblogs.com/OutliningIndicators/ExpandedBlockStart.gif" alt="">
+<div id="cnblogs_code_open_58dff601-0f6b-4040-b9b2-aa5418048514">
+<pre> 1 (__S)[S][&lt;S&gt;]
+ 2  ├─(__V)[V][&lt;V&gt;]
+ 3  │  └─(__xLeave__)[x][x]
+ 4  ├─(__equalLeave__)[=]["="]
+ 5  └─(__E)[E][&lt;E&gt;]
+ 6      └─(__V)[V][&lt;V&gt;]
+ 7          ├─(__starLeave__)[*]["*"]
+ 8          └─(__E)[E][&lt;E&gt;]
+ 9              └─(__V)[V][&lt;V&gt;]
+10                  └─(__xLeave__)[x][x]</pre>
+</div>
+
+<p>x = * x</p>
+</div>
+
+<div>
+<img id="code_img_closed_5e6f7b0f-7edf-4df4-92ea-a16fcf7e2975" src="http://images.cnblogs.com/OutliningIndicators/ContractedBlock.gif" alt=""><img id="code_img_opened_5e6f7b0f-7edf-4df4-92ea-a16fcf7e2975" src="http://images.cnblogs.com/OutliningIndicators/ExpandedBlockStart.gif" alt="">
+<div id="cnblogs_code_open_5e6f7b0f-7edf-4df4-92ea-a16fcf7e2975">
+<pre> 1 (__S)[S][&lt;S&gt;]
+ 2  ├─(__V)[V][&lt;V&gt;]
+ 3  │  ├─(__starLeave__)[*]["*"]
+ 4  │  └─(__E)[E][&lt;E&gt;]
+ 5  │      └─(__V)[V][&lt;V&gt;]
+ 6  │          └─(__xLeave__)[x][x]
+ 7  ├─(__equalLeave__)[=]["="]
+ 8  └─(__E)[E][&lt;E&gt;]
+ 9      └─(__V)[V][&lt;V&gt;]
+10          └─(__xLeave__)[x][x]</pre>
+</div>
+
+<p>*x = x</p>
+</div>
+
+<div>
+<img id="code_img_closed_e0deee34-95bf-4855-ae15-c4735506096e" src="http://images.cnblogs.com/OutliningIndicators/ContractedBlock.gif" alt=""><img id="code_img_opened_e0deee34-95bf-4855-ae15-c4735506096e" src="http://images.cnblogs.com/OutliningIndicators/ExpandedBlockStart.gif" alt="">
+<div id="cnblogs_code_open_e0deee34-95bf-4855-ae15-c4735506096e">
+<pre> 1 (__S)[S][&lt;S&gt;]
+ 2  ├─(__V)[V][&lt;V&gt;]
+ 3  │  ├─(__starLeave__)[*]["*"]
+ 4  │  └─(__E)[E][&lt;E&gt;]
+ 5  │      └─(__V)[V][&lt;V&gt;]
+ 6  │          ├─(__starLeave__)[*]["*"]
+ 7  │          └─(__E)[E][&lt;E&gt;]
+ 8  │              └─(__V)[V][&lt;V&gt;]
+ 9  │                  └─(__xLeave__)[x][x]
+10  ├─(__equalLeave__)[=]["="]
+11  └─(__E)[E][&lt;E&gt;]
+12      └─(__V)[V][&lt;V&gt;]
+13          ├─(__starLeave__)[*]["*"]
+14          └─(__E)[E][&lt;E&gt;]
+15              └─(__V)[V][&lt;V&gt;]
+16                  ├─(__starLeave__)[*]["*"]
+17                  └─(__E)[E][&lt;E&gt;]
+18                      └─(__V)[V][&lt;V&gt;]
+19                          └─(__xLeave__)[x][x]</pre>
+</div>
+
+<p>*<em>x = *</em>x</p>
+</div>
+
+<p>能够正确地导出这些结果，就说明整个库是正确的。其实，只要能导出这些结果而不throw Exception()，就可以断定结果是正确的了</p>
+
+<h1>
+<a id="计划" class="anchor" href="#%E8%AE%A1%E5%88%92" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>计划</h1>
+
+<p>所以我的开发步骤如下：</p>
+
+<h2>
+<a id="示例" class="anchor" href="#%E7%A4%BA%E4%BE%8B" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>示例</h2>
+
+<p>虎书中已有了文法3-1（如下）的分析表和一个示例分析过程，所以先手工实现文法3-1的分析器。从这个分析器的代码中抽取出所有LR分析器通用的部分，作为LALR(1)Compiler的一部分。</p>
+
+<div>
+<pre> 1 // 虎书中的文法3-1
+ 2 &lt;S&gt; ::= &lt;S&gt; ";" &lt;S&gt; ;
+ 3 &lt;S&gt; ::= identifier ":=" &lt;E&gt; ;
+ 4 &lt;S&gt; ::= "print" "(" &lt;L&gt; ")" ;
+ 5 &lt;E&gt; ::= identifier ;
+ 6 &lt;E&gt; ::= number ;
+ 7 &lt;E&gt; ::= &lt;E&gt; "+" &lt;E&gt; ;
+ 8 &lt;E&gt; ::= "(" &lt;S&gt; "," &lt;E&gt; ")" ;
+ 9 &lt;L&gt; ::= &lt;E&gt; ;
+10 &lt;L&gt; ::= &lt;L&gt; "," &lt;E&gt; ;</pre>
+</div>
+
+<h2>
+<a id="算法" class="anchor" href="#%E7%AE%97%E6%B3%95" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>算法</h2>
+
+<p>经此之后就对语法分析器的构成心中有数了。下面实现虎书中关于自动生成工具的算法。</p>
+
+<p>最妙的是，即使开始时不理解这些算法的原理，也能够实现之。实现后通过测试用例debug的过程，就很容易理解这些算法了。</p>
+
+<h3>
+<a id="lr0" class="anchor" href="#lr0" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>LR(0)</h3>
+
+<p>首先有两个基础算法。Closure用于补全一个state。Goto用于找到一个state经过某个Node后会进入的下一个state。说是算法，其实却非常简单。虽然简单，要想实现却有很多额外的工作。例如比较两个LR(0)Item的问题。</p>
+
+<p><img src="http://images2015.cnblogs.com/blog/383191/201604/383191-20160415230928645-1184612160.png" alt=""></p>
+
+<p>然后就是计算文法的状态集和边集（Goto动作集）的算法。这个是核心内容。</p>
+
+<p><img src="http://images2015.cnblogs.com/blog/383191/201604/383191-20160415230929441-1747615526.png" alt=""></p>
+
+<p>用此算法可以画出文法3-8的状态图如下：</p>
+
+<div>
+<pre>1 // 虎书中的文法3-8
+2 &lt;S&gt; ::= "(" &lt;L&gt; ")" ;
+3 &lt;S&gt; ::= "x" ;
+4 &lt;L&gt; ::= &lt;S&gt; ;
+5 &lt;L&gt; ::= &lt;L&gt; "," &lt;S&gt; ;</pre>
+</div>
+
+<p><img src="http://images2015.cnblogs.com/blog/383191/201604/383191-20160415230930363-769867346.png" alt=""></p>
+
+<p>最后就是看图作文——构造分析表了。有了分析表，语法分析器的核心部分就完成了。</p>
+
+<p><img src="http://images2015.cnblogs.com/blog/383191/201604/383191-20160415230931238-901875708.png" alt=""></p>
+
+<p> </p>
+
+<h3>
+<a id="slr" class="anchor" href="#slr" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>SLR</h3>
+
+<p>在A-&gt;α.可以被归约时，只在下一个单词是Follow(A)时才进行归约。看起来很有道理的样子。</p>
+
+<p><img src="http://images2015.cnblogs.com/blog/383191/201604/383191-20160415230932332-1237441662.png" alt=""></p>
+
+<h3>
+<a id="lr1" class="anchor" href="#lr1" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>LR(1)</h3>
+
+<p>LR(1)项（A-&gt;α.β,x）指出，序列α在栈顶，且输入中开头的是可以从βx导出的符号。看起来更有道理的样子。</p>
+
+<p><img src="http://images2015.cnblogs.com/blog/383191/201604/383191-20160415230933223-2008085940.png" alt=""></p>
+
+<p>LR(1)的state补全和转换算法也要调整。</p>
+
+<p><img src="http://images2015.cnblogs.com/blog/383191/201604/383191-20160415230934863-1694160325.png" alt=""></p>
+
+<p>然后又是看图作文。</p>
+
+<p><img src="http://images2015.cnblogs.com/blog/383191/201604/383191-20160415230936207-701094906.png" alt=""></p>
+
+<p> </p>
+
+<h3>
+<a id="lalr1" class="anchor" href="#lalr1" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>LALR(1)</h3>
+
+<p>LALR(1)是对LA(1)的化简处理。他占用空间比LR(1)少，但应用范围也比LR(1)小了点。</p>
+
+<p><img src="http://images2015.cnblogs.com/blog/383191/201604/383191-20160415230936895-1524638639.png" alt=""></p>
+
+<p>为了实现LALR(1)，也为了提高LR(1)的效率，必须优化LR(1)State，不能再单纯模仿LR(0)State了。</p>
+
+<h2>
+<a id="文法的文法" class="anchor" href="#%E6%96%87%E6%B3%95%E7%9A%84%E6%96%87%E6%B3%95" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>文法的文法</h2>
+
+<p>输入的是文法，输出的是编译器代码，这个过程也可以用一个编译器来实现。这个特别的编译器所对应的文法（即描述文法的文法）如下：（此编译器命名为ContextfreeGrammarCompiler）</p>
+
+<div>
+<pre> 1 // 文法是1到多个产生式
+ 2 &lt;Grammar&gt; ::= &lt;ProductionList&gt; &lt;Production&gt; ;
+ 3 // 产生式列表是0到多个产生式
+ 4 &lt;ProductionList&gt; ::= &lt;ProductionList&gt; &lt;Production&gt; | null ;
+ 5 // 产生式是左部+第一个候选式+若干右部
+ 6 &lt;Production&gt; ::= &lt;Vn&gt; "::=" &lt;Canditate&gt; &lt;RightPartList&gt; ";" ;
+ 7 // 候选式是1到多个结点
+ 8 &lt;Canditate&gt; ::= &lt;VList&gt; &lt;V&gt; ;
+ 9 // 结点列表是0到多个结点
+10 &lt;VList&gt; ::= &lt;VList&gt; &lt;V&gt; | null ;
+11 // 右部列表是0到多个候选式
+12 &lt;RightPartList&gt; ::= "|" &lt;Canditate&gt; &lt;RightPartList&gt; | null ;
+13 // 结点是非叶结点或叶结点
+14 &lt;V&gt; ::= &lt;Vn&gt; | &lt;Vt&gt; ;
+15 // 非叶结点是&lt;&gt;括起来的标识符
+16 &lt;Vn&gt; ::= "&lt;" identifier "&gt;" ;
+17 // 叶结点是用"引起来的字符串常量或下列内容：null, identifier, number, constString, userDefinedType
+18 // 这几个标识符就是ContextfreeGrammar的关键字
+19 &lt;Vt&gt; ::= "null" | "identifier" | "number" | "constString" | "userDefinedType"| constString ;</pre>
+</div>
+
+<h1>
+<a id="设计" class="anchor" href="#%E8%AE%BE%E8%AE%A1" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>设计</h1>
+
+<p>算法看起来还是很简单的。即使不理解他也能实现他。但是实现过程中还是出现了不少的问题。</p>
+
+<h2>
+<a id="hash缓存" class="anchor" href="#hash%E7%BC%93%E5%AD%98" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Hash缓存</h2>
+
+<p>如何判定两个对象（LR(0)Item）相同？</p>
+
+<p>这是个不可小觑的问题。</p>
+
+<p>必须重写==、!=运算符，override掉Equals和GetHashCode方法。这样才能判定两个内容相同但不是同一个对象的Item、State相等。</p>
+
+<p>对于LR(0)Item的比较，在计算过程中有太多次，这对于实际应用（例如GLSL的文法）是不可接受的。所以必须缓存这类对象的HashCode。</p>
+
+<div>
+<img id="code_img_closed_3eb2b45b-39da-41c0-b87a-125066ea0ea6" src="http://images.cnblogs.com/OutliningIndicators/ContractedBlock.gif" alt=""><img id="code_img_opened_3eb2b45b-39da-41c0-b87a-125066ea0ea6" src="http://images.cnblogs.com/OutliningIndicators/ExpandedBlockStart.gif" alt="">
+<div id="cnblogs_code_open_3eb2b45b-39da-41c0-b87a-125066ea0ea6">
+<pre>  1     /// &lt;summary&gt;
+  2     /// 缓存一个对象的hash code。提高比较（==、!=、Equals、GetHashCode、Compare）的效率。
+  3     /// &lt;/summary&gt;
+  4     public abstract class HashCache : IComparable&lt;HashCache&gt;
+  5     {
+  6         public static bool operator ==(HashCache left, HashCache right)
+  7         {
+  8             object leftObj = left, rightObj = right;
+  9             if (leftObj == null)
+ 10             {
+ 11                 if (rightObj == null) { return true; }
+ 12                 else { return false; }
+ 13             }
+ 14             else
+ 15             {
+ 16                 if (rightObj == null) { return false; }
+ 17             }
+ 18 
+ 19             return left.Equals(right);
+ 20         }
+ 21 
+ 22         public static bool operator !=(HashCache left, HashCache right)
+ 23         {
+ 24             return !(left == right);
+ 25         }
+ 26 
+ 27         public override bool Equals(object obj)
+ 28         {
+ 29             HashCache p = obj as HashCache;
+ 30             if ((System.Object)p == null)
+ 31             {
+ 32                 return false;
+ 33             }
+ 34 
+ 35             return this.HashCode == p.HashCode;
+ 36         }
+ 37 
+ 38         public override int GetHashCode()
+ 39         {
+ 40             return this.HashCode;
+ 41         }
+ 42 
+ 43         private Func&lt;HashCache, string&gt; GetUniqueString;
+ 44 
+ 45         private bool dirty = true;
+ 46 
+ 47         /// &lt;summary&gt;
+ 48         /// 指明此cache需要更新才能用。
+ 49         /// &lt;/summary&gt;
+ 50         public void SetDirty() { this.dirty = true; }
+ 51 
+ 52         private int hashCode;
+ 53         /// &lt;summary&gt;
+ 54         /// hash值。
+ 55         /// &lt;/summary&gt;
+ 56         public int HashCode
+ 57         {
+ 58             get
+ 59             {
+ 60                 if (this.dirty)
+ 61                 {
+ 62                     Update();
+ 63  
+ 64                     this.dirty = false;
+ 65                 }
+ 66 
+ 67                 return this.hashCode;
+ 68             }
+ 69         }
+ 70 
+ 71         private void Update()
+ 72         {
+ 73             string str = GetUniqueString(this);
+ 74             int hashCode = str.GetHashCode();
+ 75             this.hashCode = hashCode;
+ 76 #if DEBUG
+ 77             this.uniqueString = str;// debug时可以看到可读的信息
+ 78 #else
+ 79             this.uniqueString = string.Format("[{0}]", hashCode);// release后用最少的内存区分此对象
+ 80 #endif
+ 81         }
+ 82 
+ 83         // TODO: 功能稳定后应精简此字段的内容。
+ 84         /// &lt;summary&gt;
+ 85         /// 功能稳定后应精简此字段的内容。
+ 86         /// &lt;/summary&gt;
+ 87         private string uniqueString = string.Empty;
+ 88 
+ 89         /// &lt;summary&gt;
+ 90         /// 可唯一标识该对象的字符串。
+ 91         /// 功能稳定后应精简此字段的内容。
+ 92         /// &lt;/summary&gt;
+ 93         public string UniqueString
+ 94         {
+ 95             get
+ 96             {
+ 97                 if (this.dirty)
+ 98                 {
+ 99                     Update();
+100 
+101                     this.dirty = false;
+102                 }
+103 
+104                 return this.uniqueString;
+105             }
+106         }
+107 
+108         /// &lt;summary&gt;
+109         /// 缓存一个对象的hash code。提高比较（==、!=、Equals、GetHashCode、Compare）的效率。
+110         /// &lt;/summary&gt;
+111         /// &lt;param name="GetUniqueString"&gt;获取一个可唯一标识此对象的字符串。&lt;/param&gt;
+112         public HashCache(Func&lt;HashCache, string&gt; GetUniqueString)
+113         {
+114             if (GetUniqueString == null) { throw new ArgumentNullException(); }
+115 
+116             this.GetUniqueString = GetUniqueString;
+117         }
+118 
+119         public override string ToString()
+120         {
+121             return this.UniqueString;
+122         }
+123 
+124         public int CompareTo(HashCache other)
+125         {
+126             if (other == null) { return 1; }
+127 
+128             if (this.HashCode &lt; other.HashCode)// 如果用this.HashCode - other.HashCode &lt; 0，就会发生溢出，这个bug让我折腾了近8个小时。
+129             { return -1; }
+130             else if (this.HashCode == other.HashCode)
+131             { return 0; }
+132             else
+133             { return 1; }
+134         }
+135     }</pre>
+</div>
+
+<p>HashCache</p>
+</div>
+
+<h2>
+<a id="有序集合" class="anchor" href="#%E6%9C%89%E5%BA%8F%E9%9B%86%E5%90%88" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>有序集合</h2>
+
+<p>如何判定两个集合（LR(0)State）相同？</p>
+
+<p>一个LR(0)State是一个集合，集合内部的元素是没有先后顺序的区别的。但是为了比较两个State，其内部元素必须是有序的（这就可以用二分法进行插入和比较）。否则比较两个State会耗费太多时间。为了尽可能快地比较State，也要缓存State的HashCode。</p>
+
+<p>有序集合的应用广泛，因此独立成类。</p>
+
+<div>
+<img id="code_img_closed_bdb1f530-58b6-41aa-94a4-1a8c9b51a0a3" src="http://images.cnblogs.com/OutliningIndicators/ContractedBlock.gif" alt=""><img id="code_img_opened_bdb1f530-58b6-41aa-94a4-1a8c9b51a0a3" src="http://images.cnblogs.com/OutliningIndicators/ExpandedBlockStart.gif" alt="">
+<div id="cnblogs_code_open_bdb1f530-58b6-41aa-94a4-1a8c9b51a0a3">
+<pre> 1     /// &lt;summary&gt;
+ 2     /// 经过优化的列表。插入新元素用二分法，速度更快，但使用者不能控制元素的位置。
+ 3     /// 对于LALR(1)Compiler项目，只需支持“添加元素”的功能，所以我没有写修改和删除元素的功能。
+ 4     /// &lt;/summary&gt;
+ 5     /// &lt;typeparam name="T"&gt;元素也要支持快速比较。&lt;/typeparam&gt;
+ 6     public class OrderedCollection&lt;T&gt; :
+ 7         HashCache // 快速比较两个OrderedCollection&lt;T&gt;是否相同。
+ 8         , IEnumerable&lt;T&gt; // 可枚举该集合的元素。
+ 9         where T : HashCache // 元素也要支持快速比较。
+10     {
+11         private List&lt;T&gt; list = new List&lt;T&gt;();
+12         private string seperator = Environment.NewLine;
+13 
+14         /// &lt;summary&gt;
+15         /// 这是一个只能添加元素的集合，其元素是有序的，是按二分法插入的。
+16         /// 但是使用者不能控制元素的顺序。
+17         /// &lt;/summary&gt;
+18         /// &lt;param name="separator"&gt;在Dump到流时用什么分隔符分隔各个元素？&lt;/param&gt;
+19         public OrderedCollection(string separator)
+20             : base(GetUniqueString)
+21         {
+22             this.seperator = separator;
+23         }
+24 
+25         private static string GetUniqueString(HashCache cache)
+26         {
+27             OrderedCollection&lt;T&gt; obj = cache as OrderedCollection&lt;T&gt;;
+28             return obj.Dump();
+29         }
+30 
+31         public virtual bool TryInsert(T item)
+32         {
+33             if (this.list.TryBinaryInsert(item))
+34             {
+35                 this.SetDirty();
+36                 return true;
+37             }
+38             else
+39             {
+40                 return false;
+41             }
+42         }
+43 
+44         public int IndexOf(T item)
+45         {
+46             return this.list.BinarySearch(item);
+47         }
+48 
+49         public bool Contains(T item)
+50         {
+51             int index = this.list.BinarySearch(item);
+52             return (0 &lt;= index &amp;&amp; index &lt; this.list.Count);
+53         }
+54 
+55         public T this[int index] { get { return this.list[index]; } }
+56 
+57         public IEnumerator&lt;T&gt; GetEnumerator()
+58         {
+59             foreach (var item in this.list)
+60             {
+61                 yield return item;
+62             }
+63         }
+64 
+65         public int Count { get { return this.list.Count; } }
+66 
+67         System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator()
+68         {
+69             return this.GetEnumerator();
+70         }
+71 
+72         public override void Dump(System.IO.TextWriter stream)
+73         {
+74             for (int i = 0; i &lt; this.list.Count; i++)
+75             {
+76                 this.list[i].Dump(stream);
+77                 if (i + 1 &lt; this.list.Count)
+78                 {
+79                     stream.Write(this.seperator);
+80                 }
+81             }
+82         }
+83     }</pre>
+</div>
+
+<p>OrderedCollection&lt;T&gt;</p>
+</div>
+
+<div> </div>
+
+<p>其中有个TryBinaryInsert的扩展方法，用于向 IList&lt;T&gt; 插入元素。这个方法我经过严格测试。如果有发现此方法的bug向我说明，我愿意奖励￥100元。</p>
+
+<div>
+<img id="code_img_closed_e785f273-3423-4bf9-81bf-a904207d2a0d" src="http://images.cnblogs.com/OutliningIndicators/ContractedBlock.gif" alt=""><img id="code_img_opened_e785f273-3423-4bf9-81bf-a904207d2a0d" src="http://images.cnblogs.com/OutliningIndicators/ExpandedBlockStart.gif" alt="">
+<div id="cnblogs_code_open_e785f273-3423-4bf9-81bf-a904207d2a0d">
+<pre> 1         /// &lt;summary&gt;
+ 2         /// 尝试插入新元素。如果存在相同的元素，就不插入，并返回false。否则返回true。
+ 3         /// &lt;/summary&gt;
+ 4         /// &lt;typeparam name="T"&gt;&lt;/typeparam&gt;
+ 5         /// &lt;param name="list"&gt;&lt;/param&gt;
+ 6         /// &lt;param name="item"&gt;&lt;/param&gt;
+ 7         /// &lt;returns&gt;&lt;/returns&gt;
+ 8         public static bool TryBinaryInsert&lt;T&gt;(this List&lt;T&gt; list, T item)
+ 9             where T : IComparable&lt;T&gt;
+10         {
+11             bool inserted = false;
+12 
+13             if (list == null || item == null) { return inserted; }
+14 
+15             int left = 0, right = list.Count - 1;
+16             if (right &lt; 0)
+17             {
+18                 list.Add(item);
+19                 inserted = true;
+20             }
+21             else
+22             {
+23                 while (left &lt; right)
+24                 {
+25                     int mid = (left + right) / 2;
+26                     T current = list[mid];
+27                     int result = item.CompareTo(current);
+28                     if (result &lt; 0)
+29                     { right = mid; }
+30                     else if (result == 0)
+31                     { left = mid; right = mid; }
+32                     else
+33                     { left = mid + 1; }
+34                 }
+35                 {
+36                     T current = list[left];
+37                     int result = item.CompareTo(current);
+38                     if (result &lt; 0)
+39                     {
+40                         list.Insert(left, item);
+41                         inserted = true;
+42                     }
+43                     else if (result &gt; 0)
+44                     {
+45                         list.Insert(left + 1, item);
+46                         inserted = true;
+47                     }
+48                 }
+49             }
+50 
+51             return inserted;
+52         }</pre>
+</div>
+
+<p>TryBinaryInsert&lt;T&gt;(this IList&lt;T&gt; list, T item) where T : IComparable&lt;T&gt;</p>
+</div>
+
+<h2>
+<a id="迭代到不动点" class="anchor" href="#%E8%BF%AD%E4%BB%A3%E5%88%B0%E4%B8%8D%E5%8A%A8%E7%82%B9" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>迭代到不动点</h2>
+
+<p>虎书中的算法大量使用了迭代到不动点的方式。</p>
+
+<p><img src="http://images2015.cnblogs.com/blog/383191/201604/383191-20160415230937801-1274257256.png" alt=""></p>
+
+<p>这个方法虽好，却仍有可优化的余地。而且这属于核心的计算过程，也应当优化。</p>
+
+<p>优化方法也简单，用一个Queue代替"迭代不动点"的方式即可。这就避免了很多不必要的重复计算。</p>
+
+<div>
+<img id="code_img_closed_1976057a-2fc6-4407-9a36-412f38f7e588" src="http://images.cnblogs.com/OutliningIndicators/ContractedBlock.gif" alt=""><img id="code_img_opened_1976057a-2fc6-4407-9a36-412f38f7e588" src="http://images.cnblogs.com/OutliningIndicators/ExpandedBlockStart.gif" alt="">
+<div id="cnblogs_code_open_1976057a-2fc6-4407-9a36-412f38f7e588">
+<pre> 1         /// &lt;summary&gt;
+ 2         /// LR(0)的Closure操作。
+ 3         /// 补全一个状态。
+ 4         /// &lt;/summary&gt;
+ 5         /// &lt;param name="list"&gt;&lt;/param&gt;
+ 6         /// &lt;param name="state"&gt;&lt;/param&gt;
+ 7         /// &lt;returns&gt;&lt;/returns&gt;
+ 8         static LR0State Closure(this RegulationList list, LR0State state)
+ 9         {
+10             Queue&lt;LR0Item&gt; queue = new Queue&lt;LR0Item&gt;();
+11             foreach (var item in state)
+12             {
+13                 queue.Enqueue(item);
+14             }
+15             while (queue.Count &gt; 0)
+16             {
+17                 LR0Item item = queue.Dequeue();
+18                 TreeNodeType node = item.GetNodeNext2Dot();
+19                 if (node == null) { continue; }
+20 
+21                 foreach (var regulation in list)
+22                 {
+23                     if (regulation.Left == node)
+24                     {
+25                         var newItem = new LR0Item(regulation, 0);
+26                         if (state.TryInsert(newItem))
+27                         {
+28                             queue.Enqueue(newItem);
+29                         }
+30                     }
+31                 }
+32             }
+33 
+34             return state;
+35         }</pre>
+</div>
+
+<p>Closure</p>
+</div>
+
+<h1>
+<a id="测试" class="anchor" href="#%E6%B5%8B%E8%AF%95" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>测试</h1>
+
+<p>以前我总喜欢做个非常精致的GUI来测试。现在发现没那个必要，简单的Console就可以了。</p>
+
+<p><img src="http://images2015.cnblogs.com/blog/383191/201604/383191-20160415230941332-1762047700.png" alt=""></p>
+
+<p>详细的测试结果导出到文件里，可以慢慢查看分析。</p>
+
+<div>
+<img id="code_img_closed_53b17321-6d04-4b29-98a3-3c0908843c4b" src="http://images.cnblogs.com/OutliningIndicators/ContractedBlock.gif" alt=""><img id="code_img_opened_53b17321-6d04-4b29-98a3-3c0908843c4b" src="http://images.cnblogs.com/OutliningIndicators/ExpandedBlockStart.gif" alt="">
+<div id="cnblogs_code_open_53b17321-6d04-4b29-98a3-3c0908843c4b">
+<pre> 1 =====&gt; Processing .\TestCases\3_8.Grammar\3_8.Grammar
+ 2     Get grammar from source code...
+ 3         Dump 3_8.TokenList.log
+ 4         Dump 3_8.Tree.log
+ 5         Dump 3_8.FormatedGrammar.log
+ 6     Dump 3_8.FIRST.log
+ 7     Dump 3_8.FOLLOW.log
+ 8     LR(0) parsing...
+ 9         Dump 3_8.State.log
+10         Dump 3_8.Edge.log
+11         Dump LR(0) Compiler's source code...
+12     SLR parsing...
+13         Dump 3_8.State.log
+14         Dump 3_8.Edge.log
+15         Dump SLR Compiler's source code...
+16     LALR(1) parsing...
+17         Dump 3_8.State.log
+18         Dump 3_8.Edge.log
+19         Dump LALR(1) Compiler's source code...
+20     LR(1) parsing...
+21         Dump 3_8.State.log
+22         Dump 3_8.Edge.log
+23         Dump LR(1) Compiler's source code...
+24     Compiling 3_8 of LR(0) version
+25     Test Code 3_8 of LR(0) version
+26     Compiling 3_8 of SLR version
+27     Test Code 3_8 of SLR version
+28     Compiling 3_8 of LALR(1) version
+29     Test Code 3_8 of LALR(1) version
+30     Compiling 3_8 of LR(1) version
+31     Test Code 3_8 of LR(1) version
+32 =====&gt; Processing .\TestCases\Demo.Grammar\Demo.Grammar
+33     Get grammar from source code...
+34         Dump Demo.TokenList.log
+35         Dump Demo.Tree.log
+36         Dump Demo.FormatedGrammar.log
+37     Dump Demo.FIRST.log
+38     Dump Demo.FOLLOW.log
+39     LR(0) parsing...
+40         Dump Demo.State.log
+41         Dump Demo.Edge.log
+42         Dump LR(0) Compiler's source code...
+43         【Exists 5 Conflicts in Parsingmap】
+44     SLR parsing...
+45         Dump Demo.State.log
+46         Dump Demo.Edge.log
+47         Dump SLR Compiler's source code...
+48         【Exists 2 Conflicts in Parsingmap】
+49     LALR(1) parsing...
+50         Dump Demo.State.log
+51         Dump Demo.Edge.log
+52         Dump LALR(1) Compiler's source code...
+53         【Exists 2 Conflicts in Parsingmap】
+54     LR(1) parsing...
+55         Dump Demo.State.log
+56         Dump Demo.Edge.log
+57         Dump LR(1) Compiler's source code...
+58         【Exists 6 Conflicts in Parsingmap】
+59     Compiling Demo of LR(0) version
+60     Test Code Demo of LR(0) version
+61         No need to Test Code with conflicts in SyntaxParser
+62     Compiling Demo of SLR version
+63     Test Code Demo of SLR version
+64         No need to Test Code with conflicts in SyntaxParser
+65     Compiling Demo of LALR(1) version
+66     Test Code Demo of LALR(1) version
+67         No need to Test Code with conflicts in SyntaxParser
+68     Compiling Demo of LR(1) version
+69     Test Code Demo of LR(1) version
+70         No need to Test Code with conflicts in SyntaxParser
+71 =====&gt; Processing .\TestCases\GLSL.Grammar\GLSL.Grammar
+72     Get grammar from source code...
+73         Dump GLSL.TokenList.log
+74         Dump GLSL.Tree.log
+75         Dump GLSL.FormatedGrammar.log
+76     Dump GLSL.FIRST.log
+77     Dump GLSL.FOLLOW.log
+78     LR(0) parsing...</pre>
+</div>
+
+<p>Test.log</p>
+</div>
+
+<h1>
+<a id="初战glsl" class="anchor" href="#%E5%88%9D%E6%88%98glsl" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>初战GLSL</h1>
+
+<p>测试完成后，就可以磨刀霍霍向GLSL文法了。由于GLSL文法比那些测试用的文法规模大的多，最初的版本里，计算过程居然花了好几个小时。最终出现内存不足的Exception，不得不进行优化。</p>
+
+<p>书中给的GLSL文法也是比较奇葩。或许是有什么特别的门道我没有看懂吧。总之要降低难度先。</p>
+
+<p>思路是，把grammar拆分成几个部分，分别处理。</p>
+
+<p>首先是Expression，这是其他部分的基础。Expression部分是符合SLR的，非常好。</p>
+
+<p>然后是statement，statement里有个else悬空的问题，幸好虎书里专门对这个问题做了说明，说可以容忍这个冲突，直接选择Shift，忽略Reduction即可。也非常好。</p>
+
+<p>然后是function_definition，出乎意料的是这部分也是符合SLR的。Nice。</p>
+
+<p>最后是declaration，这里遇到了意想不到的大麻烦。GLSL文法里有个&lt;TYPE_NAME&gt;。这个东西我研究了好久，最后发现他代表的含义竟然是"在读取源代码时动态发现的用户定义的类型"。比如 struct LightInfo{ … } ，他代表的是 LightInfo 这种类型。如果简单的用identifier代替&lt;TYPE_NAME&gt;，文法就会产生无法解决的冲突。</p>
+
+<p>我只好就此打住，先去实现另一种更强的分析方式——同步分析。</p>
+
+<h1>
+<a id="同步分析" class="anchor" href="#%E5%90%8C%E6%AD%A5%E5%88%86%E6%9E%90" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>同步分析</h1>
+
+<p>现在，我的词法分析、语法分析是分开进行的。词法分析全部完成后，才把单词流交给语法分析器进行分析。为了及时识别出用户自定义的类型，这种方式完全不行，必须用"分析一个单词-&gt;语法分析-&gt;可能的语义分析-&gt;分析一个单词"这样的同步分析方式。例如下面的代码：</p>
+
+<div>
+<pre>1 struct LightInfo {  
+2     vec4 Position; // Light position in eyecoords.  
+3     vec3 La; // Ambient light intensity  
+4     vec3 Ld; // Diffuse light intensity  
+5     vec3 Ls; // Specular light intensity  
+6 };  
+7 uniform LightInfo Light;</pre>
+</div>
+
+<div> </div>
+
+<p>在读到第二个单词"LightInfo"后，就必须立即将这个"LightInfo"类型加到用户自定义的类型表里。这样，在继续读到"uniform LightInfo Light"里的"LightInfo"时，词法分析器才会知道"LightInfo"是一个userDefinedType，而不是一个随随便便的identifier。（对照上文的文法的文法，可见为实现一个看似不起眼的userDefinedType需要做多少事）</p>
+
+<h2>
+<a id="前端分析器frontendparser" class="anchor" href="#%E5%89%8D%E7%AB%AF%E5%88%86%E6%9E%90%E5%99%A8frontendparser" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>前端分析器(FrontEndParser)</h2>
+
+<p>既然要同步解析了，那么词法分析和语法分析就是结结实实绑在一起的过程，所有用个FrontEndParser封装一下就很有必要。其中的UserDefinedTypeCollection就用来记录用户自定义的类型。</p>
+
+<div>
+<pre> 1     /// &lt;summary&gt;
+ 2     /// 前端分析器。
+ 3     /// 词法分析、语法分析、语义动作同步进行。
+ 4     /// &lt;/summary&gt;
+ 5     public class FrontEndParser
+ 6     {
+ 7         private LexicalAnalyzer lexicalAnalyzer;
+ 8         private LRSyntaxParser syntaxParser;
+ 9 
+10         public FrontEndParser(LexicalAnalyzer lexicalAnalyzer, LRSyntaxParser syntaxParser)
+11         {
+12             this.lexicalAnalyzer = lexicalAnalyzer;
+13             this.syntaxParser = syntaxParser;
+14         }
+15 
+16         /// &lt;summary&gt;
+17         /// 词法分析、语法分析、语义动作同步进行。
+18         /// &lt;/summary&gt;
+19         /// &lt;param name="sourceCode"&gt;&lt;/param&gt;
+20         /// &lt;param name="tokenList"&gt;&lt;/param&gt;
+21         /// &lt;returns&gt;&lt;/returns&gt;
+22         public SyntaxTree Parse(string sourceCode, out TokenList tokenList)
+23         {
+24             tokenList = new TokenList();
+25             UserDefinedTypeCollection userDefinedTypeTable = new UserDefinedTypeCollection();
+26             this.lexicalAnalyzer.StartAnalyzing(userDefinedTypeTable);
+27             this.syntaxParser.StartParsing(userDefinedTypeTable);
+28             foreach (var token in this.lexicalAnalyzer.AnalyzeStep(sourceCode))
+29             {
+30                 tokenList.Add(token);
+31                 this.syntaxParser.ParseStep(token);
+32             }
+33 
+34             SyntaxTree result = this.syntaxParser.StopParsing();
+35             return result;
+36         }
+37     }</pre>
+</div>
+
+<h2>
+<a id="同步词法分析" class="anchor" href="#%E5%90%8C%E6%AD%A5%E8%AF%8D%E6%B3%95%E5%88%86%E6%9E%90" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>同步词法分析</h2>
+
+<p>词法分析器需要每读取一个单词就返回之，等待语法分析、语义分析结束后再继续。C#的 yield return 语法糖真是甜。</p>
+
+<div>
+<img id="code_img_closed_f47a6c2e-5918-45e5-9e49-a682e6990204" src="http://images.cnblogs.com/OutliningIndicators/ContractedBlock.gif" alt=""><img id="code_img_opened_f47a6c2e-5918-45e5-9e49-a682e6990204" src="http://images.cnblogs.com/OutliningIndicators/ExpandedBlockStart.gif" alt="">
+<div id="cnblogs_code_open_f47a6c2e-5918-45e5-9e49-a682e6990204">
+<pre> 1     public abstract partial class LexicalAnalyzer
+ 2     {
+ 3         protected UserDefinedTypeCollection userDefinedTypeTable;
+ 4         private bool inAnalyzingStep = false;
+ 5 
+ 6         internal void StartAnalyzing(UserDefinedTypeCollection userDefinedTypeTable)
+ 7         {
+ 8             if (!inAnalyzingStep)
+ 9             {
+10                 this.userDefinedTypeTable = userDefinedTypeTable;
+11                 inAnalyzingStep = true;
+12             }
+13         }
+14 
+15         internal void StopAnalyzing()
+16         {
+17             if (inAnalyzingStep)
+18             {
+19                 this.userDefinedTypeTable = null;
+20                 inAnalyzingStep = false;
+21             }
+22         }
+23 
+24         /// &lt;summary&gt;
+25         /// 每次分析都返回一个&lt;see cref="Token"/&gt;。
+26         /// &lt;/summary&gt;
+27         /// &lt;param name="sourceCode"&gt;&lt;/param&gt;
+28         /// &lt;returns&gt;&lt;/returns&gt;
+29         internal IEnumerable&lt;Token&gt; AnalyzeStep(string sourceCode)
+30         {
+31             if (!inAnalyzingStep) { throw new Exception("Must invoke this.StartAnalyzing() first!"); }
+32 
+33             if (!string.IsNullOrEmpty(sourceCode))
+34             {
+35                 var context = new AnalyzingContext(sourceCode);
+36                 int count = sourceCode.Length;
+37 
+38                 while (context.NextLetterIndex &lt; count)
+39                 {
+40                     Token token = NextToken(context);
+41                     if (token != null)
+42                     {
+43                         yield return token;
+44                     }
+45                 }
+46             }
+47 
+48             this.StopAnalyzing();
+49         }
+50     }</pre>
+</div>
+
+<p>同步词法分析</p>
+</div>
+
+<h2>
+<a id="同步语法语义分析" class="anchor" href="#%E5%90%8C%E6%AD%A5%E8%AF%AD%E6%B3%95%E8%AF%AD%E4%B9%89%E5%88%86%E6%9E%90" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>同步语法/语义分析</h2>
+
+<p>每次只获取一个新单词，据此执行可能的分析步骤。如果分析动作还绑定了语义分析（这里是为了找到自定义类型），也执行之。</p>
+
+<div>
+<img id="code_img_closed_4c4ed39c-9884-43c4-8514-c39c94dd0341" src="http://images.cnblogs.com/OutliningIndicators/ContractedBlock.gif" alt=""><img id="code_img_opened_4c4ed39c-9884-43c4-8514-c39c94dd0341" src="http://images.cnblogs.com/OutliningIndicators/ExpandedBlockStart.gif" alt="">
+<div id="cnblogs_code_open_4c4ed39c-9884-43c4-8514-c39c94dd0341">
+<pre> 1     public abstract partial class LRSyntaxParser
+ 2     {
+ 3         bool inParsingStep = false;
+ 4         ParsingStepContext parsingStepContext;
+ 5 
+ 6         internal void StartParsing(UserDefinedTypeCollection userDefinedTypeTable)
+ 7         {
+ 8             if (!inParsingStep)
+ 9             {
+10                 LRParsingMap parsingMap = GetParsingMap();
+11                 RegulationList grammar = GetGrammar();
+12                 var tokenTypeConvertor = new TokenType2TreeNodeType();
+13                 parsingStepContext = new ParsingStepContext(
+14                     grammar, parsingMap, tokenTypeConvertor, userDefinedTypeTable);
+15                 inParsingStep = true;
+16             }
+17         }
+18 
+19         internal SyntaxTree StopParsing()
+20         {
+21             SyntaxTree result = null;
+22             if (inParsingStep)
+23             {
+24                 result = ParseStep(Token.endOfTokenList);
+25                 parsingStepContext.TokenList.RemoveAt(parsingStepContext.TokenList.Count - 1);
+26                 parsingStepContext = null;
+27                 inParsingStep = false;
+28             }
+29 
+30             return result;
+31         }
+32         /// &lt;summary&gt;
+33         /// 获取归约动作对应的语义动作。
+34         /// &lt;/summary&gt;
+35         /// &lt;param name="parsingAction"&gt;&lt;/param&gt;
+36         /// &lt;returns&gt;&lt;/returns&gt;
+37         protected virtual Action&lt;ParsingStepContext&gt; GetSemanticAction(LRParsingAction parsingAction)
+38         {
+39             return null;
+40         }
+41 
+42         internal SyntaxTree ParseStep(Token token)
+43         {
+44             if (!inParsingStep) { throw new Exception("Must invoke this.StartParsing() first!"); }
+45 
+46             parsingStepContext.AddToken(token);
+47 
+48             while (parsingStepContext.CurrentTokenIndex &lt; parsingStepContext.TokenList.Count)
+49             {
+50                 // 语法分析
+51                 TreeNodeType nodeType = parsingStepContext.CurrentNodeType();
+52                 int stateId = parsingStepContext.StateIdStack.Peek();
+53                 LRParsingAction action = parsingStepContext.ParsingMap.GetAction(stateId, nodeType);
+54                 int currentTokenIndex = action.Execute(parsingStepContext);
+55                 parsingStepContext.CurrentTokenIndex = currentTokenIndex;
+56                 // 语义分析
+57                 Action&lt;ParsingStepContext&gt; semanticAction = GetSemanticAction(action);
+58                 if (semanticAction != null)
+59                 {
+60                     semanticAction(parsingStepContext);
+61                 }
+62             }
+63 
+64             if (parsingStepContext.TreeStack.Count &gt; 0)
+65             {
+66                 return parsingStepContext.TreeStack.Peek();
+67             }
+68             else
+69             {
+70                 return new SyntaxTree();
+71             }
+72         }
+73     }</pre>
+</div>
+
+<p>同步语法/语义分析</p>
+</div>
+
+<div> </div>
+
+<h1>
+<a id="再战glsl" class="anchor" href="#%E5%86%8D%E6%88%98glsl" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>再战GLSL</h1>
+
+<p>此时武器终于齐备。</p>
+
+<h2>
+<a id="文法-解析器" class="anchor" href="#%E6%96%87%E6%B3%95-%E8%A7%A3%E6%9E%90%E5%99%A8" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>文法-&gt;解析器</h2>
+
+<p>为下面的GLSL文法生成解析器，我的笔记本花费大概10分钟左右。</p>
+
+<div>
+<img id="code_img_closed_45564f23-8a78-42aa-ba72-6b1b6a7c946b" src="http://images.cnblogs.com/OutliningIndicators/ContractedBlock.gif" alt=""><img id="code_img_opened_45564f23-8a78-42aa-ba72-6b1b6a7c946b" src="http://images.cnblogs.com/OutliningIndicators/ExpandedBlockStart.gif" alt="">
+<div id="cnblogs_code_open_45564f23-8a78-42aa-ba72-6b1b6a7c946b">
+<pre>  1 &lt;translation_unit&gt; ::= &lt;external_declaration&gt; ;
+  2 &lt;translation_unit&gt; ::= &lt;translation_unit&gt; &lt;external_declaration&gt; ;
+  3 &lt;external_declaration&gt; ::= &lt;function_definition&gt; ;
+  4 &lt;external_declaration&gt; ::= &lt;declaration&gt; ;
+  5 &lt;function_definition&gt; ::= &lt;function_prototype&gt; &lt;compound_statement_no_new_scope&gt; ;
+  6 &lt;variable_identifier&gt; ::= identifier ;
+  7 &lt;primary_expression&gt; ::= &lt;variable_identifier&gt; ;
+  8 &lt;primary_expression&gt; ::= number ;
+  9 &lt;primary_expression&gt; ::= number ;
+ 10 &lt;primary_expression&gt; ::= number ;
+ 11 &lt;primary_expression&gt; ::= &lt;BOOLCONSTANT&gt; ;
+ 12 &lt;primary_expression&gt; ::= number ;
+ 13 &lt;primary_expression&gt; ::= "(" &lt;expression&gt; ")" ;
+ 14 &lt;BOOLCONSTANT&gt; ::= "true" ;
+ 15 &lt;BOOLCONSTANT&gt; ::= "false" ;
+ 16 &lt;postfix_expression&gt; ::= &lt;primary_expression&gt; ;
+ 17 &lt;postfix_expression&gt; ::= &lt;postfix_expression&gt; "[" &lt;integer_expression&gt; "]" ;
+ 18 &lt;postfix_expression&gt; ::= &lt;function_call&gt; ;
+ 19 &lt;postfix_expression&gt; ::= &lt;postfix_expression&gt; "." &lt;FIELD_SELECTION&gt; ;
+ 20 &lt;postfix_expression&gt; ::= &lt;postfix_expression&gt; "++" ;
+ 21 &lt;postfix_expression&gt; ::= &lt;postfix_expression&gt; "--" ;
+ 22 &lt;FIELD_SELECTION&gt; ::= identifier ;
+ 23 &lt;integer_expression&gt; ::= &lt;expression&gt; ;
+ 24 &lt;function_call&gt; ::= &lt;function_call_or_method&gt; ;
+ 25 &lt;function_call_or_method&gt; ::= &lt;function_call_generic&gt; ;
+ 26 &lt;function_call_generic&gt; ::= &lt;function_call_header_with_parameters&gt; ")" ;
+ 27 &lt;function_call_generic&gt; ::= &lt;function_call_header_no_parameters&gt; ")" ;
+ 28 &lt;function_call_header_no_parameters&gt; ::= &lt;function_call_header&gt; "void" ;
+ 29 &lt;function_call_header_no_parameters&gt; ::= &lt;function_call_header&gt; ;
+ 30 &lt;function_call_header_with_parameters&gt; ::= &lt;function_call_header&gt; &lt;assignment_expression&gt; ;
+ 31 &lt;function_call_header_with_parameters&gt; ::= &lt;function_call_header_with_parameters&gt; "," &lt;assignment_expression&gt; ;
+ 32 &lt;function_call_header&gt; ::= &lt;function_identifier&gt; "(" ;
+ 33 &lt;function_identifier&gt; ::= &lt;type_specifier&gt; ;
+ 34 &lt;function_identifier&gt; ::= &lt;postfix_expression&gt; ;
+ 35 &lt;unary_expression&gt; ::= &lt;postfix_expression&gt; ;
+ 36 &lt;unary_expression&gt; ::= "++" &lt;unary_expression&gt; ;
+ 37 &lt;unary_expression&gt; ::= "--" &lt;unary_expression&gt; ;
+ 38 &lt;unary_expression&gt; ::= &lt;unary_operator&gt; &lt;unary_expression&gt; ;
+ 39 &lt;unary_operator&gt; ::= "+" ;
+ 40 &lt;unary_operator&gt; ::= "-" ;
+ 41 &lt;unary_operator&gt; ::= "!" ;
+ 42 &lt;unary_operator&gt; ::= "~" ;
+ 43 &lt;multiplicative_expression&gt; ::= &lt;unary_expression&gt; ;
+ 44 &lt;multiplicative_expression&gt; ::= &lt;multiplicative_expression&gt; "*" &lt;unary_expression&gt; ;
+ 45 &lt;multiplicative_expression&gt; ::= &lt;multiplicative_expression&gt; "/" &lt;unary_expression&gt; ;
+ 46 &lt;multiplicative_expression&gt; ::= &lt;multiplicative_expression&gt; "%" &lt;unary_expression&gt; ;
+ 47 &lt;additive_expression&gt; ::= &lt;multiplicative_expression&gt; ;
+ 48 &lt;additive_expression&gt; ::= &lt;additive_expression&gt; "+" &lt;multiplicative_expression&gt; ;
+ 49 &lt;additive_expression&gt; ::= &lt;additive_expression&gt; "-" &lt;multiplicative_expression&gt; ;
+ 50 &lt;shift_expression&gt; ::= &lt;additive_expression&gt; ;
+ 51 &lt;shift_expression&gt; ::= &lt;shift_expression&gt; "&lt;&lt;" &lt;additive_expression&gt; ;
+ 52 &lt;shift_expression&gt; ::= &lt;shift_expression&gt; "&gt;&gt;" &lt;additive_expression&gt; ;
+ 53 &lt;relational_expression&gt; ::= &lt;shift_expression&gt; ;
+ 54 &lt;relational_expression&gt; ::= &lt;relational_expression&gt; "&lt;" &lt;shift_expression&gt; ;
+ 55 &lt;relational_expression&gt; ::= &lt;relational_expression&gt; "&gt;" &lt;shift_expression&gt; ;
+ 56 &lt;relational_expression&gt; ::= &lt;relational_expression&gt; "&lt;=" &lt;shift_expression&gt; ;
+ 57 &lt;relational_expression&gt; ::= &lt;relational_expression&gt; "&gt;=" &lt;shift_expression&gt; ;
+ 58 &lt;equality_expression&gt; ::= &lt;relational_expression&gt; ;
+ 59 &lt;equality_expression&gt; ::= &lt;equality_expression&gt; "==" &lt;relational_expression&gt; ;
+ 60 &lt;equality_expression&gt; ::= &lt;equality_expression&gt; "!=" &lt;relational_expression&gt; ;
+ 61 &lt;and_expression&gt; ::= &lt;equality_expression&gt; ;
+ 62 &lt;and_expression&gt; ::= &lt;and_expression&gt; "&amp;" &lt;equality_expression&gt; ;
+ 63 &lt;exclusive_or_expression&gt; ::= &lt;and_expression&gt; ;
+ 64 &lt;exclusive_or_expression&gt; ::= &lt;exclusive_or_expression&gt; "^" &lt;and_expression&gt; ;
+ 65 &lt;inclusive_or_expression&gt; ::= &lt;exclusive_or_expression&gt; ;
+ 66 &lt;inclusive_or_expression&gt; ::= &lt;inclusive_or_expression&gt; "|" &lt;exclusive_or_expression&gt; ;
+ 67 &lt;logical_and_expression&gt; ::= &lt;inclusive_or_expression&gt; ;
+ 68 &lt;logical_and_expression&gt; ::= &lt;logical_and_expression&gt; "&amp;&amp;" &lt;inclusive_or_expression&gt; ;
+ 69 &lt;logical_xor_expression&gt; ::= &lt;logical_and_expression&gt; ;
+ 70 &lt;logical_xor_expression&gt; ::= &lt;logical_xor_expression&gt; "^^" &lt;logical_and_expression&gt; ;
+ 71 &lt;logical_or_expression&gt; ::= &lt;logical_xor_expression&gt; ;
+ 72 &lt;logical_or_expression&gt; ::= &lt;logical_or_expression&gt; "||" &lt;logical_xor_expression&gt; ;
+ 73 &lt;conditional_expression&gt; ::= &lt;logical_or_expression&gt; ;
+ 74 &lt;conditional_expression&gt; ::= &lt;logical_or_expression&gt; "?" &lt;expression&gt; ":" &lt;assignment_expression&gt; ;
+ 75 &lt;assignment_expression&gt; ::= &lt;conditional_expression&gt; ;
+ 76 &lt;assignment_expression&gt; ::= &lt;unary_expression&gt; &lt;assignment_operator&gt; &lt;assignment_expression&gt; ;
+ 77 &lt;assignment_operator&gt; ::= "=" ;
+ 78 &lt;assignment_operator&gt; ::= "*=" ;
+ 79 &lt;assignment_operator&gt; ::= "/=" ;
+ 80 &lt;assignment_operator&gt; ::= "%=" ;
+ 81 &lt;assignment_operator&gt; ::= "+=" ;
+ 82 &lt;assignment_operator&gt; ::= "-=" ;
+ 83 &lt;assignment_operator&gt; ::= "&lt;&lt;=" ;
+ 84 &lt;assignment_operator&gt; ::= "&gt;&gt;=" ;
+ 85 &lt;assignment_operator&gt; ::= "&amp;=" ;
+ 86 &lt;assignment_operator&gt; ::= "^=" ;
+ 87 &lt;assignment_operator&gt; ::= "|=" ;
+ 88 &lt;expression&gt; ::= &lt;assignment_expression&gt; ;
+ 89 &lt;expression&gt; ::= &lt;expression&gt; "," &lt;assignment_expression&gt; ;
+ 90 &lt;constant_expression&gt; ::= &lt;conditional_expression&gt; ;
+ 91 &lt;declaration&gt; ::= &lt;function_prototype&gt; ";" ;
+ 92 &lt;declaration&gt; ::= &lt;init_declarator_list&gt; ";" ;
+ 93 &lt;declaration&gt; ::= "precision" &lt;precision_qualifier&gt; &lt;type_specifier&gt; ";" ;
+ 94 &lt;declaration&gt; ::= &lt;type_qualifier&gt; identifier "{" &lt;struct_declaration_list&gt; "}" ";" ;
+ 95 &lt;declaration&gt; ::= &lt;type_qualifier&gt; identifier "{" &lt;struct_declaration_list&gt; "}" identifier ";" ;
+ 96 &lt;declaration&gt; ::= &lt;type_qualifier&gt; identifier "{" &lt;struct_declaration_list&gt; "}" identifier &lt;array_specifier&gt; ";" ;
+ 97 &lt;declaration&gt; ::= &lt;type_qualifier&gt; ";" ;
+ 98 &lt;declaration&gt; ::= &lt;type_qualifier&gt; identifier ";" ;
+ 99 &lt;declaration&gt; ::= &lt;type_qualifier&gt; identifier &lt;identifier_list&gt; ";" ;
+100 &lt;identifier_list&gt; ::= "," identifier ;
+101 &lt;identifier_list&gt; ::= &lt;identifier_list&gt; "," identifier ;
+102 &lt;function_prototype&gt; ::= &lt;function_declarator&gt; ")" ;
+103 &lt;function_declarator&gt; ::= &lt;function_header&gt; ;
+104 &lt;function_declarator&gt; ::= &lt;function_header_with_parameters&gt; ;
+105 &lt;function_header_with_parameters&gt; ::= &lt;function_header&gt; &lt;parameter_declaration&gt; ;
+106 &lt;function_header_with_parameters&gt; ::= &lt;function_header_with_parameters&gt; "," &lt;parameter_declaration&gt; ;
+107 &lt;function_header&gt; ::= &lt;fully_specified_type&gt; identifier "(" ;
+108 &lt;parameter_declarator&gt; ::= &lt;type_specifier&gt; identifier ;
+109 &lt;parameter_declarator&gt; ::= &lt;type_specifier&gt; identifier &lt;array_specifier&gt; ;
+110 &lt;parameter_declaration&gt; ::= &lt;type_qualifier&gt; &lt;parameter_declarator&gt; ;
+111 &lt;parameter_declaration&gt; ::= &lt;parameter_declarator&gt; ;
+112 &lt;parameter_declaration&gt; ::= &lt;type_qualifier&gt; &lt;parameter_type_specifier&gt; ;
+113 &lt;parameter_declaration&gt; ::= &lt;parameter_type_specifier&gt; ;
+114 &lt;parameter_type_specifier&gt; ::= &lt;type_specifier&gt; ;
+115 &lt;init_declarator_list&gt; ::= &lt;single_declaration&gt; ;
+116 &lt;init_declarator_list&gt; ::= &lt;init_declarator_list&gt; "," identifier ;
+117 &lt;init_declarator_list&gt; ::= &lt;init_declarator_list&gt; "," identifier &lt;array_specifier&gt; ;
+118 &lt;init_declarator_list&gt; ::= &lt;init_declarator_list&gt; "," identifier &lt;array_specifier&gt; "=" &lt;initializer&gt; ;
+119 &lt;init_declarator_list&gt; ::= &lt;init_declarator_list&gt; "," identifier "=" &lt;initializer&gt; ;
+120 &lt;single_declaration&gt; ::= &lt;fully_specified_type&gt; ;
+121 &lt;single_declaration&gt; ::= &lt;fully_specified_type&gt; identifier ;
+122 &lt;single_declaration&gt; ::= &lt;fully_specified_type&gt; identifier &lt;array_specifier&gt; ;
+123 &lt;single_declaration&gt; ::= &lt;fully_specified_type&gt; identifier &lt;array_specifier&gt; "=" &lt;initializer&gt; ;
+124 &lt;single_declaration&gt; ::= &lt;fully_specified_type&gt; identifier "=" &lt;initializer&gt; ;
+125 &lt;fully_specified_type&gt; ::= &lt;type_specifier&gt; ;
+126 &lt;fully_specified_type&gt; ::= &lt;type_qualifier&gt; &lt;type_specifier&gt; ;
+127 &lt;invariant_qualifier&gt; ::= "invariant" ;
+128 &lt;interpolation_qualifier&gt; ::= "smooth" ;
+129 &lt;interpolation_qualifier&gt; ::= "flat" ;
+130 &lt;interpolation_qualifier&gt; ::= "noperspective" ;
+131 &lt;layout_qualifier&gt; ::= "layout" "(" &lt;layout_qualifier_id_list&gt; ")" ;
+132 &lt;layout_qualifier_id_list&gt; ::= &lt;layout_qualifier_id&gt; ;
+133 &lt;layout_qualifier_id_list&gt; ::= &lt;layout_qualifier_id_list&gt; "," &lt;layout_qualifier_id&gt; ;
+134 &lt;layout_qualifier_id&gt; ::= identifier ;
+135 &lt;layout_qualifier_id&gt; ::= identifier "=" number ;
+136 &lt;precise_qualifier&gt; ::= "precise" ;
+137 &lt;type_qualifier&gt; ::= &lt;single_type_qualifier&gt; ;
+138 &lt;type_qualifier&gt; ::= &lt;type_qualifier&gt; &lt;single_type_qualifier&gt; ;
+139 &lt;single_type_qualifier&gt; ::= &lt;storage_qualifier&gt; ;
+140 &lt;single_type_qualifier&gt; ::= &lt;layout_qualifier&gt; ;
+141 &lt;single_type_qualifier&gt; ::= &lt;precision_qualifier&gt; ;
+142 &lt;single_type_qualifier&gt; ::= &lt;interpolation_qualifier&gt; ;
+143 &lt;single_type_qualifier&gt; ::= &lt;invariant_qualifier&gt; ;
+144 &lt;single_type_qualifier&gt; ::= &lt;precise_qualifier&gt; ;
+145 &lt;storage_qualifier&gt; ::= "const" ;
+146 &lt;storage_qualifier&gt; ::= "inout" ;
+147 &lt;storage_qualifier&gt; ::= "in" ;
+148 &lt;storage_qualifier&gt; ::= "out" ;
+149 &lt;storage_qualifier&gt; ::= "centroid" ;
+150 &lt;storage_qualifier&gt; ::= "patch" ;
+151 &lt;storage_qualifier&gt; ::= "sample" ;
+152 &lt;storage_qualifier&gt; ::= "uniform" ;
+153 &lt;storage_qualifier&gt; ::= "buffer" ;
+154 &lt;storage_qualifier&gt; ::= "shared" ;
+155 &lt;storage_qualifier&gt; ::= "coherent" ;
+156 &lt;storage_qualifier&gt; ::= "volatile" ;
+157 &lt;storage_qualifier&gt; ::= "restrict" ;
+158 &lt;storage_qualifier&gt; ::= "readonly" ;
+159 &lt;storage_qualifier&gt; ::= "writeonly" ;
+160 &lt;storage_qualifier&gt; ::= "subroutine" ;
+161 &lt;storage_qualifier&gt; ::= "subroutine" "(" &lt;type_name_list&gt; ")" ;
+162 &lt;type_name_list&gt; ::= userDefinedType ;
+163 &lt;type_name_list&gt; ::= &lt;type_name_list&gt; "," userDefinedType ;
+164 &lt;type_specifier&gt; ::= &lt;type_specifier_nonarray&gt; ;
+165 &lt;type_specifier&gt; ::= &lt;type_specifier_nonarray&gt; &lt;array_specifier&gt; ;
+166 &lt;array_specifier&gt; ::= "[" "]" ;
+167 &lt;array_specifier&gt; ::= "[" &lt;constant_expression&gt; "]" ;
+168 &lt;array_specifier&gt; ::= &lt;array_specifier&gt; "[" "]" ;
+169 &lt;array_specifier&gt; ::= &lt;array_specifier&gt; "[" &lt;constant_expression&gt; "]" ;
+170 &lt;type_specifier_nonarray&gt; ::= "void" ;
+171 &lt;type_specifier_nonarray&gt; ::= "float" ;
+172 &lt;type_specifier_nonarray&gt; ::= "double" ;
+173 &lt;type_specifier_nonarray&gt; ::= "int" ;
+174 &lt;type_specifier_nonarray&gt; ::= "uint" ;
+175 &lt;type_specifier_nonarray&gt; ::= "bool" ;
+176 &lt;type_specifier_nonarray&gt; ::= "vec2" ;
+177 &lt;type_specifier_nonarray&gt; ::= "vec3" ;
+178 &lt;type_specifier_nonarray&gt; ::= "vec4" ;
+179 &lt;type_specifier_nonarray&gt; ::= "dvec2" ;
+180 &lt;type_specifier_nonarray&gt; ::= "dvec3" ;
+181 &lt;type_specifier_nonarray&gt; ::= "dvec4" ;
+182 &lt;type_specifier_nonarray&gt; ::= "bvec2" ;
+183 &lt;type_specifier_nonarray&gt; ::= "bvec3" ;
+184 &lt;type_specifier_nonarray&gt; ::= "bvec4" ;
+185 &lt;type_specifier_nonarray&gt; ::= "ivec2" ;
+186 &lt;type_specifier_nonarray&gt; ::= "ivec3" ;
+187 &lt;type_specifier_nonarray&gt; ::= "ivec4" ;
+188 &lt;type_specifier_nonarray&gt; ::= "uvec2" ;
+189 &lt;type_specifier_nonarray&gt; ::= "uvec3" ;
+190 &lt;type_specifier_nonarray&gt; ::= "uvec4" ;
+191 &lt;type_specifier_nonarray&gt; ::= "mat2" ;
+192 &lt;type_specifier_nonarray&gt; ::= "mat3" ;
+193 &lt;type_specifier_nonarray&gt; ::= "mat4" ;
+194 &lt;type_specifier_nonarray&gt; ::= "mat2x2" ;
+195 &lt;type_specifier_nonarray&gt; ::= "mat2x3" ;
+196 &lt;type_specifier_nonarray&gt; ::= "mat2x4" ;
+197 &lt;type_specifier_nonarray&gt; ::= "mat3x2" ;
+198 &lt;type_specifier_nonarray&gt; ::= "mat3x3" ;
+199 &lt;type_specifier_nonarray&gt; ::= "mat3x4" ;
+200 &lt;type_specifier_nonarray&gt; ::= "mat4x2" ;
+201 &lt;type_specifier_nonarray&gt; ::= "mat4x3" ;
+202 &lt;type_specifier_nonarray&gt; ::= "mat4x4" ;
+203 &lt;type_specifier_nonarray&gt; ::= "dmat2" ;
+204 &lt;type_specifier_nonarray&gt; ::= "dmat3" ;
+205 &lt;type_specifier_nonarray&gt; ::= "dmat4" ;
+206 &lt;type_specifier_nonarray&gt; ::= "dmat2x2" ;
+207 &lt;type_specifier_nonarray&gt; ::= "dmat2x3" ;
+208 &lt;type_specifier_nonarray&gt; ::= "dmat2x4" ;
+209 &lt;type_specifier_nonarray&gt; ::= "dmat3x2" ;
+210 &lt;type_specifier_nonarray&gt; ::= "dmat3x3" ;
+211 &lt;type_specifier_nonarray&gt; ::= "dmat3x4" ;
+212 &lt;type_specifier_nonarray&gt; ::= "dmat4x2" ;
+213 &lt;type_specifier_nonarray&gt; ::= "dmat4x3" ;
+214 &lt;type_specifier_nonarray&gt; ::= "dmat4x4" ;
+215 &lt;type_specifier_nonarray&gt; ::= "atomic_uint" ;
+216 &lt;type_specifier_nonarray&gt; ::= "sampler1D" ;
+217 &lt;type_specifier_nonarray&gt; ::= "sampler2D" ;
+218 &lt;type_specifier_nonarray&gt; ::= "sampler3D" ;
+219 &lt;type_specifier_nonarray&gt; ::= "samplerCube" ;
+220 &lt;type_specifier_nonarray&gt; ::= "sampler1DShadow" ;
+221 &lt;type_specifier_nonarray&gt; ::= "sampler2DShadow" ;
+222 &lt;type_specifier_nonarray&gt; ::= "samplerCubeShadow" ;
+223 &lt;type_specifier_nonarray&gt; ::= "sampler1DArray" ;
+224 &lt;type_specifier_nonarray&gt; ::= "sampler2DArray" ;
+225 &lt;type_specifier_nonarray&gt; ::= "sampler1DArrayShadow" ;
+226 &lt;type_specifier_nonarray&gt; ::= "sampler2DArrayShadow" ;
+227 &lt;type_specifier_nonarray&gt; ::= "samplerCubeArray" ;
+228 &lt;type_specifier_nonarray&gt; ::= "samplerCubeArrayShadow" ;
+229 &lt;type_specifier_nonarray&gt; ::= "isampler1D" ;
+230 &lt;type_specifier_nonarray&gt; ::= "isampler2D" ;
+231 &lt;type_specifier_nonarray&gt; ::= "isampler3D" ;
+232 &lt;type_specifier_nonarray&gt; ::= "isamplerCube" ;
+233 &lt;type_specifier_nonarray&gt; ::= "isampler1DArray" ;
+234 &lt;type_specifier_nonarray&gt; ::= "isampler2DArray" ;
+235 &lt;type_specifier_nonarray&gt; ::= "isamplerCubeArray" ;
+236 &lt;type_specifier_nonarray&gt; ::= "usampler1D" ;
+237 &lt;type_specifier_nonarray&gt; ::= "usampler2D" ;
+238 &lt;type_specifier_nonarray&gt; ::= "usampler3D" ;
+239 &lt;type_specifier_nonarray&gt; ::= "usamplerCube" ;
+240 &lt;type_specifier_nonarray&gt; ::= "usampler1DArray" ;
+241 &lt;type_specifier_nonarray&gt; ::= "usampler2DArray" ;
+242 &lt;type_specifier_nonarray&gt; ::= "usamplerCubeArray" ;
+243 &lt;type_specifier_nonarray&gt; ::= "sampler2DRect" ;
+244 &lt;type_specifier_nonarray&gt; ::= "sampler2DRectShadow" ;
+245 &lt;type_specifier_nonarray&gt; ::= "isampler2DRect" ;
+246 &lt;type_specifier_nonarray&gt; ::= "usampler2DRect" ;
+247 &lt;type_specifier_nonarray&gt; ::= "samplerBuffer" ;
+248 &lt;type_specifier_nonarray&gt; ::= "isamplerBuffer" ;
+249 &lt;type_specifier_nonarray&gt; ::= "usamplerBuffer" ;
+250 &lt;type_specifier_nonarray&gt; ::= "sampler2DMS" ;
+251 &lt;type_specifier_nonarray&gt; ::= "isampler2DMS" ;
+252 &lt;type_specifier_nonarray&gt; ::= "usampler2DMS" ;
+253 &lt;type_specifier_nonarray&gt; ::= "sampler2DMSArray" ;
+254 &lt;type_specifier_nonarray&gt; ::= "isampler2DMSArray" ;
+255 &lt;type_specifier_nonarray&gt; ::= "usampler2DMSArray" ;
+256 &lt;type_specifier_nonarray&gt; ::= "image1D" ;
+257 &lt;type_specifier_nonarray&gt; ::= "iimage1D" ;
+258 &lt;type_specifier_nonarray&gt; ::= "uimage1D" ;
+259 &lt;type_specifier_nonarray&gt; ::= "image2D" ;
+260 &lt;type_specifier_nonarray&gt; ::= "iimage2D" ;
+261 &lt;type_specifier_nonarray&gt; ::= "uimage2D" ;
+262 &lt;type_specifier_nonarray&gt; ::= "image3D" ;
+263 &lt;type_specifier_nonarray&gt; ::= "iimage3D" ;
+264 &lt;type_specifier_nonarray&gt; ::= "uimage3D" ;
+265 &lt;type_specifier_nonarray&gt; ::= "image2DRect" ;
+266 &lt;type_specifier_nonarray&gt; ::= "iimage2DRect" ;
+267 &lt;type_specifier_nonarray&gt; ::= "uimage2DRect" ;
+268 &lt;type_specifier_nonarray&gt; ::= "imageCube" ;
+269 &lt;type_specifier_nonarray&gt; ::= "iimageCube" ;
+270 &lt;type_specifier_nonarray&gt; ::= "uimageCube" ;
+271 &lt;type_specifier_nonarray&gt; ::= "imageBuffer" ;
+272 &lt;type_specifier_nonarray&gt; ::= "iimageBuffer" ;
+273 &lt;type_specifier_nonarray&gt; ::= "uimageBuffer" ;
+274 &lt;type_specifier_nonarray&gt; ::= "image1DArray" ;
+275 &lt;type_specifier_nonarray&gt; ::= "iimage1DArray" ;
+276 &lt;type_specifier_nonarray&gt; ::= "uimage1DArray" ;
+277 &lt;type_specifier_nonarray&gt; ::= "image2DArray" ;
+278 &lt;type_specifier_nonarray&gt; ::= "iimage2DArray" ;
+279 &lt;type_specifier_nonarray&gt; ::= "uimage2DArray" ;
+280 &lt;type_specifier_nonarray&gt; ::= "imageCubeArray" ;
+281 &lt;type_specifier_nonarray&gt; ::= "iimageCubeArray" ;
+282 &lt;type_specifier_nonarray&gt; ::= "uimageCubeArray" ;
+283 &lt;type_specifier_nonarray&gt; ::= "image2DMS" ;
+284 &lt;type_specifier_nonarray&gt; ::= "iimage2DMS" ;
+285 &lt;type_specifier_nonarray&gt; ::= "uimage2DMS" ;
+286 &lt;type_specifier_nonarray&gt; ::= "image2DMSArray" ;
+287 &lt;type_specifier_nonarray&gt; ::= "iimage2DMSArray" ;
+288 &lt;type_specifier_nonarray&gt; ::= "uimage2DMSArray" ;
+289 &lt;type_specifier_nonarray&gt; ::= &lt;struct_specifier&gt; ;
+290 &lt;type_specifier_nonarray&gt; ::= userDefinedType ;
+291 &lt;precision_qualifier&gt; ::= "high_precision" ;
+292 &lt;precision_qualifier&gt; ::= "medium_precision" ;
+293 &lt;precision_qualifier&gt; ::= "low_precision" ;
+294 // semantic parsing needed
+295 &lt;struct_specifier&gt; ::= "struct" identifier "{" &lt;struct_declaration_list&gt; "}" ;
+296 &lt;struct_specifier&gt; ::= "struct" "{" &lt;struct_declaration_list&gt; "}" ;
+297 &lt;struct_declaration_list&gt; ::= &lt;struct_declaration&gt; ;
+298 &lt;struct_declaration_list&gt; ::= &lt;struct_declaration_list&gt; &lt;struct_declaration&gt; ;
+299 &lt;struct_declaration&gt; ::= &lt;type_specifier&gt; &lt;struct_declarator_list&gt; ";" ;
+300 &lt;struct_declaration&gt; ::= &lt;type_qualifier&gt; &lt;type_specifier&gt; &lt;struct_declarator_list&gt; ";" ;
+301 &lt;struct_declarator_list&gt; ::= &lt;struct_declarator&gt; ;
+302 &lt;struct_declarator_list&gt; ::= &lt;struct_declarator_list&gt; "," &lt;struct_declarator&gt; ;
+303 &lt;struct_declarator&gt; ::= identifier ;
+304 &lt;struct_declarator&gt; ::= identifier &lt;array_specifier&gt; ;
+305 &lt;initializer&gt; ::= &lt;assignment_expression&gt; ;
+306 &lt;initializer&gt; ::= "{" &lt;initializer_list&gt; "}" ;
+307 &lt;initializer&gt; ::= "{" &lt;initializer_list&gt; "," "}" ;
+308 &lt;initializer_list&gt; ::= &lt;initializer&gt; ;
+309 &lt;initializer_list&gt; ::= &lt;initializer_list&gt; "," &lt;initializer&gt; ;
+310 &lt;declaration_statement&gt; ::= &lt;declaration&gt; ;
+311 &lt;statement&gt; ::= &lt;compound_statement&gt; ;
+312 &lt;statement&gt; ::= &lt;simple_statement&gt; ;
+313 &lt;simple_statement&gt; ::= &lt;declaration_statement&gt; ;
+314 &lt;simple_statement&gt; ::= &lt;expression_statement&gt; ;
+315 &lt;simple_statement&gt; ::= &lt;selection_statement&gt; ;
+316 &lt;simple_statement&gt; ::= &lt;switch_statement&gt; ;
+317 &lt;simple_statement&gt; ::= &lt;case_label&gt; ;
+318 &lt;simple_statement&gt; ::= &lt;iteration_statement&gt; ;
+319 &lt;simple_statement&gt; ::= &lt;jump_statement&gt; ;
+320 &lt;compound_statement&gt; ::= "{" "}" ;
+321 &lt;compound_statement&gt; ::= "{" &lt;statement_list&gt; "}" ;
+322 &lt;statement_no_new_scope&gt; ::= &lt;compound_statement_no_new_scope&gt; ;
+323 &lt;statement_no_new_scope&gt; ::= &lt;simple_statement&gt; ;
+324 &lt;compound_statement_no_new_scope&gt; ::= "{" "}" ;
+325 &lt;compound_statement_no_new_scope&gt; ::= "{" &lt;statement_list&gt; "}" ;
+326 &lt;statement_list&gt; ::= &lt;statement&gt; ;
+327 &lt;statement_list&gt; ::= &lt;statement_list&gt; &lt;statement&gt; ;
+328 &lt;expression_statement&gt; ::= ";" ;
+329 &lt;expression_statement&gt; ::= &lt;expression&gt; ";" ;
+330 &lt;selection_statement&gt; ::= "if" "(" &lt;expression&gt; ")" &lt;selection_rest_statement&gt; ;
+331 &lt;selection_rest_statement&gt; ::= &lt;statement&gt; "else" &lt;statement&gt; ;
+332 &lt;selection_rest_statement&gt; ::= &lt;statement&gt; ;
+333 &lt;condition&gt; ::= &lt;expression&gt; ;
+334 &lt;condition&gt; ::= &lt;fully_specified_type&gt; identifier "=" &lt;initializer&gt; ;
+335 &lt;switch_statement&gt; ::= "switch" "(" &lt;expression&gt; ")" "{" &lt;switch_statement_list&gt; "}" ;
+336 &lt;switch_statement_list&gt; ::= &lt;statement_list&gt; ;
+337 &lt;case_label&gt; ::= "case" &lt;expression&gt; ":" ;
+338 &lt;case_label&gt; ::= "default" ":" ;
+339 &lt;iteration_statement&gt; ::= "while" "(" &lt;condition&gt; ")" &lt;statement_no_new_scope&gt; ;
+340 &lt;iteration_statement&gt; ::= "do" &lt;statement&gt; "while" "(" &lt;expression&gt; ")" ";" ;
+341 &lt;iteration_statement&gt; ::= "for" "(" &lt;for_init_statement&gt; &lt;for_rest_statement&gt; ")" &lt;statement_no_new_scope&gt; ;
+342 &lt;for_init_statement&gt; ::= &lt;expression_statement&gt; ;
+343 &lt;for_init_statement&gt; ::= &lt;declaration_statement&gt; ;
+344 &lt;conditionopt&gt; ::= &lt;condition&gt; ;
+345 &lt;for_rest_statement&gt; ::= &lt;conditionopt&gt; ";" ;
+346 &lt;for_rest_statement&gt; ::= &lt;conditionopt&gt; ";" &lt;expression&gt; ;
+347 &lt;jump_statement&gt; ::= "continue" ";" ;
+348 &lt;jump_statement&gt; ::= "break" ";" ;
+349 &lt;jump_statement&gt; ::= "return" ";" ;
+350 &lt;jump_statement&gt; ::= "return" &lt;expression&gt; ";" ;
+351 &lt;jump_statement&gt; ::= "discard" ";" ;</pre>
+</div>
+
+<p>GLSL.Grammar</p>
+</div>
+
+<h2>
+<a id="补充语义分析片段" class="anchor" href="#%E8%A1%A5%E5%85%85%E8%AF%AD%E4%B9%89%E5%88%86%E6%9E%90%E7%89%87%E6%AE%B5" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>补充语义分析片段</h2>
+
+<p>语义分析是不能自动生成的。此时需要的语义分析，只有找到自定义类型这一个目的。</p>
+
+<p>在GLSL文法里，是下面这个state需要进行语义分析。此时，分析器刚刚读到用户自定义的类型名字（identifier）。</p>
+
+<div>
+<pre>1 State [172]:
+2 &lt;struct_specifier&gt; ::= "struct" identifier . "{" &lt;struct_declaration_list&gt; "}" ;, identifier "," ")" "(" ";" "["</pre>
+</div>
+
+<p>语义分析动作内容则十分简单，将identifier的内容作为自定义类型名加入UserDefinedTypeTable即可。</p>
+
+<div>
+<pre>1         // State [172]:
+2         // &lt;struct_specifier&gt; ::= "struct" identifier . "{" &lt;struct_declaration_list&gt; "}" ;, identifier "," ")" "(" ";" "["
+3         static void state172_struct_specifier(ParsingStepContext context)
+4         {
+5             SyntaxTree tree = context.TreeStack.Peek();
+6             string name = tree.NodeType.Content;
+7             context.UserDefinedTypeTable.TryInsert(new UserDefinedType(name));
+8         }</pre>
+</div>
+
+<p>当然，别忘了在初始化时将此动作绑定到对应的state上。</p>
+
+<div>
+<pre> 1         static GLSLSyntaxParser()
+ 2         {
+ 3             // 将语义动作绑定的到state上。
+ 4             dict.Add(new LR1ShiftInAction(172), state172_struct_specifier);
+ 5         }
+ 6        static Dictionary&lt;LRParsingAction, Action&lt;ParsingStepContext&gt;&gt; dict =
+ 7             new Dictionary&lt;LRParsingAction, Action&lt;ParsingStepContext&gt;&gt;();
+ 8 
+ 9         protected override Action&lt;ParsingStepContext&gt; GetSemanticAction(LRParsingAction parsingAction)
+10         {
+11             Action&lt;ParsingStepContext&gt; semanticAction = null;
+12             if (dict.TryGetValue(parsingAction, out semanticAction))
+13             {
+14                 return semanticAction;
+15             }
+16             else
+17             {
+18                 return null;
+19             }
+20         }</pre>
+</div>
+
+<h2>
+<a id="userdefinedtype" class="anchor" href="#userdefinedtype" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>userDefinedType</h2>
+
+<p>下面是上文的LightInfo代码片段的词法分析结果。请注意在定义LightInfo时，他是个identifier，定义之后，就是一个userDefinedType类型的单词了。</p>
+
+<div>
+<pre> 1 TokenList[Count: 21]
+ 2 [[struct](__struct)[struct]]$[Ln:1, Col:1]
+ 3 [[LightInfo](identifier)[LightInfo]]$[Ln:1, Col:8]
+ 4 [[{](__left_brace)["{"]]$[Ln:1, Col:18]
+ 5 [[vec4](__vec4)[vec4]]$[Ln:2, Col:5]
+ 6 [[Position](identifier)[Position]]$[Ln:2, Col:10]
+ 7 [[;](__semicolon)[";"]]$[Ln:2, Col:18]
+ 8 [[vec3](__vec3)[vec3]]$[Ln:3, Col:5]
+ 9 [[La](identifier)[La]]$[Ln:3, Col:10]
+10 [[;](__semicolon)[";"]]$[Ln:3, Col:12]
+11 [[vec3](__vec3)[vec3]]$[Ln:4, Col:5]
+12 [[Ld](identifier)[Ld]]$[Ln:4, Col:10]
+13 [[;](__semicolon)[";"]]$[Ln:4, Col:12]
+14 [[vec3](__vec3)[vec3]]$[Ln:5, Col:5]
+15 [[Ls](identifier)[Ls]]$[Ln:5, Col:10]
+16 [[;](__semicolon)[";"]]$[Ln:5, Col:12]
+17 [[}](__right_brace)["}"]]$[Ln:6, Col:1]
+18 [[;](__semicolon)[";"]]$[Ln:6, Col:2]
+19 [[uniform](__uniform)[uniform]]$[Ln:7, Col:1]
+20 [[LightInfo](__userDefinedType)[LightInfo]]$[Ln:7, Col:9]
+21 [[Light](identifier)[Light]]$[Ln:7, Col:19]
+22 [[;](__semicolon)[";"]]$[Ln:7, Col:24]</pre>
+</div>
+
+<p>下面是LightInfo片段的语法树。你可以看到单词的类型对照着叶结点的类型。</p>
+
+<div>
+<img id="code_img_closed_6330c88a-6ab3-42f5-8b1c-c81fc2013056" src="http://images.cnblogs.com/OutliningIndicators/ContractedBlock.gif" alt=""><img id="code_img_opened_6330c88a-6ab3-42f5-8b1c-c81fc2013056" src="http://images.cnblogs.com/OutliningIndicators/ExpandedBlockStart.gif" alt="">
+<div id="cnblogs_code_open_6330c88a-6ab3-42f5-8b1c-c81fc2013056">
+<pre> 1 (__translation_unit)[&lt;translation_unit&gt;][translation_unit]
+ 2  ├─(__translation_unit)[&lt;translation_unit&gt;][translation_unit]
+ 3  │  └─(__external_declaration)[&lt;external_declaration&gt;][external_declaration]
+ 4  │      └─(__declaration)[&lt;declaration&gt;][declaration]
+ 5  │          ├─(__init_declarator_list)[&lt;init_declarator_list&gt;][init_declarator_list]
+ 6  │          │  └─(__single_declaration)[&lt;single_declaration&gt;][single_declaration]
+ 7  │          │      └─(__fully_specified_type)[&lt;fully_specified_type&gt;][fully_specified_type]
+ 8  │          │          └─(__type_specifier)[&lt;type_specifier&gt;][type_specifier]
+ 9  │          │              └─(__type_specifier_nonarray)[&lt;type_specifier_nonarray&gt;][type_specifier_nonarray]
+10  │          │                  └─(__struct_specifier)[&lt;struct_specifier&gt;][struct_specifier]
+11  │          │                      ├─(__structLeave__)[struct][struct]
+12  │          │                      ├─(identifierLeave__)[LightInfo][LightInfo]
+13  │          │                      ├─(__left_braceLeave__)["{"][{]
+14  │          │                      ├─(__struct_declaration_list)[&lt;struct_declaration_list&gt;][struct_declaration_list]
+15  │          │                      │  ├─(__struct_declaration_list)[&lt;struct_declaration_list&gt;][struct_declaration_list]
+16  │          │                      │  │  ├─(__struct_declaration_list)[&lt;struct_declaration_list&gt;][struct_declaration_list]
+17  │          │                      │  │  │  ├─(__struct_declaration_list)[&lt;struct_declaration_list&gt;][struct_declaration_list]
+18  │          │                      │  │  │  │  └─(__struct_declaration)[&lt;struct_declaration&gt;][struct_declaration]
+19  │          │                      │  │  │  │      ├─(__type_specifier)[&lt;type_specifier&gt;][type_specifier]
+20  │          │                      │  │  │  │      │  └─(__type_specifier_nonarray)[&lt;type_specifier_nonarray&gt;][type_specifier_nonarray]
+21  │          │                      │  │  │  │      │      └─(__vec4Leave__)[vec4][vec4]
+22  │          │                      │  │  │  │      ├─(__struct_declarator_list)[&lt;struct_declarator_list&gt;][struct_declarator_list]
+23  │          │                      │  │  │  │      │  └─(__struct_declarator)[&lt;struct_declarator&gt;][struct_declarator]
+24  │          │                      │  │  │  │      │      └─(identifierLeave__)[Position][Position]
+25  │          │                      │  │  │  │      └─(__semicolonLeave__)[";"][;]
+26  │          │                      │  │  │  └─(__struct_declaration)[&lt;struct_declaration&gt;][struct_declaration]
+27  │          │                      │  │  │      ├─(__type_specifier)[&lt;type_specifier&gt;][type_specifier]
+28  │          │                      │  │  │      │  └─(__type_specifier_nonarray)[&lt;type_specifier_nonarray&gt;][type_specifier_nonarray]
+29  │          │                      │  │  │      │      └─(__vec3Leave__)[vec3][vec3]
+30  │          │                      │  │  │      ├─(__struct_declarator_list)[&lt;struct_declarator_list&gt;][struct_declarator_list]
+31  │          │                      │  │  │      │  └─(__struct_declarator)[&lt;struct_declarator&gt;][struct_declarator]
+32  │          │                      │  │  │      │      └─(identifierLeave__)[La][La]
+33  │          │                      │  │  │      └─(__semicolonLeave__)[";"][;]
+34  │          │                      │  │  └─(__struct_declaration)[&lt;struct_declaration&gt;][struct_declaration]
+35  │          │                      │  │      ├─(__type_specifier)[&lt;type_specifier&gt;][type_specifier]
+36  │          │                      │  │      │  └─(__type_specifier_nonarray)[&lt;type_specifier_nonarray&gt;][type_specifier_nonarray]
+37  │          │                      │  │      │      └─(__vec3Leave__)[vec3][vec3]
+38  │          │                      │  │      ├─(__struct_declarator_list)[&lt;struct_declarator_list&gt;][struct_declarator_list]
+39  │          │                      │  │      │  └─(__struct_declarator)[&lt;struct_declarator&gt;][struct_declarator]
+40  │          │                      │  │      │      └─(identifierLeave__)[Ld][Ld]
+41  │          │                      │  │      └─(__semicolonLeave__)[";"][;]
+42  │          │                      │  └─(__struct_declaration)[&lt;struct_declaration&gt;][struct_declaration]
+43  │          │                      │      ├─(__type_specifier)[&lt;type_specifier&gt;][type_specifier]
+44  │          │                      │      │  └─(__type_specifier_nonarray)[&lt;type_specifier_nonarray&gt;][type_specifier_nonarray]
+45  │          │                      │      │      └─(__vec3Leave__)[vec3][vec3]
+46  │          │                      │      ├─(__struct_declarator_list)[&lt;struct_declarator_list&gt;][struct_declarator_list]
+47  │          │                      │      │  └─(__struct_declarator)[&lt;struct_declarator&gt;][struct_declarator]
+48  │          │                      │      │      └─(identifierLeave__)[Ls][Ls]
+49  │          │                      │      └─(__semicolonLeave__)[";"][;]
+50  │          │                      └─(__right_braceLeave__)["}"][}]
+51  │          └─(__semicolonLeave__)[";"][;]
+52  └─(__external_declaration)[&lt;external_declaration&gt;][external_declaration]
+53      └─(__declaration)[&lt;declaration&gt;][declaration]
+54          ├─(__init_declarator_list)[&lt;init_declarator_list&gt;][init_declarator_list]
+55          │  └─(__single_declaration)[&lt;single_declaration&gt;][single_declaration]
+56          │      ├─(__fully_specified_type)[&lt;fully_specified_type&gt;][fully_specified_type]
+57          │      │  ├─(__type_qualifier)[&lt;type_qualifier&gt;][type_qualifier]
+58          │      │  │  └─(__single_type_qualifier)[&lt;single_type_qualifier&gt;][single_type_qualifier]
+59          │      │  │      └─(__storage_qualifier)[&lt;storage_qualifier&gt;][storage_qualifier]
+60          │      │  │          └─(__uniformLeave__)[uniform][uniform]
+61          │      │  └─(__type_specifier)[&lt;type_specifier&gt;][type_specifier]
+62          │      │      └─(__type_specifier_nonarray)[&lt;type_specifier_nonarray&gt;][type_specifier_nonarray]
+63          │      │          └─(__userDefinedTypeLeave__)[LightInfo][LightInfo]
+64          │      └─(identifierLeave__)[Light][Light]
+65          └─(__semicolonLeave__)[";"][;]</pre>
+</div>
+
+<p>SyntaxTree</p>
+</div>
+
+<p>再加上其他的测试用例，这个GLSL解析器终于实现了。</p>
+
+<h2>
+<a id="最终目的" class="anchor" href="#%E6%9C%80%E7%BB%88%E7%9B%AE%E7%9A%84" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>最终目的</h2>
+
+<p>解析GLSL源代码，是为了获取其中的信息（都有哪些in/out/uniform等）。现在语法树已经有了，剩下的就是遍历此树的事了。不再详述。</p>
+
+<h1>
+<a id="故事" class="anchor" href="#%E6%95%85%E4%BA%8B" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>故事</h1>
+
+<p>故事，其实是事故。由于心急，此项目第一次实现时出现了几乎无法fix的bug。于是重写了一遍，这次一步一步走，终于成功了。</p>
+
+<h2>
+<a id="lalr1state" class="anchor" href="#lalr1state" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>LALR(1)State</h2>
+
+<p>LALR(1)State集合在尝试插入一个新的State时，如果已有在LALR(1)意义上"相等"的状态，仍旧要尝试将新state的LookAhead列表插入已有状态。</p>
+
+<p><img src="http://images2015.cnblogs.com/blog/383191/201604/383191-20160415230944301-914787360.png" alt=""></p>
+
+<p>否则，下面的例子就显示了文法3-8在忽视了这一点时的state集合与正确的state集合的差别（少了一些LookAhead项）。</p>
+
+<div>
+<img id="code_img_closed_6c0bc999-7872-4f7e-9a51-41429e5678a7" src="http://images.cnblogs.com/OutliningIndicators/ContractedBlock.gif" alt=""><img id="code_img_opened_6c0bc999-7872-4f7e-9a51-41429e5678a7" src="http://images.cnblogs.com/OutliningIndicators/ExpandedBlockStart.gif" alt="">
+<div id="cnblogs_code_open_6c0bc999-7872-4f7e-9a51-41429e5678a7">
+<pre> 1 State [1]:
+ 2 &lt;S&gt; ::= . "(" &lt;L&gt; ")" ;, "$"
+ 3 &lt;S'&gt; ::= . &lt;S&gt; "$" ;, "$"
+ 4 &lt;S&gt; ::= . "x" ;, "$"
+ 5 State [8]:
+ 6 &lt;S&gt; ::= "(" &lt;L&gt; ")" . ;, "$"
+ 7 State [4]:
+ 8 &lt;S&gt; ::= "x" . ;, "$"
+ 9 State [6]:
+10 &lt;L&gt; ::= &lt;S&gt; . ;, ","")"
+11 State [9]:
+12 &lt;L&gt; ::= &lt;L&gt; "," &lt;S&gt; . ;, ","")"
+13 State [5]:
+14 &lt;L&gt; ::= &lt;L&gt; . "," &lt;S&gt; ;, ","")"
+15 &lt;S&gt; ::= "(" &lt;L&gt; . ")" ;, "$"
+16 State [7]:
+17 &lt;S&gt; ::= . "(" &lt;L&gt; ")" ;, ","")"
+18 &lt;S&gt; ::= . "x" ;, ","")"
+19 &lt;L&gt; ::= &lt;L&gt; "," . &lt;S&gt; ;, ","")"
+20 State [2]:
+21 &lt;S&gt; ::= . "(" &lt;L&gt; ")" ;, ","")"
+22 &lt;S&gt; ::= . "x" ;, ","")"
+23 &lt;S&gt; ::= "(" . &lt;L&gt; ")" ;, "$"
+24 &lt;L&gt; ::= . &lt;L&gt; "," &lt;S&gt; ;, ","")"
+25 &lt;L&gt; ::= . &lt;S&gt; ;, ","")"
+26 State [3]:
+27 &lt;S'&gt; ::= &lt;S&gt; . "$" ;, "$"</pre>
+</div>
+
+<p>少LookAhead项的</p>
+</div>
+
+<div>
+<img id="code_img_closed_09e25cc9-4875-4b71-9038-156dc08eec94" src="http://images.cnblogs.com/OutliningIndicators/ContractedBlock.gif" alt=""><img id="code_img_opened_09e25cc9-4875-4b71-9038-156dc08eec94" src="http://images.cnblogs.com/OutliningIndicators/ExpandedBlockStart.gif" alt="">
+<div id="cnblogs_code_open_09e25cc9-4875-4b71-9038-156dc08eec94">
+<pre> 1 State [1]:
+ 2 &lt;S&gt; ::= . "(" &lt;L&gt; ")" ;, "$"
+ 3 &lt;S'&gt; ::= . &lt;S&gt; "$" ;, "$"
+ 4 &lt;S&gt; ::= . "x" ;, "$"
+ 5 State [8]:
+ 6 &lt;S&gt; ::= "(" &lt;L&gt; ")" . ;, "$"","")"
+ 7 State [4]:
+ 8 &lt;S&gt; ::= "x" . ;, "$"","")"
+ 9 State [6]:
+10 &lt;L&gt; ::= &lt;S&gt; . ;, ","")"
+11 State [9]:
+12 &lt;L&gt; ::= &lt;L&gt; "," &lt;S&gt; . ;, ","")"
+13 State [5]:
+14 &lt;L&gt; ::= &lt;L&gt; . "," &lt;S&gt; ;, ","")"
+15 &lt;S&gt; ::= "(" &lt;L&gt; . ")" ;, "$"","")"
+16 State [7]:
+17 &lt;S&gt; ::= . "(" &lt;L&gt; ")" ;, ","")"
+18 &lt;S&gt; ::= . "x" ;, ","")"
+19 &lt;L&gt; ::= &lt;L&gt; "," . &lt;S&gt; ;, ","")"
+20 State [2]:
+21 &lt;S&gt; ::= . "(" &lt;L&gt; ")" ;, ","")"
+22 &lt;S&gt; ::= . "x" ;, ","")"
+23 &lt;S&gt; ::= "(" . &lt;L&gt; ")" ;, "$"","")"
+24 &lt;L&gt; ::= . &lt;L&gt; "," &lt;S&gt; ;, ","")"
+25 &lt;L&gt; ::= . &lt;S&gt; ;, ","")"
+26 State [3]:
+27 &lt;S'&gt; ::= &lt;S&gt; . "$" ;, "$"</pre>
+</div>
+
+<p>正确的</p>
+</div>
+
+<h2>
+<a id="codedom" class="anchor" href="#codedom" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>CodeDom</h2>
+
+<p>CodeDom不支持readonly属性，实在是遗憾。CodeDom还会对以"__"开头的变量自动添加个@前缀，真是无语。</p>
+
+<div>
+<pre> 1 // private static TreeNodeType NODE__Grammar = new TreeNodeType(ContextfreeGrammarSLRTreeNodeType.NODE__Grammar, "Grammar", "&lt;Grammar&gt;");
+ 2 CodeMemberField field = new CodeMemberField(typeof(TreeNodeType), GetNodeNameInParser(node));
+ 3 // field.Attributes 不支持readonly，遗憾了。
+ 4 field.Attributes = MemberAttributes.Private | MemberAttributes.Static;
+ 5 var ctor = new CodeObjectCreateExpression(typeof(TreeNodeType),
+ 6     new CodeFieldReferenceExpression(
+ 7         new CodeTypeReferenceExpression(GetTreeNodeConstTypeName(grammarId, algorithm)),
+ 8         GetNodeNameInParser(node)),
+ 9     new CodePrimitiveExpression(node.Content),
+10     new CodePrimitiveExpression(node.Nickname));
+11 field.InitExpression = ctor;</pre>
+</div>
+
+<h2>
+<a id="复杂的词法分析器" class="anchor" href="#%E5%A4%8D%E6%9D%82%E7%9A%84%E8%AF%8D%E6%B3%95%E5%88%86%E6%9E%90%E5%99%A8" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>复杂的词法分析器</h2>
+
+<p>从算法上说，理解语法分析器要比较理解词法分析器困难的多。但是LR语法分析器的结构却比词法分析器的结构和LL语法分析器的结果简单得多。目前实现dump词法分析器代码的代码是最绕的。要处理注释（//和/**/）是其中最复杂的问题。这段代码写好了我再也不想动了。</p>
+
+<h2>
+<a id="ll和lr" class="anchor" href="#ll%E5%92%8Clr" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>LL和LR</h2>
+
+<p>LR分析法确实比LL强太多。其适用各种现今的程序语言，对文法的限制极少，分析器结构还十分简单。奇妙的是，稍微改动下文法，就可以减少LR分析的state，精简代码。</p>
+
+<p>例如ContextfreeGrammarCompiler的文法，稍微改改会有不同的state数目。</p>
+
+<div>
+<img id="code_img_closed_6c6ff319-e9de-4acb-a047-bc654e02e0e2" src="http://images.cnblogs.com/OutliningIndicators/ContractedBlock.gif" alt=""><img id="code_img_opened_6c6ff319-e9de-4acb-a047-bc654e02e0e2" src="http://images.cnblogs.com/OutliningIndicators/ExpandedBlockStart.gif" alt="">
+<div id="cnblogs_code_open_6c6ff319-e9de-4acb-a047-bc654e02e0e2">
+<pre> 1 ====================================================================
+ 2 135 set action items
+ 3 &lt;Grammar&gt; ::= &lt;ProductionList&gt; &lt;Production&gt; ;
+ 4 &lt;ProductionList&gt; ::= &lt;ProductionList&gt; &lt;Production&gt; | null ;
+ 5 &lt;Production&gt; ::= &lt;Vn&gt; "::=" &lt;Canditate&gt; &lt;RightPartList&gt; ";" ;
+ 6 &lt;Canditate&gt; ::= &lt;V&gt; &lt;VList&gt; ;
+ 7 &lt;VList&gt; ::= &lt;V&gt; &lt;VList&gt; | null ;
+ 8 &lt;RightPartList&gt; ::= "|" &lt;Canditate&gt; &lt;RightPartList&gt; | null ;
+ 9 &lt;V&gt; ::= &lt;Vn&gt; | &lt;Vt&gt; ;
+10 &lt;Vn&gt; ::= "&lt;" identifier "&gt;" ;
+11 &lt;Vt&gt; ::= "null" | "identifier" | "number" | "constString" | constString ;
+12 ====================================================================
+13 143 set action items
+14 &lt;Grammar&gt; ::= &lt;Production&gt; &lt;ProductionList&gt; ;
+15 &lt;ProductionList&gt; ::= &lt;Production&gt; &lt;ProductionList&gt; | null ;
+16 &lt;Production&gt; ::= &lt;Vn&gt; "::=" &lt;Canditate&gt; &lt;RightPartList&gt; ";" ;
+17 &lt;Canditate&gt; ::= &lt;V&gt; &lt;VList&gt; ;
+18 &lt;VList&gt; ::= &lt;V&gt; &lt;VList&gt; | null ;
+19 &lt;RightPartList&gt; ::= "|" &lt;Canditate&gt; &lt;RightPartList&gt; | null ;
+20 &lt;V&gt; ::= &lt;Vn&gt; | &lt;Vt&gt; ;
+21 &lt;Vn&gt; ::= "&lt;" identifier "&gt;" ;
+22 &lt;Vt&gt; ::= "null" | "identifier" | "number" | "constString" | constString ;
+23 ====================================================================
+24 139 set action items
+25 &lt;Grammar&gt; ::= &lt;ProductionList&gt; &lt;Production&gt; ;
+26 &lt;ProductionList&gt; ::= &lt;ProductionList&gt; &lt;Production&gt; | null ;
+27 &lt;Production&gt; ::= &lt;Vn&gt; "::=" &lt;LeftPartList&gt; &lt;Canditate&gt; ";" ;
+28 &lt;LeftPartList&gt; ::= &lt;LeftPartList&gt; &lt;LeftPart&gt; | null ;
+29 &lt;LeftPart&gt; ::= &lt;Canditate&gt; "|" ;
+30 &lt;Canditate&gt; ::= &lt;V&gt; &lt;VList&gt; ;
+31 &lt;VList&gt; ::= &lt;V&gt; &lt;VList&gt; | null ;
+32 &lt;V&gt; ::= &lt;Vn&gt; | &lt;Vt&gt; ;
+33 &lt;Vn&gt; ::= "&lt;" identifier "&gt;" ;
+34 &lt;Vt&gt; ::= "null" | "identifier" | "number" | "constString" | constString ;
+35 ====================================================================
+36 120 set action items
+37 &lt;Grammar&gt; ::= &lt;ProductionList&gt; &lt;Production&gt; ;
+38 &lt;ProductionList&gt; ::= &lt;ProductionList&gt; &lt;Production&gt; | null ;
+39 &lt;Production&gt; ::= &lt;Vn&gt; "::=" &lt;Canditate&gt; &lt;RightPartList&gt; ";" ;
+40 &lt;Canditate&gt; ::= &lt;VList&gt; &lt;V&gt; ;
+41 &lt;VList&gt; ::= &lt;VList&gt; &lt;V&gt; | null ;
+42 &lt;RightPartList&gt; ::= "|" &lt;Canditate&gt; &lt;RightPartList&gt; | null ;
+43 &lt;V&gt; ::= &lt;Vn&gt; | &lt;Vt&gt; ;
+44 &lt;Vn&gt; ::= "&lt;" identifier "&gt;" ;
+45 &lt;Vt&gt; ::= "null" | "identifier" | "number" | "constString" | constString ;</pre>
+</div>
+
+<p>ContextfreeGrammars</p>
+</div>
+
+<h1>
+<a id="总结" class="anchor" href="#%E6%80%BB%E7%BB%93" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>总结</h1>
+
+<p>实现了LALR(1)分析和GLSL解析器。</p>
+
+<p>今后做任何语言、格式的解析都不用愁了。</p>
+
+      <footer class="site-footer">
+        <span class="site-footer-owner"><a href="https://github.com/bitzhuwei/LALR1Compiler">LALR1Compiler</a> is maintained by <a href="https://github.com/bitzhuwei">bitzhuwei</a>.</span>
+
+        <span class="site-footer-credits">This page was generated by <a href="https://pages.github.com">GitHub Pages</a> using the <a href="https://github.com/jasonlong/cayman-theme">Cayman theme</a> by <a href="https://twitter.com/jasonlong">Jason Long</a>.</span>
+      </footer>
+
+    </section>
+
+  
+  </body>
+</html>
