@@ -1,0 +1,16 @@
+﻿//https://www.cnblogs.com/yjh4866/archive/2011/08/01/6253882.html
+
+//<Expression> ::= <Expression> "+" <Multiply> | <Expression> "-" <Multiply> | <Multiply>;
+//<Multiply> ::= <Multiply> "*" <PorN> | <Multiply> "/" <PorN> | <PorN>;
+//<PorN> ::= "-" <Positive> | <Positive>;
+//<Positive> ::= <Base> "^" <Positive> | <Base>;
+//<Base> ::= "(" <Expression> ")" | number;
+//
+<Expression> ::= <Multiply> <PlusOpt>;
+<PlusOpt> ::= "+" <Multiply><PlusOpt> | "-" <Multiply><PlusOpt> | null;
+<Multiply> ::= <PorN> <MultiplyOpt>;
+<MultiplyOpt> ::= "*" <PorN> <MultiplyOpt> | "/" <PorN> <MultiplyOpt> | null;
+<PorN> ::= "-" <Positive> | <Positive>;
+<Positive> ::= <Base> <Power>;
+<Power> ::= "^" <Positive> | null;
+<Base> ::= "(" <Expression> ")" | number;
